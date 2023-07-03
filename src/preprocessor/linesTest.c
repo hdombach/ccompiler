@@ -193,6 +193,34 @@ void linesTestInsertLines() {
 
 }
 
+void linesTestCmp() {
+	Lines llines;
+	Lines rlines;
+	const char *LINE_1 = "This is definitely going to be line 1";
+	const char *LINE_2 = "This is line 2";
+	const char *LINE_3 = "This is line 3 with a bunch of extra text";
+
+	tStartSection("Compare two lines");
+	llines = initLines();
+	rlines = initLines();
+	
+	tAssert("compare 1", linesCmp(&llines, &rlines));
+	linesApp(&llines, LINE_1);
+	tAssert("compare 2", !linesCmp(&llines, &rlines));
+	linesApp(&rlines, LINE_1);
+	tAssert("compare 3", linesCmp(&llines, &rlines));
+
+	linesApp(&rlines, LINE_2);
+	linesApp(&rlines, LINE_3);
+	tAssert("compare 4", !linesCmp(&llines, &rlines));
+	linesApp(&llines, LINE_2);
+	linesApp(&llines, LINE_3);
+	tAssert("compare 5", linesCmp(&llines, &rlines));
+
+	freeLines(&llines);
+	freeLines(&rlines);
+}
+
 void linesTest() {
 	linesTestEmpty();
 	linesTestAdding();
@@ -200,6 +228,7 @@ void linesTest() {
 	linesTestRemove();
 	linesTestInsert();
 	linesTestInsertLines();
+	linesTestCmp();
 }
 
 int linesTestMain() {

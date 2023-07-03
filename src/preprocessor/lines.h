@@ -52,4 +52,10 @@ int linesIns(Lines *lines, const char *line, int index);
  */
 int linesInsLines(Lines *lines, const Lines *newLines, int index);
 
+/*
+ * Compares two lines
+ * Returns 1 if they are equal and 0 if they are not
+ */
+int linesCmp(const Lines *llines, const Lines *rlines);
+
 #endif

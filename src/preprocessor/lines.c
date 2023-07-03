@@ -134,3 +134,17 @@ int linesInsLines(Lines *lines, const Lines *newLines, int index) {
 
 	return LINES_SUCCESS;
 }
+
+int linesCmp(const Lines *llines, const Lines *rlines) {
+	if (llines->size != rlines->size) {
+		return 0;
+	}
+
+	for (int i = 0; i < llines->size; i++) {
+		if (strcmp(llines->data[i], rlines->data[i]) != 0) {
+			return 0;
+		}
+	}
+
+	return 1;
+}
