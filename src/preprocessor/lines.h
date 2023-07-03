@@ -47,4 +47,9 @@ int linesRem(Lines *lines, int index);
  */
 int linesIns(Lines *lines, const char *line, int index);
 
+/*
+ * Inserts multiple lines at the index
+ */
+int linesInsLines(Lines *lines, const Lines *newLines, int index);
+
 #endif

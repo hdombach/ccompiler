@@ -128,6 +128,69 @@ void linesTestInsert() {
 	tAssert("check 3", strcmp(LINES_3, lines.data[2]) == 0);
 	tAssert("check 4", strcmp(LINES_4, lines.data[3]) == 0);
 
+	freeLines(&lines);
+}
+
+void linesTestInsertLines() {
+	Lines lines;
+	Lines subLines1;
+	Lines subLines2;
+	const char *LINES_1 = "This is line 1";
+	const char *LINES_2 = "This is line 2";
+	const char *LINES_3 = "This is line 3";
+	const char *LINES_4 = "This is line 4";
+	const char *LINES_5 = "This is line 5";
+	const char *LINES_6 = "This is line 6";
+	const char *LINES_7 = "This is line 7";
+	const char *LINES_8 = "This is line 8";
+
+
+	tStartSection("Inserting Multiple Lines");
+
+	lines = initLines();
+	subLines1 = initLines();
+	subLines2 = initLines();
+
+	linesApp(&lines, LINES_1);
+	linesApp(&lines, LINES_8);
+
+	linesApp(&subLines1, LINES_2);
+	linesApp(&subLines1, LINES_3);
+
+	linesApp(&subLines2, LINES_4);
+	linesApp(&subLines2, LINES_5);
+	linesApp(&subLines2, LINES_6);
+	linesApp(&subLines2, LINES_7);
+
+	tAssert(
+			"invalid insert 1",
+			linesInsLines(&subLines1, &subLines2, 3) == LINES_INVALID_INDEX);
+	tAssert(
+			"invalid insert 2",
+			linesInsLines(&subLines1, &subLines2, -1) == LINES_INVALID_INDEX);
+
+	tAssert(
+			"insert 1",
+			linesInsLines(&subLines1, &subLines2, 2) == LINES_SUCCESS);
+
+	tAssert(
+			"insert 1",
+			linesInsLines(&lines, &subLines1, 1) == LINES_SUCCESS);
+
+	tAssert("size", lines.size == 8);
+	tAssert("contents 1", strcmp(lines.data[0], LINES_1) == 0);
+	tAssert("contents 2", strcmp(lines.data[1], LINES_2) == 0);
+	tAssert("contents 3", strcmp(lines.data[2], LINES_3) == 0);
+	tAssert("contents 4", strcmp(lines.data[3], LINES_4) == 0);
+	tAssert("contents 5", strcmp(lines.data[4], LINES_5) == 0);
+	tAssert("contents 6", strcmp(lines.data[5], LINES_6) == 0);
+	tAssert("contents 7", strcmp(lines.data[6], LINES_7) == 0);
+	tAssert("contents 8", strcmp(lines.data[7], LINES_8) == 0);
+
+	freeLines(&lines);
+	freeLines(&subLines1);
+	freeLines(&subLines2);
+
 }
 
 void linesTest() {
@@ -136,6 +199,7 @@ void linesTest() {
 	linesTestFromFile();
 	linesTestRemove();
 	linesTestInsert();
+	linesTestInsertLines();
 }
 
 int linesTestMain() {

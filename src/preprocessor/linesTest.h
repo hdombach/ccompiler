@@ -6,6 +6,7 @@ void linesTestAdding();
 void linesTestFromFile();
 void linesTestRemove();
 void linesTestInsert();
+void linesTestInsertLines();
 void linesTest();
 int linesTestMain();
 

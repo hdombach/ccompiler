@@ -111,3 +111,26 @@ int linesIns(Lines *lines, const char *line, int index) {
 
 	return LINES_SUCCESS;
 }
+
+int linesInsLines(Lines *lines, const Lines *newLines, int index) {
+	size_t mvLen;
+	size_t lineLen;
+
+	if (index < 0 || index > lines->size) {
+		return LINES_INVALID_INDEX;
+	}
+	while ((lines->size + newLines->size) > lines->capacity) {
+		linesIncCap(lines);
+	}
+
+	mvLen = (lines->size - index) * sizeof(char *);
+	memmove(lines->data + index + newLines->size, lines->data + index, mvLen);
+	for (int i = 0; i < newLines->size; i++) {
+		lineLen = sizeof(char) * (strlen(newLines->data[i]) + 1);
+		lines->data[index + i] = malloc(lineLen);
+		strcpy(lines->data[index + i], newLines->data[i]);
+	}
+	lines->size += newLines->size;
+
+	return LINES_SUCCESS;
+}
