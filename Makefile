@@ -18,7 +18,7 @@ tests.o: src/shared/tests.c
 linesTest.o: src/preprocessor/linesTest.c
 	cc src/preprocessor/linesTest.c -c -o build/linesTest.o $(CFLAGS)
 
-linesTest: linesTest.o
+linesTest: linesTest.o lines.o tests.o
 	cc build/linesTest.o build/lines.o build/tests.o -Wl,-e,_linesTestMain -o build/linesTest $(CFLAGS)
 
 allTests: src/shared/allTests.c linesTest.o tests.o lines.o
