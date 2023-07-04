@@ -148,3 +148,14 @@ int linesCmp(const Lines *llines, const Lines *rlines) {
 
 	return 1;
 }
+
+void linesPrint(const Lines *lines) {
+	printf("[");
+	for (int i = 0; i < lines->size; i++) {
+		printf("\"%s\"", lines->data[i]);
+		if (i < lines->size - 1) {
+			printf(", ");
+		}
+	}
+	printf("]");
+}

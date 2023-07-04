@@ -58,4 +58,6 @@ int linesInsLines(Lines *lines, const Lines *newLines, int index);
  */
 int linesCmp(const Lines *llines, const Lines *rlines);
 
+void linesPrint(const Lines *lines);
+
 #endif

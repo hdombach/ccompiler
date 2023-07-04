@@ -1,10 +1,20 @@
 CFLAGS=-g
 
-all: linesTest assets allTests 
+all: linesTest assets allTests preprocessor
+
+#preprocessor
+preprocessor: src/preprocessor/ppMain.c ppArgParser.o lines.o
+	cc src/preprocessor/ppMain.c build/ppArgParser.o build/lines.o -o build/preprocessor $(CFLAGS)
 
 #modules
 lines.o: src/preprocessor/lines.c
 	cc src/preprocessor/lines.c -c -o build/lines.o  $(CFLAGS)
+
+ppArgParser.o: src/preprocessor/ppArgParser.c
+	cc src/preprocessor/ppArgParser.c -c -o build/ppArgParser.o $(CFLAGS)
+
+stages.o: src/preprocessor/stages.c
+	cc src/preprocessor/stages.c -c -o build/stages.c $(CFLAGS)
 
 #assets
 assets: assets/exampleLines.txt
