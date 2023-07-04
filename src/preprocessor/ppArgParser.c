@@ -79,6 +79,10 @@ PPArgs initPPArgs() {
 	return result;
 }
 
+void freePPArgs(PPArgs *args) {
+	freeLines(&args->files);
+}
+
 int ppParseArgs(int argc, char **argv, PPArgs *args) {
 	int progress;
 	int parseRes;

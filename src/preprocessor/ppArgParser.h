@@ -16,6 +16,7 @@ typedef struct {
 extern const char *PP_HELP_MSG;
 
 PPArgs initPPArgs();
+void freePPArgs(PPArgs *args);
 
 /*
  * Parses the provided args.
