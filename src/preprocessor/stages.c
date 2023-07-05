@@ -23,6 +23,7 @@ void stagesBackslashes(Lines *lines) {
 			strcat(curLine, lines->data[i + 1]);
 
 			lines->data[i] = curLine;
+			linesRem(lines, i + 1);
 		} else {
 			i++;
 		}

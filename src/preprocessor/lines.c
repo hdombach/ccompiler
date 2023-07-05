@@ -26,14 +26,17 @@ void freeLines(Lines *lines) {
 
 int linesFromFile(Lines *result, FILE *f) {
 	char *curLine;
+	size_t linecap;
 
+	linecap = 0;
+	curLine = NULL;
 	if (!f) {
 		return LINES_INVALID_ARGUMENT;
 	}
 
 	*result = initLines();
 
-	while (getline(&curLine, NULL, f) > 0) {
+	while (getline(&curLine, &linecap, f) > 0) {
 		linesApp(result, curLine);
 	}
 
