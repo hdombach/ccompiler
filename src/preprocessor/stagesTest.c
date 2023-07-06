@@ -3,7 +3,7 @@
 #include "stagesTest.h"
 #include "lines.h"
 #include "stages.h"
-#include "../shared/tests.h"
+#include "../util/tests.h"
 
 void stagesTestBackslash() {
 	FILE *exampleFile;

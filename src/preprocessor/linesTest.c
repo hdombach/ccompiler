@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../shared/tests.h"
+#include "../util/tests.h"
 #include "lines.h"
 #include "linesTest.h"
 
