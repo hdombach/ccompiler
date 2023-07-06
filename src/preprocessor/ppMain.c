@@ -20,6 +20,6 @@ int main(int argc, char **argv) {
 	ppArgsPrint(&args);
 	printf("\n");
 
-		freePPArgs(&args);
-		return 0;
+	freePPArgs(&args);
+	return 0;
 }

@@ -37,11 +37,6 @@ void stagesTestBackslash() {
 	stagesBackslashes(&lines);
 
 	tAssert("compare result", linesCmp(&lines, &resultLines));
-	printf("lines 1");
-	linesPrint(&lines);
-	printf("lines 2");
-	linesPrint(&resultLines);
-
 
 	freeLines(&lines);
 	freeLines(&resultLines);
