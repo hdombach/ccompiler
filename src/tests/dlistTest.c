@@ -3,6 +3,9 @@
 #include "test.h"
 #include <stdlib.h>
 
+/*
+ * Struct for testing with
+ */
 typedef struct {
 	int *data;
 	int offset;
@@ -27,7 +30,7 @@ void _freeTestType(_TestObj *obj) {
 	free(obj->data);
 }
 
-int _TestTypeCmp(const _TestObj *lhs, const _TestObj *rhs) {
+int _testTypeCmp(const _TestObj *lhs, const _TestObj *rhs) {
 	return lhs->uuid == rhs->uuid;
 }
 
@@ -209,7 +212,7 @@ void dlistDynObj() {
 	dlistIns(&list2, &obj1, 0); //1, 2
 	dlistIns(&list2, &obj3, 2); //1, 2, 3
 
-	tAssert("compare 1", dlistCmp(&list1, &list2, (DListCmpFunc) _TestTypeCmp));
+	tAssert("compare 1", dlistCmp(&list1, &list2, (DListCmpFunc) _testTypeCmp));
 
 	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
 	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
@@ -224,8 +227,8 @@ void dlistDynObj() {
 	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
 	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
 	tAssert("valid 3", _validTestType(dlistGet(&list1, 2)));
-	tAssert("compare 2", _TestTypeCmp(dlistGet(&list1, 0), dlistGet(&list1, 1)));
-	tAssert("compare 3", !dlistCmp(&list1, &list2, (DListCmpFunc) _TestTypeCmp));
+	tAssert("compare 2", _testTypeCmp(dlistGet(&list1, 0), dlistGet(&list1, 1)));
+	tAssert("compare 3", !dlistCmp(&list1, &list2, (DListCmpFunc) _testTypeCmp));
 
 	freeDList(&list1, (DListFreeFunc) _freeTestType);
 	freeDList(&list2, (DListFreeFunc) _freeTestType);
