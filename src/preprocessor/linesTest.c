@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-#include "../util/tests.h"
+#include "../tests/test.h"
 #include "lines.h"
 #include "linesTest.h"
 
@@ -64,6 +65,7 @@ void linesTestFromFile() {
 
 
 	freeLines(&lines);
+	free(currentLine);
 }
 
 void linesTestRemove() {
@@ -104,6 +106,8 @@ void linesTestRemove() {
 	tAssert("check size 5", lines.size == 0);
 
 	tAssert("invalid index 3", linesRem(&lines, 0) == LINES_INVALID_INDEX);
+
+	freeLines(&lines);
 }
 
 void linesTestInsert() {

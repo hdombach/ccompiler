@@ -23,7 +23,7 @@ void freeLines(Lines *lines);
  * Initiliazes a lines struct from a file pointer
  * returns LinesError
  */
-int linesFromFile(Lines *lines, FILE *f);
+int initLinesFromFile(Lines *lines, FILE *f);
 /*
  * Append a line to lines
  */

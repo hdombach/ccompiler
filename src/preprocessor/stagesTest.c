@@ -3,7 +3,7 @@
 #include "stagesTest.h"
 #include "lines.h"
 #include "stages.h"
-#include "../util/tests.h"
+#include "../tests/test.h"
 
 void stagesTestBackslash() {
 	FILE *exampleFile;
@@ -14,9 +14,7 @@ void stagesTestBackslash() {
 	const char *EXAMPLE_RESULT_FILE_NAME = "assets/tests/backslashResult1.txt";
 
 	tStartSection("Preprocessor backslash");
-	lines = initLines();
-	resultLines = initLines();
-	
+
 	exampleFile = fopen(EXAMPLE_FILE_NAME, "r");
 	if (!exampleFile) {
 		tAssert("Opening backslash1.txt", 0);
@@ -31,8 +29,8 @@ void stagesTestBackslash() {
 		return;
 	}
 
-	linesFromFile(&lines, exampleFile);
-	linesFromFile(&resultLines, exampleResultFile);
+	initLinesFromFile(&lines, exampleFile);
+	initLinesFromFile(&resultLines, exampleResultFile);
 
 	stagesBackslashes(&lines);
 

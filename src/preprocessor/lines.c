@@ -24,7 +24,7 @@ void freeLines(Lines *lines) {
 	free(lines->data);
 }
 
-int linesFromFile(Lines *result, FILE *f) {
+int initLinesFromFile(Lines *result, FILE *f) {
 	char *curLine;
 	size_t linecap;
 

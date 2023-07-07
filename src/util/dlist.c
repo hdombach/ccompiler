@@ -15,18 +15,20 @@ void initDList(DList *list, size_t elementSize) {
 }
 
 void freeDList(DList *list, DListFreeFunc freeFunc) {
-	for (int i = 0; i < list->size; i++) {
-		freeFunc(dlistGet(list, i));
+	if (freeFunc) {
+		for (int i = 0; i < list->size; i++) {
+			freeFunc(dlistGetm(list, i));
+		}
 	}
 	free(list->data);
 }
 
-void *dlistGet(DList *list, int index) {
+void *dlistGetm(DList *list, int index) {
 	//TODO: add debug boundary tests
 	return list->data + index * list->elSize;
 }
 
-const void *dlistGetc(DList const *list, int index) {
+const void *dlistGet(DList const *list, int index) {
 	return list->data + index * list->elSize;
 }
 
@@ -35,7 +37,7 @@ void dlistApp(DList *list, const void *element) {
 		dlistIncCap(list);
 	}
 
-	memcpy(dlistGet(list, list->size), element, list->elSize);
+	memcpy(dlistGetm(list, list->size), element, list->elSize);
 	list->size++;
 }
 
@@ -57,9 +59,11 @@ DListErr dlistRem(DList *list, int index, DListFreeFunc freeFunc) {
 	if (index < 0 || index >= list->size) {
 		return DLIST_INVALID_INDEX;
 	}
-	freeFunc(dlistGet(list, index));
+	if (freeFunc) {
+		freeFunc(dlistGetm(list, index));
+	}
 	mvLen = (list->size - 1 - index) * list->elSize;
-	memmove(dlistGet(list, index), dlistGet(list, index + 1), mvLen);
+	memmove(dlistGetm(list, index), dlistGet(list, index + 1), mvLen);
 	list->size--;
 	if (list->size * 2 <= list->capacity) {
 		dlistDecCap(list);
@@ -79,8 +83,8 @@ DListErr dlistIns(DList *list, const void *element, int index) {
 	}
 
 	mvLen = (list->size - index) * list->elSize;
-	memmove(dlistGet(list, index + 1), dlistGet(list, index), mvLen);
-	memcpy(dlistGet(list, index), element, list->elSize);
+	memmove(dlistGetm(list, index + 1), dlistGet(list, index), mvLen);
+	memcpy(dlistGetm(list, index), element, list->elSize);
 	list->size++;
 
 	return DLIST_SUCCESS;
@@ -91,7 +95,7 @@ int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
 		return 0;
 	}
 	for (int i = 0; i < lhs->size; i++) {
-		if (!cmpFunc(dlistGetc(lhs, i), dlistGetc(rhs, i))) {
+		if (!cmpFunc(dlistGet(lhs, i), dlistGet(rhs, i))) {
 			return 0;
 		}
 	}
@@ -101,7 +105,7 @@ int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
 void dlistPrint(const DList *list, DListPrintFunc printFunc) {
 	printf("[");
 	for (int i = 0; i < list->size; i++) {
-		printFunc(dlistGetc(list, i));
+		printFunc(dlistGet(list, i));
 		if (i < list->size - 1) {
 			printf(", ");
 		}

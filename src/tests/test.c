@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "test.h"
 #include <stdio.h>
 
 int testsTotal;

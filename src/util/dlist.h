@@ -25,8 +25,8 @@ typedef void (*DListPrintFunc)(void const*);
 void initDList(DList *list, size_t elementSize);
 void freeDList(DList *list, DListFreeFunc freeFunc);
 
-void *dlistGet(DList *list, int index);
-const void *dlistGetc(DList const *list, int index);
+void *dlistGetm(DList *list, int index);
+const void *dlistGet(DList const *list, int index);
 
 /*
  * Appends an element to the list.
