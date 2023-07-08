@@ -54,6 +54,8 @@ DListErr dlistRem(DList *list, int index, DListFreeFunc);
  */
 DListErr dlistIns(DList *list, const void *element, int index);
 
+void dlistRemAll(DList *list);
+
 /*
  * Compares two lists
  */

@@ -153,5 +153,22 @@ typedef struct {
 void initToken(Token *token);
 void freeToken(Token *token);
 
+void initNumbToken(Token *token, const char *word);
+void initStrToken(Token *token, const char *word);
+void initCharToken(Token *token, const char *word);
+void initIdentToken(Token *token, const char *word);
+void initSymToken(Token *token, const char *word);
+
 void printToken(Token *token);
 const char *tokTypeStr(TokenType type);
+
+/*
+ * Finds keyword token.
+ * Has to match exactly.
+ */
+TokenType findKeyword(const char *word);
+/*
+ * Finds token type.
+ * Characters have to match start of the token punctuation
+ */
+TokenType findPunctuation(const char *symb);
