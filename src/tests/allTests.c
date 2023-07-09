@@ -1,3 +1,4 @@
+#include "dstrTest.h"
 #include <stdio.h>
 #define TESTS_MAIN
 
@@ -5,6 +6,7 @@
 #include "../preprocessor/linesTest.h"
 #include "../preprocessor/stagesTest.h"
 #include "dlistTest.h"
+#include "dstrTest.h"
 
 int main() {
 	tInit();
@@ -12,6 +14,7 @@ int main() {
 	linesTest();
 	stagesTest();
 	dlistTest();
+	dstrTest();
 
 	tPrintResult();
 }

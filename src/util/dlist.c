@@ -90,6 +90,17 @@ DListErr dlistIns(DList *list, const void *element, int index) {
 	return DLIST_SUCCESS;
 }
 
+void dlistRemAll(DList *list, DListFreeFunc freeFunc) {
+	if (freeFunc) {
+		for (int i = 0; i < list->size; i++) {
+			freeFunc(dlistGetm(list, i));;
+		}
+	}
+	list->capacity = DLIST_INITIAL_CAP;
+	list->size = 0;
+	list->data = realloc(list->data, list->capacity * list->elSize);
+}
+
 int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
 	if (lhs->size != rhs->size) {
 		return 0;

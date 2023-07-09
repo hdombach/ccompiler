@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "token.h"
 
@@ -20,13 +21,43 @@ void freeToken(Token *token) {
 	}
 }
 
+void initNumbToken(Token *token, const char *word) {
+	initToken(token);
+	token->type = TT_INT_CONSTANT;
+	token->contents = strdup(word);
+}
+
+void initStrToken(Token *token, const char *word) {
+	initToken(token);
+	token->type = TT_STR_CONSTANT;
+	token->contents = strdup(word);
+}
+
+void initCharToken(Token *token, const char *word) {
+	initToken(token);
+	token->type = TT_CHAR_CONSTANT;
+	token->contents = strdup(word);
+}
+
+void initIdentToken(Token *token, const char *word) {
+	initToken(token);
+	token->type = TT_IDENTIFIER;
+	token->contents = strdup(word);
+}
+
+void initSymToken(Token *token, const char *word) {
+	initToken(token);
+	token->type = TT_UNKNOWN;
+	token->contents = strdup(word);
+}
+
 void printToken(Token *token) {
-	printf("{type: \"%s\"", tokTypeStr(token->type));
+	printf("{\"type\": \"%s\"", tokTypeStr(token->type));
 	if (token->contents) {
-		printf(", contents: \"%s\"", token->contents);
+		printf(", \"contents\": \"%s\"", token->contents);
 	}
 
-	printf(", position, \"");
+	printf(", \"position\": \"");
 	if (token->filename) {
 		printf("%s:", token->filename);
 	}
@@ -170,4 +201,22 @@ const char * TT_STRS[] = {
 };
 const char *tokTypeStr(TokenType type) {
 	return TT_STRS[type];
+}
+
+TokenType findKeyword(const char *word) {
+	for (TokenType type = TT_AUTO; type <= TT_WHILE; type++) {
+		if (strcmp(tokTypeStr(type), word) == 0) {
+			return type;
+		}
+	}
+	return TT_UNKNOWN;
+}
+
+TokenType findPunctuation(const char *symb) {
+	for (TokenType type = TT_O_CURLY; type <= TT_COMMA; type++) {
+		if (strcmp(tokTypeStr(type), symb) == 0) {
+			return type;
+		}
+	}
+	return TT_UNKNOWN;
 }
