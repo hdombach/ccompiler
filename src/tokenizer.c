@@ -95,7 +95,25 @@ DList tokenize(FILE *fp, const char *filename) {
 					stateType = STATE_NONE;
 			}
 		} else if (stateType == STATE_STRING) {
-			if (wasBackslash || curChar != '"') {
+			if (wasBackslash) {
+				if (curChar == '"') {
+					dstrApp(&state.curWord, '"');
+				} else if (curChar == 'n') {
+					dstrApp(&state.curWord, '\n');
+				} else if (curChar == 't') {
+					dstrApp(&state.curWord, '\t');
+				} else if (curChar == '0') {
+					dstrApp(&state.curWord, '\0');
+				} else if (curChar == 'v') {
+					dstrApp(&state.curWord, '\v');
+				} else if (curChar == 'r') {
+					dstrApp(&state.curWord, '\r');
+				} else if (curChar == 'f') {
+					dstrApp(&state.curWord, '\f');
+				} else {
+					fprintf(stderr, "Unrecosgnized character after backslash: %c\n", curChar);
+				}
+			} else if (curChar != '"') {
 				dstrApp(&state.curWord, curChar);
 			} else {
 				initStrToken(&token, &state);

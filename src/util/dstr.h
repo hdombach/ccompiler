@@ -52,6 +52,18 @@ static inline void printJsonStr(char const *str) {
 			printf("\\\\");
 		} else if (*str == '"') {
 			printf("\\\"");
+		} else if (*str == '\n') {
+			printf("\\\\n");
+		} else if (*str == '\t') {
+			printf("\\\\t");
+		} else if (*str == '\0') {
+			printf("\\\\0");
+		} else if (*str == '\v') {
+			printf("\\\\v");
+		} else if (*str == '\r') {
+			printf("\\\\r");
+		} else if (*str == '\f') {
+			printf("\\\\f");
 		} else {
 			printf("%c", *str);
 		}
