@@ -7,8 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//TODO: prob return #
-const char *_SPECIAL_SYMB = "{}[]#()<>%:;.?*+-/^&|~!=,\"'#";
+const char *_SPECIAL_SYMB = "{}[]#()<>%:;.?*+-/^&|~!=,\"'";
 const char *_NUM = "0123456789";
 const char *_ALPH="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char *_ALPH_NUM="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -23,6 +22,7 @@ typedef enum {
 	STATE_IDENTIFIER,
 	STATE_SINGLE_COMM,
 	STATE_MULTI_COMM,
+	STATE_MACRO,
 } _StateType;
 
 void initTokenzState(TokenzState *state, const char *filename) {
@@ -136,6 +136,19 @@ DList tokenize(FILE *fp, const char *filename) {
 			}
 		} else if (stateType == STATE_SYMBOL) {
 			TokenType tempTokenType;
+
+			if (*dstrGet(&state.curWord, 0) == '/') {
+				if (curChar == '/') {
+					stateType = STATE_SINGLE_COMM;
+					wasBackslash = 0;
+					continue;
+				} else if (curChar == '*') {
+					stateType = STATE_MULTI_COMM;
+					wasBackslash = 0;
+					continue;
+				}
+			}
+
 			dstrApp(&state.curWord, curChar);
 			tempTokenType = findPunctuation(state.curWord.data);
 			if (tempTokenType != TT_UNKNOWN) {
@@ -173,14 +186,25 @@ DList tokenize(FILE *fp, const char *filename) {
 		} else if (stateType == STATE_SINGLE_COMM) {
 			if (curChar == '\n') {
 				stateType = STATE_NONE;
+				_resetState(&state, curColumn, curLine);
 			}
 		} else if (stateType == STATE_MULTI_COMM) {
 			if (curChar == '/') {
 				if (state.curWord.size > 2 && *dstrGet(&state.curWord, state.curWord.size - 2) == '*') {
+					_resetState(&state, curColumn, curLine);
 					stateType = STATE_NONE;
 					wasBackslash = 0;
 					continue;
 				}
+			}
+		} else if (stateType == STATE_MACRO) {
+			if (strchr(_ALPH_NUM, curChar)) {
+				dstrApp(&state.curWord, curChar);
+			} else {
+				initMacroToken(&token, &state);
+				dlistApp(&result, &token);
+				_resetState(&state, curColumn, curLine);
+				stateType = STATE_NONE;
 			}
 		}
 
@@ -189,6 +213,9 @@ DList tokenize(FILE *fp, const char *filename) {
 				stateType = STATE_STRING;
 			} else if (curChar == '\'') {
 				stateType = STATE_CHAR;
+			} else if (curChar == '#') {
+				stateType = STATE_MACRO;
+				dstrApp(&state.curWord, curChar);
 			} else if (strchr(_NUM, curChar)) {
 				stateType = STATE_NUMBER;
 				dstrApp(&state.curWord, curChar);

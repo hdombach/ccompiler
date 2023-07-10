@@ -159,6 +159,7 @@ void initStrToken(Token *token, const TokenzState *state);
 void initCharToken(Token *token, const TokenzState *state);
 void initIdentToken(Token *token, const TokenzState *state);
 void initSymToken(Token *token, const TokenzState *state);
+void initMacroToken(Token *token, const TokenzState *state);
 
 void printToken(Token *token);
 const char *tokTypeStr(TokenType type);
@@ -173,3 +174,5 @@ TokenType findKeyword(const char *word);
  * Characters have to match start of the token punctuation
  */
 TokenType findPunctuation(const char *symb);
+
+TokenType findMacro(const char *word);

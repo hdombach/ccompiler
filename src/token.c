@@ -53,9 +53,16 @@ void initCharToken(Token *token, const TokenzState *state) {
 }
 
 void initIdentToken(Token *token, const TokenzState *state) {
+	TokenType type;
+
 	initToken(token);
-	token->type = TT_IDENTIFIER;
-	token->contents = strdup(state->curWord.data);
+	type = findKeyword(state->curWord.data);
+	if (type == TT_UNKNOWN) {
+		token->type = TT_IDENTIFIER;
+		token->contents = strdup(state->curWord.data);
+	} else {
+		token->type = type;
+	}
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
@@ -70,6 +77,20 @@ void initSymToken(Token *token, const TokenzState *state) {
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
 
+}
+
+void initMacroToken(Token *token, const TokenzState *state) {
+
+	initToken(token);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+
+	token->type = findMacro(state->curWord.data);
+	if (token->type == TT_UNKNOWN) {
+		fprintf(stderr, "Unrecognized macro %s", (char *) state->curWord.data);
+		return;
+	}
 }
 
 void printToken(Token *token) {
@@ -101,15 +122,15 @@ const char * TT_STRS[] = {
 	"Ifndef Macro",
 	//"Elifdef Macro",
 	//"Elifndef Macro",
-	"Define Macro",
-	"Undef Macro",
-	"Include Macro",
+	"#define",
+	"#undef",
+	"#include",
 	//"Embed Macro",
-	"Line Macro",
-	"Error Macro",
+	"#line",
+	"#error",
 	//"Warning Macro",
-	"Pragma Macro",
-	"Defined Macro",
+	"#pragma",
+	"#defined",
 	//"Has Include Macro",
 	//"Has Embed Macro",
 	//"Has C Attribute Macro",
@@ -238,6 +259,15 @@ TokenType findKeyword(const char *word) {
 TokenType findPunctuation(const char *symb) {
 	for (TokenType type = TT_O_CURLY; type <= TT_COMMA; type++) {
 		if (strcmp(tokTypeStr(type), symb) == 0) {
+			return type;
+		}
+	}
+	return TT_UNKNOWN;
+}
+
+TokenType findMacro(const char *word) {
+	for (TokenType type = TT_MACRO_DEFINE; type <= TT_MACRO_DEFINED; type++) {
+		if (strcmp(tokTypeStr(type), word) == 0) {
 			return type;
 		}
 	}
