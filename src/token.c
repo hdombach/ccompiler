@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "token.h"
+#include "tokenizer.h"
+#include "util/dstr.h"
 
 void initToken(Token *token) {
 	token->type = TT_UNKNOWN;
@@ -21,40 +23,61 @@ void freeToken(Token *token) {
 	}
 }
 
-void initNumbToken(Token *token, const char *word) {
+void initNumbToken(Token *token, const TokenzState *state) {
 	initToken(token);
 	token->type = TT_INT_CONSTANT;
-	token->contents = strdup(word);
+	token->contents = strdup(state->curWord.data);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
 }
 
-void initStrToken(Token *token, const char *word) {
+void initStrToken(Token *token, const TokenzState *state) {
 	initToken(token);
 	token->type = TT_STR_CONSTANT;
-	token->contents = strdup(word);
+	token->contents = strdup(state->curWord.data);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+
 }
 
-void initCharToken(Token *token, const char *word) {
+void initCharToken(Token *token, const TokenzState *state) {
 	initToken(token);
 	token->type = TT_CHAR_CONSTANT;
-	token->contents = strdup(word);
+	token->contents = strdup(state->curWord.data);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+
 }
 
-void initIdentToken(Token *token, const char *word) {
+void initIdentToken(Token *token, const TokenzState *state) {
 	initToken(token);
 	token->type = TT_IDENTIFIER;
-	token->contents = strdup(word);
+	token->contents = strdup(state->curWord.data);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+
 }
 
-void initSymToken(Token *token, const char *word) {
+void initSymToken(Token *token, const TokenzState *state) {
 	initToken(token);
 	token->type = TT_UNKNOWN;
-	token->contents = strdup(word);
+	token->contents = strdup(state->curWord.data);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+
 }
 
 void printToken(Token *token) {
 	printf("{\"type\": \"%s\"", tokTypeStr(token->type));
 	if (token->contents) {
-		printf(", \"contents\": \"%s\"", token->contents);
+		printf(", \"contents\": \"");
+		printJsonStr(token->contents);
+		printf("\"");
 	}
 
 	printf(", \"position\": \"");

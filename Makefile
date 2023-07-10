@@ -28,10 +28,10 @@ build/dlist.o: src/util/dlist.c
 build/argParser.o: src/argParser.c build/dlist.o
 	cc src/argParser.c build/dlist.o -c -o build/argParser.o $(CFLAGS)
 
-build/tokenizer.o: src/tokenizer.c build/dlist.o
+build/tokenizer.o: src/tokenizer.c build/dlist.o src/util/dstr.h
 	cc src/tokenizer.c build/dlist.o -c -o build/tokenizer.o $(CFLAGS)
 
-build/token.o: src/token.c
+build/token.o: src/token.c src/util/dstr.h
 	cc src/token.c -c -o build/token.o $(CFLAGS)
 
 #assets

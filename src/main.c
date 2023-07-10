@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 			perror("ree");
 			return 1;
 		}
-		tokens = tokenize(fp);
+		tokens = tokenize(fp, file);
 
 		dlistPrint(&tokens, (DListPrintFunc) printToken);
 		freeDList(&tokens, (DListFreeFunc) freeToken);
