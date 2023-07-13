@@ -42,6 +42,9 @@ void _resetState(TokenzState *state, int column, int line) {
 	dstrRemAll(&state->curWord);
 }
 
+/*
+ * Generates tokens from file
+ */
 DList tokenize(FILE *fp, const char *filename) {
 	DList result;
 	Token token;
@@ -77,6 +80,7 @@ DList tokenize(FILE *fp, const char *filename) {
 		}
 
 		if (stateType == STATE_NUMBER) {
+
 			if (strchr(_ALPH_NUM, curChar) || curChar == '.') {
 				dstrApp(&state.curWord, curChar);
 			} else if (strchr("-+", curChar)) {
@@ -94,7 +98,9 @@ DList tokenize(FILE *fp, const char *filename) {
 					_resetState(&state, curColumn, curLine);
 					stateType = STATE_NONE;
 			}
+
 		} else if (stateType == STATE_STRING) {
+
 			if (wasBackslash) {
 				if (curChar == '"') {
 					dstrApp(&state.curWord, '"');
@@ -123,7 +129,9 @@ DList tokenize(FILE *fp, const char *filename) {
 				wasBackslash = 0;
 				continue;
 			}
+
 		} else if (stateType == STATE_CHAR) {
+
 			if (wasBackslash || curChar != '\'') {
 				dstrApp(&state.curWord, curChar);
 			} else {
@@ -134,7 +142,9 @@ DList tokenize(FILE *fp, const char *filename) {
 				wasBackslash = 0;
 				continue;
 			}
+
 		} else if (stateType == STATE_SYMBOL) {
+
 			TokenType tempTokenType;
 
 			if (*dstrGet(&state.curWord, 0) == '/') {
@@ -148,7 +158,6 @@ DList tokenize(FILE *fp, const char *filename) {
 					continue;
 				}
 			}
-
 			dstrApp(&state.curWord, curChar);
 			tempTokenType = findPunctuation(state.curWord.data);
 			if (tempTokenType != TT_UNKNOWN) {
@@ -163,18 +172,16 @@ DList tokenize(FILE *fp, const char *filename) {
 				_resetState(&state, curColumn, curLine);
 				stateType = STATE_NONE;
 			} else if (!strchr(_SPECIAL_SYMB, curChar)) {
-				fprintf(stderr, "Unhandled error\n");
+				fprintf(stderr, "Unrecosgnized symbole %s\n", (char *) state.curWord.data);
 				initToken(&token);
 				token.type = TT_UNKNOWN;
-				//token.contents = strdup(state.curWord.data);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 				stateType = STATE_NONE;
-
-				//TODO error handling
 			}
 			
 		} else if (stateType == STATE_IDENTIFIER) {
+
 			if (strchr(_ALPH_NUM, curChar)) {
 				dstrApp(&state.curWord, curChar);
 			} else {
@@ -183,12 +190,16 @@ DList tokenize(FILE *fp, const char *filename) {
 				_resetState(&state, curColumn, curLine);
 				stateType = STATE_NONE;
 			}
+
 		} else if (stateType == STATE_SINGLE_COMM) {
+
 			if (curChar == '\n') {
 				stateType = STATE_NONE;
 				_resetState(&state, curColumn, curLine);
 			}
+
 		} else if (stateType == STATE_MULTI_COMM) {
+
 			if (curChar == '/') {
 				if (state.curWord.size > 2 && *dstrGet(&state.curWord, state.curWord.size - 2) == '*') {
 					_resetState(&state, curColumn, curLine);
@@ -196,8 +207,12 @@ DList tokenize(FILE *fp, const char *filename) {
 					wasBackslash = 0;
 					continue;
 				}
+			} else {
+				dstrApp(&state.curWord, curChar);
 			}
+
 		} else if (stateType == STATE_MACRO) {
+
 			if (strchr(_ALPH_NUM, curChar)) {
 				dstrApp(&state.curWord, curChar);
 			} else {
@@ -209,6 +224,7 @@ DList tokenize(FILE *fp, const char *filename) {
 		}
 
 		if (stateType == STATE_NONE) {
+			_resetState(&state, curColumn - 1, curLine);
 			if (curChar == '"') {
 				stateType = STATE_STRING;
 			} else if (curChar == '\'') {

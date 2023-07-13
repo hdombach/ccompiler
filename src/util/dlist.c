@@ -96,9 +96,10 @@ void dlistRemAll(DList *list, DListFreeFunc freeFunc) {
 			freeFunc(dlistGetm(list, i));;
 		}
 	}
-	list->capacity = DLIST_INITIAL_CAP;
+	//TODO: I am not sure whether it is faster or not to reallocate when decrease size
+	//list->capacity = DLIST_INITIAL_CAP;
+	//list->data = realloc(list->data, list->capacity * list->elSize);
 	list->size = 0;
-	list->data = realloc(list->data, list->capacity * list->elSize);
 }
 
 int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
