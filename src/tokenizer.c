@@ -13,18 +13,6 @@ const char *_ALPH="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char *_ALPH_NUM="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const char *_WHITESPACE = " \t\v\f\n\r";
 
-typedef enum {
-	STATE_NONE,
-	STATE_NUMBER,
-	STATE_STRING,
-	STATE_CHAR,
-	STATE_SYMBOL,
-	STATE_IDENTIFIER,
-	STATE_SINGLE_COMM,
-	STATE_MULTI_COMM,
-	STATE_MACRO,
-} _StateType;
-
 void initTokenzState(TokenzState *state, const char *filename) {
 	state->startColumn = 0;
 	state->startLine = 0;
@@ -39,6 +27,7 @@ void freeTokenzState(TokenzState *state) {
 void _resetState(TokenzState *state, int column, int line) {
 	state->startColumn = column;
 	state->startLine = line;
+	state->type = TOKENZ_STATE_NONE;
 	dstrRemAll(&state->curWord);
 }
 
@@ -55,12 +44,10 @@ DList tokenize(FILE *fp, const char *filename) {
 	char curChar;
 	int wasBackslash = 0;
 	TokenType lastTokType;
-	_StateType stateType;
 
 	initDList(&result, sizeof(Token));
 	initTokenzState(&state, filename);
 	_resetState(&state, curColumn, curLine);
-	stateType = STATE_NONE;
 
 	do {
 		curChar_i = getc(fp);
@@ -83,7 +70,7 @@ DList tokenize(FILE *fp, const char *filename) {
 			continue;
 		}
 
-		if (stateType == STATE_NUMBER) {
+		if (state.type == TOKENZ_STATE_NUMBER) {
 
 			if (strchr(_ALPH_NUM, curChar) || curChar == '.') {
 				dstrApp(&state.curWord, curChar);
@@ -94,16 +81,14 @@ DList tokenize(FILE *fp, const char *filename) {
 					initNumbToken(&token, &state);
 					dlistApp(&result, &token);
 					_resetState(&state, curColumn, curLine);
-					stateType = STATE_NONE;
 				}
 			} else {
 					initNumbToken(&token, &state);
 					dlistApp(&result, &token);
 					_resetState(&state, curColumn, curLine);
-					stateType = STATE_NONE;
 			}
 
-		} else if (stateType == STATE_STRING) {
+		} else if (state.type == TOKENZ_STATE_STRING) {
 
 			if (wasBackslash) {
 				if (curChar == '"') {
@@ -129,12 +114,11 @@ DList tokenize(FILE *fp, const char *filename) {
 				initStrToken(&token, &state);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 				wasBackslash = 0;
 				continue;
 			}
 
-		} else if (stateType == STATE_CHAR) {
+		} else if (state.type == TOKENZ_STATE_CHAR) {
 
 			if (wasBackslash || curChar != '\'') {
 				dstrApp(&state.curWord, curChar);
@@ -142,22 +126,21 @@ DList tokenize(FILE *fp, const char *filename) {
 				initCharToken(&token, &state);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 				wasBackslash = 0;
 				continue;
 			}
 
-		} else if (stateType == STATE_SYMBOL) {
+		} else if (state.type == TOKENZ_STATE_SYMBOL) {
 
 			TokenType tempTokenType;
 
 			if (*dstrGet(&state.curWord, 0) == '/') {
 				if (curChar == '/') {
-					stateType = STATE_SINGLE_COMM;
+					state.type = TOKENZ_STATE_SINGLE_COMM;
 					wasBackslash = 0;
 					continue;
 				} else if (curChar == '*') {
-					stateType = STATE_MULTI_COMM;
+					state.type = TOKENZ_STATE_MULTI_COMM;
 					wasBackslash = 0;
 					continue;
 				}
@@ -167,15 +150,9 @@ DList tokenize(FILE *fp, const char *filename) {
 			if (tempTokenType != TT_UNKNOWN) {
 				lastTokType = tempTokenType;
 			} else if (lastTokType != TT_UNKNOWN) {
-				initToken(&token);
-				token.type = lastTokType;
-				token.filename = strdup(filename);
-				token.posLine = state.startLine;
-				token.posColumn = state.startColumn;
-				token.isMacro = state.isMacro;
+				initSymToken(&token, &state, lastTokType);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 			} else if (!strchr(_SPECIAL_SYMB, curChar)) {
 				fprintf(stderr, "Unrecosgnized symbole %s\n", (char *) state.curWord.data);
 				initToken(&token);
@@ -183,10 +160,9 @@ DList tokenize(FILE *fp, const char *filename) {
 				token.isMacro = state.isMacro;
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 			}
 			
-		} else if (stateType == STATE_IDENTIFIER) {
+		} else if (state.type == TOKENZ_STATE_IDENTIFIER) {
 
 			if (strchr(_ALPH_NUM, curChar)) {
 				dstrApp(&state.curWord, curChar);
@@ -194,22 +170,19 @@ DList tokenize(FILE *fp, const char *filename) {
 				initIdentToken(&token, &state);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 			}
 
-		} else if (stateType == STATE_SINGLE_COMM) {
+		} else if (state.type == TOKENZ_STATE_SINGLE_COMM) {
 
 			if (curChar == '\n') {
-				stateType = STATE_NONE;
 				_resetState(&state, curColumn, curLine);
 			}
 
-		} else if (stateType == STATE_MULTI_COMM) {
+		} else if (state.type == TOKENZ_STATE_MULTI_COMM) {
 
 			if (curChar == '/') {
 				if (state.curWord.size > 2 && *dstrGet(&state.curWord, state.curWord.size - 2) == '*') {
 					_resetState(&state, curColumn, curLine);
-					stateType = STATE_NONE;
 					wasBackslash = 0;
 					continue;
 				}
@@ -217,7 +190,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				dstrApp(&state.curWord, curChar);
 			}
 
-		} else if (stateType == STATE_MACRO) {
+		} else if (state.type == TOKENZ_STATE_MACRO) {
 
 			if (strchr(_ALPH_NUM, curChar)) {
 				dstrApp(&state.curWord, curChar);
@@ -225,29 +198,28 @@ DList tokenize(FILE *fp, const char *filename) {
 				initMacroToken(&token, &state);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
-				stateType = STATE_NONE;
 			}
 		}
 
-		if (stateType == STATE_NONE) {
+		if (state.type == TOKENZ_STATE_NONE) {
 			_resetState(&state, curColumn - 1, curLine);
 			if (curChar == '"') {
-				stateType = STATE_STRING;
+				state.type = TOKENZ_STATE_STRING;
 			} else if (curChar == '\'') {
-				stateType = STATE_CHAR;
+				state.type = TOKENZ_STATE_CHAR;
 			} else if (curChar == '#') {
-				stateType = STATE_MACRO;
+				state.type = TOKENZ_STATE_MACRO;
 				state.isMacro = 1;
 				dstrApp(&state.curWord, curChar);
 			} else if (strchr(_NUM, curChar)) {
-				stateType = STATE_NUMBER;
+				state.type = TOKENZ_STATE_NUMBER;
 				dstrApp(&state.curWord, curChar);
 			} else if (strchr(_SPECIAL_SYMB, curChar)) {
-				stateType = STATE_SYMBOL;
+				state.type = TOKENZ_STATE_SYMBOL;
 				dstrApp(&state.curWord, curChar);
 				lastTokType = findPunctuation(state.curWord.data);
 			} else if (strchr(_ALPH, curChar)) {
-				stateType = STATE_IDENTIFIER;
+				state.type = TOKENZ_STATE_IDENTIFIER;
 				dstrApp(&state.curWord, curChar);
 			}
 		}

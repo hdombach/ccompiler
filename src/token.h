@@ -159,7 +159,7 @@ void initNumbToken(Token *token, const TokenzState *state);
 void initStrToken(Token *token, const TokenzState *state);
 void initCharToken(Token *token, const TokenzState *state);
 void initIdentToken(Token *token, const TokenzState *state);
-void initSymToken(Token *token, const TokenzState *state);
+void initSymToken(Token *token, const TokenzState *state, TokenType type);
 void initMacroToken(Token *token, const TokenzState *state);
 
 void printToken(Token *token);

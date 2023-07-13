@@ -73,10 +73,12 @@ void initIdentToken(Token *token, const TokenzState *state) {
 
 }
 
-void initSymToken(Token *token, const TokenzState *state) {
+void initSymToken(Token *token, const TokenzState *state, TokenType type) {
 	initToken(token);
-	token->type = TT_UNKNOWN;
-	token->contents = strdup(state->curWord.data);
+	token->type = type;
+	if (type == TT_UNKNOWN) {
+		token->contents = strdup(state->curWord.data);
+	}
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
