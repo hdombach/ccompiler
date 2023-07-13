@@ -10,6 +10,7 @@ typedef struct {
 	int startLine;
 	const char *filename;
 	DStr curWord;
+	int isMacro;
 } TokenzState;
 
 void initTokenzState(TokenzState *state, const char *filename);

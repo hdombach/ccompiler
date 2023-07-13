@@ -12,6 +12,7 @@ void initToken(Token *token) {
 	token->posLine = 0;
 	token->posColumn = 0;
 	token->filename = NULL;
+	token->isMacro = 0;
 }
 
 void freeToken(Token *token) {
@@ -30,6 +31,7 @@ void initNumbToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
+	token->isMacro = state->isMacro;
 }
 
 void initStrToken(Token *token, const TokenzState *state) {
@@ -39,7 +41,7 @@ void initStrToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
-
+	token->isMacro = state->isMacro;
 }
 
 void initCharToken(Token *token, const TokenzState *state) {
@@ -49,6 +51,7 @@ void initCharToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
+	token->isMacro = state->isMacro;
 
 }
 
@@ -66,6 +69,7 @@ void initIdentToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
+	token->isMacro = state->isMacro;
 
 }
 
@@ -76,6 +80,7 @@ void initSymToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
+	token->isMacro = state->isMacro;
 
 }
 
@@ -85,6 +90,7 @@ void initMacroToken(Token *token, const TokenzState *state) {
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
 	token->filename = strdup(state->filename);
+	token->isMacro = state->isMacro;
 
 	token->type = findMacro(state->curWord.data);
 	if (token->type == TT_UNKNOWN) {
@@ -99,6 +105,10 @@ void printToken(Token *token) {
 		printf(", \"contents\": \"");
 		printJsonStr(token->contents);
 		printf("\"");
+	}
+
+	if (token->isMacro) {
+		printf(", \"isMacro\": \"true\"");
 	}
 
 	printf(", \"position\": \"");

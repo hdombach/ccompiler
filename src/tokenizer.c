@@ -68,11 +68,15 @@ DList tokenize(FILE *fp, const char *filename) {
 		if (curChar == '\n') {
 			curLine++;
 			curColumn = 1;
+			if (!wasBackslash) {
+				state.isMacro = 0;
+			}
 		} else {
 			curColumn++;
 		}
 		if (wasBackslash && curChar == '\n') {
 			wasBackslash = 0;
+			continue;
 		}
 		if (curChar == '\\' && !wasBackslash) {
 			wasBackslash = 1;
@@ -168,6 +172,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				token.filename = strdup(filename);
 				token.posLine = state.startLine;
 				token.posColumn = state.startColumn;
+				token.isMacro = state.isMacro;
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 				stateType = STATE_NONE;
@@ -175,6 +180,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				fprintf(stderr, "Unrecosgnized symbole %s\n", (char *) state.curWord.data);
 				initToken(&token);
 				token.type = TT_UNKNOWN;
+				token.isMacro = state.isMacro;
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 				stateType = STATE_NONE;
@@ -231,6 +237,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				stateType = STATE_CHAR;
 			} else if (curChar == '#') {
 				stateType = STATE_MACRO;
+				state.isMacro = 1;
 				dstrApp(&state.curWord, curChar);
 			} else if (strchr(_NUM, curChar)) {
 				stateType = STATE_NUMBER;

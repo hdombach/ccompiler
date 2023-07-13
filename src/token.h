@@ -149,6 +149,7 @@ typedef struct {
 	int posLine;
 	int posColumn;
 	char *filename;
+	int isMacro;
 } Token;
 
 void initToken(Token *token);
