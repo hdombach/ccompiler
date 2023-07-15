@@ -12,6 +12,8 @@ const char *_NUM = "0123456789";
 const char *_ALPH="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char *_ALPH_NUM="_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const char *_WHITESPACE = " \t\v\f\n\r";
+const char *_LINE_WHITESPACE = " \t";
+
 
 void initTokenzState(TokenzState *state, const char *filename) {
 	state->startColumn = 0;
@@ -55,16 +57,19 @@ DList tokenize(FILE *fp, const char *filename) {
 		if (curChar == '\n') {
 			curLine++;
 			curColumn = 1;
-			if (!wasBackslash) {
-				state.isMacro = 0;
-			}
 		} else {
 			curColumn++;
 		}
+
 		if (wasBackslash && curChar == '\n') {
 			wasBackslash = 0;
 			continue;
 		}
+
+		if (!wasBackslash && curChar == '\n') {
+			state.isMacro = 0;
+		}
+
 		if (curChar == '\\' && !wasBackslash) {
 			wasBackslash = 1;
 			continue;
@@ -155,9 +160,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				_resetState(&state, curColumn, curLine);
 			} else if (!strchr(_SPECIAL_SYMB, curChar)) {
 				fprintf(stderr, "Unrecosgnized symbole %s\n", (char *) state.curWord.data);
-				initToken(&token);
-				token.type = TT_UNKNOWN;
-				token.isMacro = state.isMacro;
+				initSymToken(&token, &state, TT_UNKNOWN);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 			}
