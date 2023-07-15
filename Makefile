@@ -39,11 +39,14 @@ assets: assets/exampleLines.txt testAssets
 	-mkdir build/assets
 	-cp assets/exampleLines.txt build/assets/exampleLines.txt
 
-testAssets: assets/tests/backslash1.txt assets/tests/backslashResult1.txt
+testAssets: assets/tests/backslash1.txt assets/tests/backslashResult1.txt\
+	assets/tests/tokens.txt
 	-mkdir build/assets
 	-mkdir build/assets/tests
 	-cp assets/tests/backslash1.txt build/assets/tests/backslash1.txt
 	-cp assets/tests/backslash1.txt build/assets/tests/backslash1.txt
+	-cp assets/tests/tokens.txt build/assets/tests/tokens.txt
+
 
 #testing
 build/test.o: src/tests/test.c

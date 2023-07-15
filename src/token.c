@@ -96,7 +96,7 @@ void initMacroToken(Token *token, const TokenzState *state) {
 
 	token->type = findMacro(state->curWord.data);
 	if (token->type == TT_UNKNOWN) {
-		fprintf(stderr, "Unrecognized macro %s", (char *) state->curWord.data);
+		fprintf(stderr, "Unrecognized macro %s\n", (char *) state->curWord.data);
 		return;
 	}
 }
@@ -126,12 +126,12 @@ const char * TT_STRS[] = {
 	"Int Constant",
 	"Char Constant",
 	"String Constant",
-	"If Macro",
-	"Elif Macro",
-	"Else Macro",
-	"Endif Macro",
-	"Ifdef Macro",
-	"Ifndef Macro",
+	"#if",
+	"#elif",
+	"#else",
+	"#endif",
+	"#ifdef",
+	"#ifndef",
 	//"Elifdef Macro",
 	//"Elifndef Macro",
 	"#define",
@@ -227,7 +227,7 @@ const char * TT_STRS[] = {
 	"signed",
 	"sizeof",
 	"static",
-	"static_assert",
+	//"static_assert",
 	"struct",
 	"switch",
 	//"thread_local",
@@ -278,7 +278,7 @@ TokenType findPunctuation(const char *symb) {
 }
 
 TokenType findMacro(const char *word) {
-	for (TokenType type = TT_MACRO_DEFINE; type <= TT_MACRO_DEFINED; type++) {
+	for (TokenType type = TT_MACRO_IF; type <= TT_MACRO_DEFINED; type++) {
 		if (strcmp(tokTypeStr(type), word) == 0) {
 			return type;
 		}
