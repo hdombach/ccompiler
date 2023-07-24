@@ -1,7 +1,8 @@
-#include "dlistTest.h"
 #include "../util/dlist.h"
-#include "test.h"
 #include <stdlib.h>
+
+#include "dlistTest.h"
+#include "test.h"
 
 /*
  * Struct for testing with

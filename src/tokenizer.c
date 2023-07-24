@@ -111,7 +111,7 @@ DList tokenize(FILE *fp, const char *filename) {
 				} else if (curChar == 'f') {
 					dstrApp(&state.curWord, '\f');
 				} else {
-					fprintf(stderr, "Unrecosgnized character after backslash: %c\n", curChar);
+					fprintf(stderr, "Unrecognized character after backslash: %c\n", curChar);
 				}
 			} else if (curChar != '"') {
 				dstrApp(&state.curWord, curChar);
@@ -154,13 +154,17 @@ DList tokenize(FILE *fp, const char *filename) {
 			tempTokenType = findPunctuation(state.curWord.data);
 			if (tempTokenType != TT_UNKNOWN) {
 				lastTokType = tempTokenType;
+			} else if (strcmp(state.curWord.data, "..") == 0) {
+				//This one edge case breaks the algorithm for 
+				//determaining punctionation based tokens.
 			} else if (lastTokType != TT_UNKNOWN) {
 				initSymToken(&token, &state, lastTokType);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 			} else if (!strchr(_SPECIAL_SYMB, curChar)) {
-				fprintf(stderr, "Unrecosgnized symbole %s\n", (char *) state.curWord.data);
+				fprintf(stderr, "Unrecognized symbols %s\n", (char *) state.curWord.data);
 				initSymToken(&token, &state, TT_UNKNOWN);
+				printToken(&token);
 				dlistApp(&result, &token);
 				_resetState(&state, curColumn, curLine);
 			}

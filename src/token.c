@@ -104,9 +104,8 @@ void initMacroToken(Token *token, const TokenzState *state) {
 void printToken(Token *token) {
 	printf("{\"type\": \"%s\"", tokTypeStr(token->type));
 	if (token->contents) {
-		printf(", \"contents\": \"");
+		printf(", \"contents\": ");
 		printJsonStr(token->contents);
-		printf("\"");
 	}
 
 	if (token->isMacro) {

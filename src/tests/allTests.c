@@ -3,18 +3,16 @@
 #define TESTS_MAIN
 
 #include "test.h"
-#include "../preprocessor/linesTest.h"
-#include "../preprocessor/stagesTest.h"
 #include "dlistTest.h"
 #include "dstrTest.h"
+#include "macroDictTest.h"
 
 int main() {
 	tInit();
 
-	linesTest();
-	stagesTest();
 	dlistTest();
 	dstrTest();
+	macroDictTest();
 
 	tPrintResult();
 }

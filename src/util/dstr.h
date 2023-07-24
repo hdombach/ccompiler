@@ -47,6 +47,7 @@ static inline void dstrRemAll(DStr *dstr) {
 }*/
 
 static inline void printJsonStr(char const *str) {
+	printf("\"");
 	while (*str) {
 		if (*str == '\\') {
 			printf("\\\\");
@@ -69,4 +70,5 @@ static inline void printJsonStr(char const *str) {
 		}
 		str++;
 	}
+	printf("\"");
 }
