@@ -1,33 +1,50 @@
-CFLAGS=-g
+#template from https://gist.github.com/tomdaley92/190c68e8a84038cc91a5459409e007df
 
-all: assets build/allTests\
-	build/ccompiler build/macroDictTest
+CFLAGS = -g
+DEPFLAGS = -MMD -MP
+SRC = src
+OBJECTS := $(patsubst $(SRC)/%.c, build/%.o, $(wildcard $(SRC)/*.c))
+DEPENDS := $(OBJECTS:.o=.d)
+COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@
+COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
 
-build/ccompiler: src/main.c build/argParser.o build/dlist.o build/tokenizer.o\
-	build/token.o
-	cc src/main.c build/argParser.o build/dlist.o build/tokenizer.o \
-		build/token.o -o build/ccompiler $(CFLAGS)
 
-#modules
-build/dlist.o: src/util/dlist.c
-	cc src/util/dlist.c -c -o build/dlist.o $(CFLAGS)
+DEPS_TOKENIZER = build/util/dlist.o build/token.o build/tokenizer.o
 
-build/argParser.o: src/argParser.c build/dlist.o
-	cc src/argParser.c -c -o build/argParser.o $(CFLAGS)
+DEPS_CCOMPILER = build/main.o build/argParser.o $(DEPS_TOKENIZER)\
+								 build/util/dlist.o build/util/dlist.o
 
-build/tokenizer.o: src/tokenizer.c build/dlist.o src/util/dstr.h
-	cc src/tokenizer.c build/dlist.o -c -o build/tokenizer.o $(CFLAGS)
+DEPS_MACRO_DICT = build/util/dlist.o build/util/hash.o build/util/macroDict.o
 
-build/token.o: src/token.c src/util/dstr.h
-	cc src/token.c -c -o build/token.o $(CFLAGS)
+DEPS_ALL_TESTS = build/util/dlist.o $(DEPS_MACRO_DICT)\
+								 $(patsubst $(SRC)/tests/%.c, build/tests/%.o, $(wildcard $(SRC)/tests/*.c))
 
-build/macroDict.o: src/util/macroDict.c build/dlist.o src/util/dstr.h\
-	build/hash.o
-	cc src/util/macroDict.c build/hash.o -c\
-		-o build/macroDict.o $(CFLAGS)
+DEPS_MACRO_DICT_TEST = $(DEPS_MACRO_DICT) build/tests/macroDictTest.o build/tests/test.o
 
-build/hash.o: src/util/hash.c src/util/hash.h
-	cc src/util/hash.c -c -o build/hash.o $(CFLAGS)
+
+all: build/ccompiler assets testAssets build/allTests build/macroDictTest
+
+build/ccompiler: build $(DEPS_CCOMPILER)
+	$(COMPILE_EXE) -o build/ccompiler
+
+build/allTests: build $(DEPS_ALL_TESTS)
+	$(COMPILE_EXE) -o build/allTests
+
+build/macroDictTest: build $(DEPS_MACRO_DICT_TEST)
+	$(COMPILE_EXE) -o build/macroDictTest  -Wl,-e,_macroDictPlayground
+
+build/%.o: $(SRC)/%.c
+	$(COMPILE.c) $<
+
+build:
+	mkdir -p build 
+	mkdir -p build/util
+	mkdir -p build/tests
+
+clean:
+	rm -r build
+
+-include $(DEPENDS)
 
 #assets
 assets: assets/exampleLines.txt testAssets
@@ -41,31 +58,3 @@ testAssets: assets/tests/backslash1.txt assets/tests/backslashResult1.txt\
 	-cp assets/tests/backslash1.txt build/assets/tests/backslash1.txt
 	-cp assets/tests/backslash1.txt build/assets/tests/backslash1.txt
 	-cp assets/tests/tokens.txt build/assets/tests/tokens.txt
-
-
-#testing
-build/test.o: src/tests/test.c
-	cc src/tests/test.c -c -o build/test.o $(CFLAGS)
-
-#		-Wl,-e,_stagesTestMain -o build/stagesTest $(CFLAGS)
-
-build/dlistTest.o: src/tests/dlistTest.c build/dlist.o
-	cc src/tests/dlistTest.c -c -o build/dlistTest.o $(CFLAGS)
-
-build/dstrTest.o: src/tests/dstrTest.c build/test.o build/dlist.o
-	cc src/tests/dstrTest.c build/dlist.o -c -o build/dstrTest.o $(CFLAGS)
-
-build/macroDictTest.o: src/tests/macroDictTest.c build/macroDict.o
-	cc src/tests/macroDictTest.c build/macroDict.o -c -o build/macroDictTest.o $(CFLAGS)
-
-build/macroDictTest: build/macroDictTest.o build/hash.o build/test.o
-	cc build/macroDictTest.o build/macroDict.o build/hash.o $(CFLAGS)\
-		-Wl,-e,_macroDictPlayground build/test.o -o build/macroDictTest
-build/allTests: src/tests/allTests.c build/test.o\
-	 build/dlistTest.o build/dlist.o\
-	build/dstrTest.o build/macroDictTest.o build/test.o
-	cc src/tests/allTests.c build/test.o\
-		build/dlistTest.o build/dlist.o\
-		build/dstrTest.o build/macroDictTest.o build/macroDict.o build/hash.o\
-		\
-		-o build/allTests $(CFLAGS)
