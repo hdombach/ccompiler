@@ -162,6 +162,13 @@ void initIdentToken(Token *token, const TokenzState *state);
 void initSymToken(Token *token, const TokenzState *state, TokenType type);
 void initMacroToken(Token *token, const TokenzState *state);
 
+void tokenDup(Token const *token, Token *dest);
+/*
+ * Get a numeric value for if a token is a bracket and increases
+ * or decreases depth
+ */
+int tokenBracketDepth(TokenType type);
+
 void printToken(Token *token);
 const char *tokTypeStr(TokenType type);
 

@@ -42,10 +42,6 @@ static inline void dstrRemAll(DStr *dstr) {
 	dlistApp(dstr, ""); //append \0
 }
 
-/*int dstrCmp(const DList *lhs, const DList *rhs) {
-	return strcmp(lhs->data, rhs->data);
-}*/
-
 static inline void printJsonStr(char const *str) {
 	printf("\"");
 	while (*str) {

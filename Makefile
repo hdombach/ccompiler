@@ -12,7 +12,8 @@ COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
 DEPS_TOKENIZER = build/util/dlist.o build/token.o build/tokenizer.o
 
 DEPS_CCOMPILER = build/main.o build/argParser.o $(DEPS_TOKENIZER)\
-								 build/util/dlist.o build/util/dlist.o
+								 build/util/dlist.o build/util/dlist.o build/ast/macroDef.o\
+								 build/ast/tokenParser.o build/util/util.o
 
 DEPS_MACRO_DICT = build/util/dlist.o build/util/hash.o build/util/macroDict.o
 
@@ -40,6 +41,7 @@ build:
 	mkdir -p build 
 	mkdir -p build/util
 	mkdir -p build/tests
+	mkdir -p build/ast
 
 clean:
 	rm -r build

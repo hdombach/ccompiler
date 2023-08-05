@@ -101,6 +101,14 @@ void initMacroToken(Token *token, const TokenzState *state) {
 	}
 }
 
+void tokenDup(const Token *token, Token *dest) {
+	dest->contents = strdup(token->contents);
+	dest->posLine = token->posLine;
+	dest->posColumn = token->posColumn;
+	dest->filename = strdup(token->filename);
+	dest->isMacro = token->isMacro;
+}
+
 void printToken(Token *token) {
 	printf("{\"type\": \"%s\"", tokTypeStr(token->type));
 	if (token->contents) {

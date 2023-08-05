@@ -3,6 +3,7 @@
 
 #include "argParser.h"
 #include "util/dlist.h"
+#include "util/util.h"
 
 const char *ARGS_HELP_MSG =
 "usage: cmd [-h | --help] file...\n"
@@ -34,7 +35,6 @@ int _parseArg(int argc, char **argv, Args *args) {
 	}
 }
 
-void _freeStr(char **str) { free(*str); }
 void _printStr(char **str) {
 	printf("%s", *str);
 }
@@ -45,7 +45,7 @@ void initArgs(Args *args) {
 }
 
 void freeArgs(Args *args) {
-	freeDList(&args->files, (DListFreeFunc) _freeStr);
+	freeDList(&args->files, (DListFreeFunc) freeStr);
 }
 
 int parseArgs(int argc, char **argv, Args *args) {
