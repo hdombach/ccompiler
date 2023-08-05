@@ -102,10 +102,18 @@ void initMacroToken(Token *token, const TokenzState *state) {
 }
 
 void tokenDup(const Token *token, Token *dest) {
-	dest->contents = strdup(token->contents);
+	if (token->contents) {
+		dest->contents = strdup(token->contents);
+	} else {
+		dest->contents = NULL;
+	}
 	dest->posLine = token->posLine;
 	dest->posColumn = token->posColumn;
-	dest->filename = strdup(token->filename);
+	if (token->filename) {
+		dest->filename = strdup(token->filename);
+	} else {
+		dest->filename = NULL;
+	}
 	dest->isMacro = token->isMacro;
 }
 

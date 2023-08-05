@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 
 		dlistPrint(&tokens, (DListPrintFunc) printToken);
 
-		while (n < tokens.size) {
+		/*while (n < tokens.size) {
 			ASTMacroDef def;
 			int res;
 
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "INTERNAL_ERROR");
 			}
 			freeASTMacroDef(&def);
-		}
+		}*/
 
 		freeDList(&tokens, (DListFreeFunc) freeToken);
 	}

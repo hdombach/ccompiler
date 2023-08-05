@@ -15,12 +15,20 @@ void initDList(DList *list, size_t elementSize) {
 }
 
 void freeDList(DList *list, DListFreeFunc freeFunc) {
+	if (!list->data) {
+		return;
+	}
 	if (freeFunc) {
 		for (int i = 0; i < list->size; i++) {
 			freeFunc(dlistGetm(list, i));
 		}
 	}
 	free(list->data);
+}
+
+void moveDList(DList *dest, DList *src) {
+	*dest = *src;
+	src->data = NULL;
 }
 
 void *dlistGetm(DList *list, int index) {

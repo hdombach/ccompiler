@@ -3,7 +3,6 @@
 /*
  * All the token types
  */
-#include "tokenizer.h"
 typedef enum {
 	TT_UNKNOWN = 0,
 	TT_IDENTIFIER = 1,
@@ -155,12 +154,14 @@ typedef struct {
 void initToken(Token *token);
 void freeToken(Token *token);
 
-void initNumbToken(Token *token, const TokenzState *state);
-void initStrToken(Token *token, const TokenzState *state);
-void initCharToken(Token *token, const TokenzState *state);
-void initIdentToken(Token *token, const TokenzState *state);
-void initSymToken(Token *token, const TokenzState *state, TokenType type);
-void initMacroToken(Token *token, const TokenzState *state);
+struct _TokenzState;
+
+void initNumbToken(Token *token, const struct _TokenzState *state);
+void initStrToken(Token *token, const struct _TokenzState *state);
+void initCharToken(Token *token, const struct _TokenzState *state);
+void initIdentToken(Token *token, const struct _TokenzState *state);
+void initSymToken(Token *token, const struct _TokenzState *state, TokenType type);
+void initMacroToken(Token *token, const struct _TokenzState *state);
 
 void tokenDup(Token const *token, Token *dest);
 /*
