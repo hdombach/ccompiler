@@ -6,7 +6,7 @@
 typedef enum {
 	TT_UNKNOWN = 0,
 	TT_IDENTIFIER = 1,
-	TT_INT_CONSTANT,
+	TT_INT_CONSTANT = 2,
 	TT_CHAR_CONSTANT,
 	TT_STR_CONSTANT,
 	TT_MACRO_IF,
@@ -138,7 +138,7 @@ typedef enum {
 	//TT__STATIC_ASSERT,
 	//TT__THREAD_LOCAL,
 
-
+	TT_EOF,
 } TokenType;
 
 typedef struct {
@@ -162,6 +162,7 @@ void initCharToken(Token *token, const struct _TokenzState *state);
 void initIdentToken(Token *token, const struct _TokenzState *state);
 void initSymToken(Token *token, const struct _TokenzState *state, TokenType type);
 void initMacroToken(Token *token, const struct _TokenzState *state);
+void initEOFToken(Token *token, const struct _TokenzState *state);
 
 void tokenDup(Token const *token, Token *dest);
 /*

@@ -259,6 +259,9 @@ DList tokenize(FILE *fp, const char *filename) {
 		state.wasBackslash = 0;
 	} while (curChar_i != EOF);
 
+	initEOFToken(&token, &state);
+	dlistApp(&state.tokens, &token);
+
 	moveDList(&result, &state.tokens);
 	freeTokenzState(&state);
 

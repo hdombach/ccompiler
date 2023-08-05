@@ -101,6 +101,15 @@ void initMacroToken(Token *token, const TokenzState *state) {
 	}
 }
 
+void initEOFToken(Token *token, const struct _TokenzState *state) {
+	initToken(token);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+	token->isMacro = 0;
+	token->type = TT_EOF;
+}
+
 void tokenDup(const Token *token, Token *dest) {
 	if (token->contents) {
 		dest->contents = strdup(token->contents);
@@ -269,6 +278,7 @@ const char * TT_STRS[] = {
 	//"_Noreturn",
 	//"_Static_assert",
 	//"_Thread_local",
+	"EOF",
 };
 const char *tokTypeStr(TokenType type) {
 	return TT_STRS[type];
