@@ -110,7 +110,17 @@ void initEOFToken(Token *token, const struct _TokenzState *state) {
 	token->type = TT_EOF;
 }
 
+void initNewlineToken(Token *token, const struct _TokenzState *state) {
+	initToken(token);
+	token->posColumn = state->startColumn;
+	token->posLine = state->startLine;
+	token->filename = strdup(state->filename);
+	token->isMacro = 0;
+	token->type = TT_NEWLINE;
+}
+
 void tokenDup(const Token *token, Token *dest) {
+	dest->type = token->type;
 	if (token->contents) {
 		dest->contents = strdup(token->contents);
 	} else {
@@ -279,6 +289,7 @@ const char * TT_STRS[] = {
 	//"_Static_assert",
 	//"_Thread_local",
 	"EOF",
+	"\\n",
 };
 const char *tokTypeStr(TokenType type) {
 	return TT_STRS[type];

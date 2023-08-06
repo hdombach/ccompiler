@@ -68,3 +68,7 @@ static inline void printJsonStr(char const *str) {
 	}
 	printf("\"");
 }
+
+static inline void printJsonStrp(char const **str) {
+	printJsonStr(*str);
+}

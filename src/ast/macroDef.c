@@ -1,3 +1,4 @@
+#include <malloc/_malloc.h>
 #include <string.h>
 
 #include "macroDef.h"
@@ -75,19 +76,23 @@ int _parseReplList(ASTMacroDef *def, const Token *tok) {
 		ASTMacroDefNode node;
 
 		if (!tok[n].isMacro) break;
+		if (tok[n].type == TT_EOF) break;
 
 		initASTMacroDefNode(&node);
+		node.token = malloc(sizeof(Token));
 		tokenDup(&tok[n], node.token);
 
 		if (node.token->type == TT_IDENTIFIER) {
 			for (int i = 0; i < def->paramNames.size; i++) {
 				if (strcmp(*(char**) dlistGet(&def->paramNames, i), node.token->contents) == 0) {
 					node.paramIndex = i;
+					break;
 				}
 			}
 		}
 
 		dlistApp(&def->nodes, &node);
+		n++;
 	}
 	return n;
 }
@@ -118,7 +123,18 @@ int parseASTMacroDef(ASTMacroDef *def, const Token *tok) {
 }
 
 void printASTMacroDefNode(ASTMacroDefNode const *node) {
-	printToken(node->token);
+	if (node->paramIndex >= 0) {
+		printf("{");
+
+		printf("\"paramIndex\": %d", node->paramIndex);
+
+		printf(", \"token\": ");
+		printToken(node->token);
+
+		printf("}");
+	} else {
+		printToken(node->token);
+	}
 }
 
 void printASTMacroDef(ASTMacroDef const *def) {
@@ -128,7 +144,7 @@ void printASTMacroDef(ASTMacroDef const *def) {
 	printJsonStr(def->name);
 
 	printf(", \"params\": ");
-	dlistPrint(&def->paramNames, (DListPrintFunc) printJsonStr);
+	dlistPrint(&def->paramNames, (DListPrintFunc) printJsonStrp);
 
 	printf(", \"content\": ");
 	dlistPrint(&def->nodes, (DListPrintFunc) printASTMacroDefNode);

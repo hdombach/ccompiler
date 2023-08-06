@@ -139,6 +139,7 @@ typedef enum {
 	//TT__THREAD_LOCAL,
 
 	TT_EOF,
+	TT_NEWLINE, /* Is helpful for macros */
 } TokenType;
 
 typedef struct {
@@ -163,6 +164,7 @@ void initIdentToken(Token *token, const struct _TokenzState *state);
 void initSymToken(Token *token, const struct _TokenzState *state, TokenType type);
 void initMacroToken(Token *token, const struct _TokenzState *state);
 void initEOFToken(Token *token, const struct _TokenzState *state);
+void initNewlineToken(Token *token, const struct _TokenzState *state);
 
 void tokenDup(Token const *token, Token *dest);
 /*

@@ -253,7 +253,11 @@ DList tokenize(FILE *fp, const char *filename) {
 		}
 
 		if (!state.wasBackslash && state.curChar == '\n') {
-			state.isMacro = 0;
+			if (state.isMacro) {
+				initNewlineToken(&token, &state);
+				dlistApp(&state.tokens, &token);
+				state.isMacro = 0;
+			}
 		}
 
 		state.wasBackslash = 0;
