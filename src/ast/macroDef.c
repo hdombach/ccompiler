@@ -96,8 +96,6 @@ void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 		tempTok = astPop(&subState);
 		if (!tempTok) break;
 		if (!tempTok->isMacro) subState.status = AST_STATUS_FAILED;
-		if (tempTok->type == TT_EOF) subState.status = AST_STATUS_FAILED;
-		if (tempTok->type == TT_NEWLINE) subState.status = AST_STATUS_FAILED;
 
 		if (!astValid(&subState)) {
 			break;
