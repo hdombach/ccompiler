@@ -7,6 +7,7 @@
 #include "tokenParser.h"
 #include "../util/dstr.h"
 #include "../util/util.h"
+#include "astState.h"
 
 void initASTMacroDefNode(ASTMacroDefNode *node) {
 	node->token = NULL;
@@ -31,56 +32,79 @@ void freeASTMacroDef(ASTMacroDef *def) {
 	freeDList(&def->nodes, (DListFreeFunc) freeASTMacroDefNode);
 }
 
-int _parseParam(ASTMacroDef *def, const Token *tok) {
-	int res, n;
+void _parseParam(ASTMacroDef *def, ASTState *parentState) {
 	char *tempStr;
-	n = 0;
+	Token *tempTok;
+	ASTState state, subState;
 
-	if (!tok[n].isMacro) return TP_FAILED;
-	if (tok[n].type != TT_O_PARAN) return TP_FAILED;
-	n++;
-
-	if (!tok[n].isMacro) return TP_ERROR;
-	if (tok[n].type != TT_IDENTIFIER)
-		return tpError(tok + n, "Expected macro paramater name");
-	tempStr = strdup(tok[n].contents);
-	dlistApp(&def->paramNames, &tempStr);
-	n++;
-
-	while (1) {
-		if (!tok[n].isMacro) return tpError(tok + n, "Expected )");
-		if (tok[n].type != TT_COMMA) break;
-		n++;
-
-		if (!tpMacroType(tok + n, TT_IDENTIFIER))
-			return tpError(tok + n, "Expected param name after ,");
-		tempStr = strdup(tok[n].contents);
-		dlistApp(&def->paramNames, &tempStr);
-		n++;
+	if (astValid(&state)) {
+		return;
 	}
 
-	if (!tpMacroType(tok + n, TT_C_PARAN))
-		return tpError(tok + n, "Expected )");
-	n++;
+	state = *parentState;
 
-	return n;
+	astExpMacro(&state, TT_O_PARAN);
+
+	tempTok = astReqMacro(&state, TT_IDENTIFIER);
+	if (tempTok) {
+		tempStr = strdup(tempTok->contents);
+		dlistApp(&def->paramNames, &tempStr);
+	}
+
+	while (1) {
+		subState = state;
+		tempTok = astPop(&subState);
+		if (!tempTok) break;
+		if (!tempTok->isMacro) {
+			subState.status = AST_STATUS_ERROR;
+			//TODO: error msg
+		}
+		if (tempTok->type != TT_COMMA) {
+			break;
+		}
+
+		tempTok = astReqMacro(&subState, TT_IDENTIFIER);
+		if (!tempTok) break;
+		tempStr = strdup(tempTok->contents);
+		dlistApp(&def->paramNames, &tempStr);
+
+		astMergeState(&state, &subState);
+	}
+
+	astReqMacro(&state, TT_C_PARAN);
+
+	astMergeState(parentState, &state);
 }
 
-int _parseReplList(ASTMacroDef *def, const Token *tok) {
-	int res, n;
+void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 	char *tempStr;
+	Token *tempTok;
+	ASTState state, subState;
 
-	n = 0;
+	if (!astValid(&state)) {
+		return;
+	}
+
+	state = *parentState;
 
 	while (1) {
 		ASTMacroDefNode node;
 
-		if (!tok[n].isMacro) break;
-		if (tok[n].type == TT_EOF) break;
+		subState = state;
+
+		tempTok = astPop(&subState);
+		if (!tempTok) break;
+		if (!tempTok->isMacro) subState.status = AST_STATUS_FAILED;
+		if (tempTok->type == TT_EOF) subState.status = AST_STATUS_FAILED;
+		if (tempTok->type == TT_NEWLINE) subState.status = AST_STATUS_FAILED;
+
+		if (!astValid(&subState)) {
+			break;
+		}
 
 		initASTMacroDefNode(&node);
 		node.token = malloc(sizeof(Token));
-		tokenDup(&tok[n], node.token);
+		tokenDup(tempTok, node.token);
 
 		if (node.token->type == TT_IDENTIFIER) {
 			for (int i = 0; i < def->paramNames.size; i++) {
@@ -92,34 +116,38 @@ int _parseReplList(ASTMacroDef *def, const Token *tok) {
 		}
 
 		dlistApp(&def->nodes, &node);
-		n++;
+		astMergeState(&state, &subState);
 	}
-	return n;
+	astMergeState(parentState, &state);
 }
 
-int parseASTMacroDef(ASTMacroDef *def, const Token *tok) {
+int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
 	int res, n;
+	ASTState state, subState;
+	Token *tempToken;
 
-	n = 0;
-	if (!tok[n].isMacro) return TP_FAILED;
-	if (tok[n].type != TT_MACRO_DEFINE) return TP_FAILED;
-	n++;
-
-	if (!tpMacroType(tok + n, TT_IDENTIFIER))
-		return tpError(tok + n, "Expect macro name");
-	if (def->name) {
-		free(def->name);
+	if (!astValid(parentState)) {
+		return 0;
 	}
-	def->name = strdup(tok[n].contents);
-	n++;
 
-	n += res = _parseParam(def, tok + n);
-	if (res < 0) return res;
+	state = *parentState;
+	astExpMacro(&state, TT_MACRO_DEFINE);
 
-	n += res = _parseReplList(def, tok + n);
-	if (res < 0) return res;
+	tempToken = astReqMacro(&state, TT_IDENTIFIER);
+	if (tempToken) {
+		def->name = strdup(tempToken->contents);
+	}
 
-	return n;
+	_parseParam(def, &state);
+	_parseReplList(def, &state);
+
+	astMergeState(parentState, &state);
+	if (astValid(&state)) {
+		return 1;
+	} else {
+		freeASTMacroDef(def);
+		return 0;
+	}
 }
 
 void printASTMacroDefNode(ASTMacroDefNode const *node) {

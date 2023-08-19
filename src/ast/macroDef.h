@@ -2,6 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "astState.h"
 
 typedef struct _MacroDefNode {
 	Token *token;
@@ -20,7 +21,7 @@ void freeASTMacroDefNode(ASTMacroDefNode *node);
 void initASTMacroDef(ASTMacroDef *def);
 void freeASTMacroDef(ASTMacroDef *def);
 
-int parseASTMacroDef(ASTMacroDef *def, Token const *tokens);
+int parseASTMacroDef(ASTMacroDef *def, ASTState *state);
 
 void printASTMacroDefNode(ASTMacroDefNode const *node);
 void printASTMacroDef(ASTMacroDef const *def);

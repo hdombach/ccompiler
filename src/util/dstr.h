@@ -43,6 +43,10 @@ static inline void dstrRemAll(DStr *dstr) {
 }
 
 static inline void printJsonStr(char const *str) {
+	if (!str) {
+		printf("(null)");
+		return;
+	}
 	printf("\"");
 	while (*str) {
 		if (*str == '\\') {

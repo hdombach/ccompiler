@@ -2,5 +2,7 @@
 #include <stdlib.h>
 
 void freeStr(char **str) {
-	free(*str);
+	if (*str) {
+		free(*str);
+	}
 }

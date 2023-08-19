@@ -11,9 +11,11 @@ COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
 
 DEPS_TOKENIZER = build/util/dlist.o build/token.o build/tokenizer.o
 
+DEPS_AST = build/ast/astState.o build/ast/macroDef.o build/ast/tokenParser.o
+
 DEPS_CCOMPILER = build/main.o build/argParser.o $(DEPS_TOKENIZER)\
 								 build/util/dlist.o build/util/dlist.o build/ast/macroDef.o\
-								 build/ast/tokenParser.o build/util/util.o
+								 build/util/util.o $(DEPS_AST)
 
 DEPS_MACRO_DICT = build/util/dlist.o build/util/hash.o build/util/macroDict.o
 

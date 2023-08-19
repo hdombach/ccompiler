@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "argParser.h"
+#include "ast/astState.h"
 #include "ast/macroDef.h"
 #include "ast/tokenParser.h"
 #include "token.h"
@@ -30,6 +31,7 @@ int main(int argc, char **argv) {
 		char *file;
 		FILE *fp;
 		int n;
+		Token *tok, *tokEnd;
 
 		file = *(char **) dlistGet(&args.files, i);
 		fp = fopen(file, "r");
@@ -39,21 +41,24 @@ int main(int argc, char **argv) {
 		}
 		tokens = tokenize(fp, file);
 
-		dlistPrint(&tokens, (DListPrintFunc) printToken);
+		//dlistPrint(&tokens, (DListPrintFunc) printToken);
 
-		while (n < tokens.size) {
+		tok = (Token *) dlistGet(&tokens, 0);
+		tokEnd = tok + tokens.size;
+		while (tok <= tokEnd) {
+			ASTState state;
 			ASTMacroDef def;
-			int res;
 
 			initASTMacroDef(&def);
-			res = parseASTMacroDef(&def, dlistGetm(&tokens, n));
-			if (res > 0) {
+			initASTState(&state, tok);
+			if (parseASTMacroDef(&def, &state)) {
 				printASTMacroDef(&def);
-				n += res;
+				tok = state.tok;
 			} else {
-				n++;
+				tok++;
 			}
-			if (res == TP_ERROR) {
+
+			if (state.status == TP_ERROR) {
 				fprintf(stderr, "INTERNAL_ERROR");
 			}
 			freeASTMacroDef(&def);
