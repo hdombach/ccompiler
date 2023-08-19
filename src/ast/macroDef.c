@@ -81,11 +81,12 @@ void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 	Token *tempTok;
 	ASTState state, subState;
 
+	state = *parentState;
+
 	if (!astValid(&state)) {
 		return;
 	}
 
-	state = *parentState;
 
 	while (1) {
 		ASTMacroDefNode node;

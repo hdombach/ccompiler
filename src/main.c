@@ -54,6 +54,7 @@ int main(int argc, char **argv) {
 			if (parseASTMacroDef(&def, &state)) {
 				printASTMacroDef(&def);
 				tok = state.tok;
+				freeASTMacroDef(&def);
 			} else {
 				tok++;
 			}
@@ -61,7 +62,6 @@ int main(int argc, char **argv) {
 			if (state.status == TP_ERROR) {
 				fprintf(stderr, "INTERNAL_ERROR");
 			}
-			freeASTMacroDef(&def);
 		}
 
 		freeDList(&tokens, (DListFreeFunc) freeToken);
