@@ -15,10 +15,11 @@ typedef struct {
 	DList nodes;
 } ASTMacroDef;
 
-void initASTMacroDefNode(ASTMacroDefNode *node);
-void freeASTMacroDefNode(ASTMacroDefNode *node);
+void _initASTMacroDefNode(ASTMacroDefNode *node);
+void _freeASTMacroDefNode(ASTMacroDefNode *node);
 
 void initASTMacroDef(ASTMacroDef *def);
+void initASTMacroDefn(ASTMacroDef *def, char *name);
 void freeASTMacroDef(ASTMacroDef *def);
 
 int parseASTMacroDef(ASTMacroDef *def, ASTState *state);

@@ -39,27 +39,31 @@ void freeMacroDict(MacroDict *macroDict) {
 			curNode = nextNode;
 		}
 	}
+	free(macroDict->nodes);
 }
 
 void initMacroDictNode(
 		MacroDictNode *node,
 		MacroDictMKey key,
-		MacroDictMValue value)
+		MacroDictValue value)
 {
 	node->key = key;
-	node->value = value;
+
+	node->value = malloc(sizeof(MacroDictValue));
+	*node->value = value;
 	node->next = NULL;
 }
 
 void freeMacroDictNode(MacroDictNode *node) {
 	free(node->key);
+	freeASTMacroDef(node->value);
 	free(node->value);
 }
 
 int macroDictInsert(
 		MacroDict *macroDict,
 		MacroDictMKey key,
-		MacroDictMValue value)
+		MacroDictValue value)
 {
 	hash_t index;
 	MacroDictNode **curNode;
@@ -69,7 +73,7 @@ int macroDictInsert(
 	while (*curNode) {
 		if (_cmpKey((*curNode)->key, key)) {
 			free(key);
-			free(value);
+			freeASTMacroDef(&value);
 			return 0;
 		}
 		curNode = &((*curNode)->next);
@@ -94,7 +98,7 @@ int macroDictPresent(const MacroDict *macroDict, MacroDictKey key) {
 	return 0;
 }
 
-MacroDictValue macroDictGet(const MacroDict *macroDict, MacroDictKey key) {
+MacroDictValue const *macroDictGet(const MacroDict *macroDict, MacroDictKey key) {
 	hash_t index;
 	MacroDictNode *curNode;
 
@@ -109,7 +113,7 @@ MacroDictValue macroDictGet(const MacroDict *macroDict, MacroDictKey key) {
 	return NULL;
 }
 
-MacroDictMValue macroDictGetm(MacroDict *macroDict, MacroDictKey key) {
+MacroDictValue *macroDictGetm(MacroDict *macroDict, MacroDictKey key) {
 	hash_t index;
 	MacroDictNode *curNode;
 
@@ -143,7 +147,7 @@ void macroDictDelete(MacroDict *macroDict, MacroDictKey key) {
 	}
 }
 
-MacroDictMValue macroDictRemove(MacroDict *macroDict, MacroDictKey key) {
+MacroDictValue *macroDictRemove(MacroDict *macroDict, MacroDictKey key) {
 	hash_t index;
 	MacroDictNode **curNode;
 
@@ -152,7 +156,7 @@ MacroDictMValue macroDictRemove(MacroDict *macroDict, MacroDictKey key) {
 	while (*curNode) {
 		if (_cmpKey((*curNode)->key, key)) {
 			MacroDictNode *temp;
-			MacroDictMValue tempValue;
+			MacroDictValue *tempValue;
 
 			temp = *curNode;
 			*curNode = temp->next;
@@ -168,7 +172,7 @@ MacroDictMValue macroDictRemove(MacroDict *macroDict, MacroDictKey key) {
 	return NULL;
 }
 
-void macroDictVPrint(const MacroDict *dict) {
+void printMacroDictV(const MacroDict *dict) {
 	printf("[");
 	for (int i = 0; i < dict->allocatedSize; i++) {
 		MacroDictNode *curNode;
@@ -178,7 +182,7 @@ void macroDictVPrint(const MacroDict *dict) {
 			printf("{");
 			printJsonStr(curNode->key);
 			printf(": ");
-			printJsonStr(curNode->value);
+			printASTMacroDef(curNode->value);
 			printf("}");
 			if (curNode->next) {
 				printf(", ");
@@ -192,4 +196,26 @@ void macroDictVPrint(const MacroDict *dict) {
 		}
 	}
 	printf("]");
+}
+
+void printMacroDict(MacroDict const *dict) {
+	int isFirst = 1;
+
+	printf("{");
+	for (int i = 0; i < dict->allocatedSize; i++) {
+		MacroDictNode *curNode;
+		curNode = dict->nodes[i];
+		while (curNode) {
+			if (isFirst) {
+				isFirst = 0;
+			} else {
+				printf(", ");
+			}
+			printJsonStr(curNode->key);
+			printf(": ");
+			printASTMacroDef(curNode->value);
+			curNode = curNode->next;
+		}
+	}
+	printf("}");
 }

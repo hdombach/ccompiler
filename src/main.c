@@ -7,6 +7,7 @@
 #include "token.h"
 #include "tokenizer.h"
 #include "util/dlist.h"
+#include "util/macroDict.h"
 
 #define HELLO 
 
@@ -32,6 +33,7 @@ int main(int argc, char **argv) {
 		FILE *fp;
 		int n;
 		Token *tok, *tokEnd;
+		MacroDict macros;
 
 		file = *(char **) dlistGet(&args.files, i);
 		fp = fopen(file, "r");
@@ -45,6 +47,7 @@ int main(int argc, char **argv) {
 
 		tok = (Token *) dlistGet(&tokens, 0);
 		tokEnd = tok + tokens.size;
+		initMacroDict(&macros);
 		while (tok <= tokEnd) {
 			ASTState state;
 			ASTMacroDef def;
@@ -52,9 +55,8 @@ int main(int argc, char **argv) {
 			initASTMacroDef(&def);
 			initASTState(&state, tok);
 			if (parseASTMacroDef(&def, &state)) {
-				printASTMacroDef(&def);
+				macroDictInsert(&macros, strdup(def.name), def);
 				tok = state.tok;
-				freeASTMacroDef(&def);
 			} else {
 				tok++;
 			}
@@ -63,7 +65,9 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "INTERNAL_ERROR");
 			}
 		}
+		printMacroDict(&macros);
 
+		freeMacroDict(&macros);
 		freeDList(&tokens, (DListFreeFunc) freeToken);
 	}
 

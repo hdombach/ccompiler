@@ -2,17 +2,18 @@
 
 #include <stddef.h>
 
+#include "../ast/macroDef.h"
+
 typedef char const * MacroDictKey;
-typedef char const * MacroDictValue;
 typedef char * MacroDictMKey;
-typedef char * MacroDictMValue;
+typedef ASTMacroDef MacroDictValue;
 
 struct _MacroDictNode;
 
 typedef struct _MacroDictNode {
 	struct _MacroDictNode *next;
 	MacroDictMKey key;
-	MacroDictMValue value;
+	MacroDictValue *value;
 } MacroDictNode;
 
 typedef struct {
@@ -28,7 +29,7 @@ void freeMacroDict(MacroDict *macroDict);
 void initMacroDictNode(
 		MacroDictNode *node,
 		MacroDictMKey key,
-		MacroDictMValue value);
+		MacroDictValue value);
 /*
  * Frees a node and returns the next
  */
@@ -42,13 +43,13 @@ void freeMacroDictNode(MacroDictNode *node);
 int macroDictInsert(
 		MacroDict *macroDict,
 		MacroDictMKey key,
-		MacroDictMValue value);
+		MacroDictValue value);
 
 int macroDictPresent(MacroDict const *macroDict, MacroDictKey key);
 
-MacroDictValue macroDictGet(MacroDict const *macroDict, MacroDictKey key);
+MacroDictValue const *macroDictGet(MacroDict const *macroDict, MacroDictKey key);
 
-MacroDictMValue macroDictGetm(MacroDict *macroDict, MacroDictKey key);
+MacroDictValue *macroDictGetm(MacroDict *macroDict, MacroDictKey key);
 
 /*
  * Looks up an element by key and deletes it
@@ -58,9 +59,11 @@ void macroDictDelete(MacroDict *macroDict, MacroDictKey key);
 /*
  * Removes an element and returns it
  */
-MacroDictMValue macroDictRemove(MacroDict *macroDict, MacroDictKey key);
+MacroDictValue *macroDictRemove(MacroDict *macroDict, MacroDictKey key);
 
 /*
  * Verbose print with info about layout
  */
-void macroDictVPrint(MacroDict const *macroDict);
+void printMacroDictV(MacroDict const *macroDict);
+
+void printMacroDict(MacroDict const *macroDict);

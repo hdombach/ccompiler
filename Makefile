@@ -9,20 +9,17 @@ COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@
 COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
 
 
-DEPS_TOKENIZER = build/util/dlist.o build/token.o build/tokenizer.o
 
-DEPS_AST = build/ast/astState.o build/ast/macroDef.o build/ast/tokenParser.o
+DEPS_GEN = build/argParser.o build/token.o build/tokenizer.o\
+					 $(patsubst $(SRC)/ast/%.c, build/ast/%.o, $(wildcard $(SRC)/ast/*.c))\
+					 $(patsubst $(SRC)/util/%.c, build/util/%.o, $(wildcard $(SRC)/util/*.c))\
 
-DEPS_CCOMPILER = build/main.o build/argParser.o $(DEPS_TOKENIZER)\
-								 build/util/dlist.o build/util/dlist.o build/ast/macroDef.o\
-								 build/util/util.o $(DEPS_AST)
+DEPS_CCOMPILER = build/main.o $(DEPS_GEN)
 
-DEPS_MACRO_DICT = build/util/dlist.o build/util/hash.o build/util/macroDict.o
-
-DEPS_ALL_TESTS = build/util/dlist.o $(DEPS_MACRO_DICT)\
+DEPS_ALL_TESTS = $(DEPS_GEN)\
 								 $(patsubst $(SRC)/tests/%.c, build/tests/%.o, $(wildcard $(SRC)/tests/*.c))
 
-DEPS_MACRO_DICT_TEST = $(DEPS_MACRO_DICT) build/tests/macroDictTest.o build/tests/test.o
+DEPS_MACRO_DICT_TEST = $(DEPS_GEN) build/tests/macroDictTest.o build/tests/test.o
 
 
 all: build/ccompiler assets testAssets build/allTests build/macroDictTest

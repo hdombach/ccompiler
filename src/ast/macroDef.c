@@ -9,14 +9,15 @@
 #include "../util/util.h"
 #include "astState.h"
 
-void initASTMacroDefNode(ASTMacroDefNode *node) {
+void _initASTMacroDefNode(ASTMacroDefNode *node) {
 	node->token = NULL;
 	node->paramIndex = -1;
 }
 
-void freeASTMacroDefNode(ASTMacroDefNode *node) {
+void _freeASTMacroDefNode(ASTMacroDefNode *node) {
 	if (node->token) {
 		freeToken(node->token);
+		free(node->token);
 	}
 }
 
@@ -26,10 +27,18 @@ void initASTMacroDef(ASTMacroDef *def) {
 	initDList(&def->nodes, sizeof(ASTMacroDefNode));
 }
 
+void initASTMacroDefn(ASTMacroDef *def, char *name) {
+	def->name = name;
+	initDList(&def->paramNames, sizeof(char *));
+	initDList(&def->nodes, sizeof(ASTMacroDefNode));
+}
+
 void freeASTMacroDef(ASTMacroDef *def) {
-	free(def->name);
+	if (def->name) {
+		free(def->name);
+	}
 	freeDList(&def->paramNames, (DListFreeFunc) freeStr);
-	freeDList(&def->nodes, (DListFreeFunc) freeASTMacroDefNode);
+	freeDList(&def->nodes, (DListFreeFunc) _freeASTMacroDefNode);
 }
 
 void _parseParam(ASTMacroDef *def, ASTState *parentState) {
@@ -101,7 +110,7 @@ void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 			break;
 		}
 
-		initASTMacroDefNode(&node);
+		_initASTMacroDefNode(&node);
 		node.token = malloc(sizeof(Token));
 		tokenDup(tempTok, node.token);
 
