@@ -10,7 +10,7 @@ COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
 
 
 
-DEPS_GEN = build/argParser.o build/token.o build/tokenizer.o\
+DEPS_GEN = build/argParser.o build/token.o build/tokenizer.o build/preprocessor.o\
 					 $(patsubst $(SRC)/ast/%.c, build/ast/%.o, $(wildcard $(SRC)/ast/*.c))\
 					 $(patsubst $(SRC)/util/%.c, build/util/%.o, $(wildcard $(SRC)/util/*.c))\
 

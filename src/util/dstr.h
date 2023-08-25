@@ -26,7 +26,17 @@ static inline const char *dstrGet(DStr const *dstr, int index) {
 
 static inline void dstrApp(DStr *dstr, char element) {
 	*dstrGetm(dstr, dstr->size - 1) = element;
-	dlistApp(dstr, "\0");
+	dlistApp(dstr, "");
+}
+
+static inline void dstrAppStr(DStr *dstr, char const *str) {
+	*dstrGetm(dstr, dstr->size - 1) = *str;
+	str++;
+	while (*str) {
+		dlistApp(dstr, str);
+		str++;
+	}
+	dlistApp(dstr, "");
 }
 
 static inline DListErr dstrRem(DStr *dstr, int index) {

@@ -65,8 +65,7 @@ void _parseParam(ASTMacroDef *def, ASTState *parentState) {
 		tempTok = astPop(&subState);
 		if (!tempTok) break;
 		if (!tempTok->isMacro) {
-			subState.status = AST_STATUS_ERROR;
-			//TODO: error msg
+			astError(&state, "Expected )");
 		}
 		if (tempTok->type != TT_COMMA) {
 			break;
@@ -130,7 +129,6 @@ void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 }
 
 int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
-	int res, n;
 	ASTState state, subState;
 	Token *tempToken;
 
@@ -176,7 +174,9 @@ void printASTMacroDefNode(ASTMacroDefNode const *node) {
 void printASTMacroDef(ASTMacroDef const *def) {
 	printf("{");
 
-	printf("\"name\": ");
+	printf("\"type\": \"Macro Definition\"");
+
+	printf(", \"name\": ");
 	printJsonStr(def->name);
 
 	printf(", \"params\": ");

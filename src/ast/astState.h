@@ -1,12 +1,19 @@
 #pragma once
 
 #include "../token.h"
+#include <stdio.h>
 
 typedef enum {
 	AST_STATUS_NOMINAL = 1,
 	AST_STATUS_FAILED = 0,
 	AST_STATUS_ERROR = -1,
 } ASTStatus;
+
+enum {
+	AST_STATE_MSG_S = 256 
+};
+
+static char ASTStateMsg[AST_STATE_MSG_S];
 
 typedef struct {
 	Token *tok;
@@ -21,4 +28,5 @@ Token *astReqMacro(ASTState *state, TokenType macroType);
 Token *astExpMacro(ASTState *state, TokenType macroType);
 Token *astPop(ASTState *state);
 int astValid(ASTState *state);
-
+void astError(ASTState *state, char *msg);
+void fprintAstError(FILE *file, ASTState *state);

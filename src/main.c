@@ -1,15 +1,15 @@
 #include <stdio.h>
+#include <sys/types.h>
 
 #include "argParser.h"
 #include "ast/astState.h"
 #include "ast/macroDef.h"
 #include "ast/tokenParser.h"
+#include "preprocessor.h"
 #include "token.h"
 #include "tokenizer.h"
 #include "util/dlist.h"
 #include "util/macroDict.h"
-
-#define HELLO 
 
 int main(int argc, char **argv) {
 	Args args;
@@ -32,8 +32,6 @@ int main(int argc, char **argv) {
 		char *file;
 		FILE *fp;
 		int n;
-		Token *tok, *tokEnd;
-		MacroDict macros;
 
 		file = *(char **) dlistGet(&args.files, i);
 		fp = fopen(file, "r");
@@ -45,29 +43,8 @@ int main(int argc, char **argv) {
 
 		//dlistPrint(&tokens, (DListPrintFunc) printToken);
 
-		tok = (Token *) dlistGet(&tokens, 0);
-		tokEnd = tok + tokens.size;
-		initMacroDict(&macros);
-		while (tok <= tokEnd) {
-			ASTState state;
-			ASTMacroDef def;
+		preprocessor(&tokens);
 
-			initASTMacroDef(&def);
-			initASTState(&state, tok);
-			if (parseASTMacroDef(&def, &state)) {
-				macroDictInsert(&macros, strdup(def.name), def);
-				tok = state.tok;
-			} else {
-				tok++;
-			}
-
-			if (state.status == TP_ERROR) {
-				fprintf(stderr, "INTERNAL_ERROR");
-			}
-		}
-		printMacroDict(&macros);
-
-		freeMacroDict(&macros);
 		freeDList(&tokens, (DListFreeFunc) freeToken);
 	}
 
