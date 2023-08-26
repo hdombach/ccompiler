@@ -12,36 +12,28 @@
 
 void preprocessor(DList *tokens) {
 	MacroDict macros;
+	ASTState state;
 	
 	initMacroDict(&macros);
 
-	Token *tok, *tokEnd;
-	tok = (Token *) dlistGetm(tokens, 0);
-	tokEnd = tok + tokens->size;
-	while (tok <= tokEnd) {
-		ASTState state;
+	initASTState(&state, (Token *) dlistGetm(tokens, 0));
+	while (state.tok->type != TT_EOF) {
 		ASTMacroDef def;
 		ASTMacroIncl include;
 
 		initASTMacroDef(&def);
-		initASTState(&state, tok);
 		if (parseASTMacroDef(&def, &state)) {
 			macroDictInsert(&macros, strdup(def.name), def);
-			tok = state.tok;
 		} else if (parseASTMacroIncl(&include, &state)) {
 			printASTMacroIncl(&include);
 			freeASTMacroIncl(&include);
-			tok = state.tok;
 		} else {
-			tok++;
+			Token *tok = astPop(&state);
 		}
 
 		if (state.status == AST_STATUS_ERROR) {
 			fprintAstError(stderr, &state);
 			exit(1);
-		}
-		if (tok->type == TT_EOF) {
-			break;
 		}
 	}
 
