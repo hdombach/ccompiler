@@ -5,7 +5,9 @@ void dlistTestCmp();
 void dlistTestApp();
 void dlistTestIns();
 void dlistTestRem();
-void dlistDynObj();
+void dlistTestDynObj();
+void dlistTestRemMult();
+void dlistTestInsMult();
 
 void dlistTest();
 int dlistTestMain();

@@ -179,7 +179,7 @@ int macroDictPlayground(int argc, char **argv) {
 		printf("\n");
 	}
 
-	macroDictVPrint(&macros);
+	printMacroDictV(&macros);
 
 	freeMacroDict(&macros);
 	return 0;

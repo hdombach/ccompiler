@@ -80,6 +80,28 @@ DListErr dlistRem(DList *list, int index, DListFreeFunc freeFunc) {
 	return DLIST_SUCCESS;
 }
 
+DListErr dlistRemMult(DList *list, int start, int count, DListFreeFunc freeFunc) {
+	size_t mvLen;
+
+	if (start < 0 || start + count > list->size) {
+		return DLIST_INVALID_INDEX;
+	}
+	if (freeFunc) {
+		for (int i = start; i < start + count; i++) {
+			freeFunc(dlistGetm(list, i));
+		}
+	}
+
+	mvLen = (list->size - (start + count)) * list->elSize;
+	memmove(dlistGetm(list, start), dlistGet(list, start + count), mvLen);
+	list->size -= count;
+	while (list->size * 2 <= list->capacity) {
+		dlistDecCap(list);
+	}
+
+	return DLIST_SUCCESS;
+}
+
 DListErr dlistIns(DList *list, const void *element, int index) {
 	size_t mvLen;
 
@@ -94,6 +116,25 @@ DListErr dlistIns(DList *list, const void *element, int index) {
 	memmove(dlistGetm(list, index + 1), dlistGet(list, index), mvLen);
 	memcpy(dlistGetm(list, index), element, list->elSize);
 	list->size++;
+
+	return DLIST_SUCCESS;
+}
+
+DListErr dlistInsMult(DList *list, const DList *elements, int index) {
+	size_t mvLen;
+
+	if (index < 0 || index > list->size) {
+		return DLIST_INVALID_INDEX;
+	}
+	while (list->size + elements->size > list->capacity) {
+		dlistIncCap(list);
+	}
+
+	mvLen = (list->size - index) * list->elSize;
+	memmove(dlistGetm(list, index + elements->size), dlistGet(list, index), mvLen);
+	memcpy(dlistGetm(list, index), elements->data, elements->elSize * elements->size);
+	list->size += elements->size;
+	free(elements->data);
 
 	return DLIST_SUCCESS;
 }

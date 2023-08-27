@@ -20,6 +20,7 @@ typedef enum {
 
 typedef void (*DListFreeFunc)(void*);
 typedef int (*DListCmpFunc)(void const*, void const*);
+typedef void (*DListCpFunc)(void *, void const*);
 typedef void (*DListPrintFunc)(void const*);
 
 void initDList(DList *list, size_t elementSize);
@@ -51,9 +52,21 @@ void dlistDecCap(DList *list);
 DListErr dlistRem(DList *list, int index, DListFreeFunc);
 
 /*
+ * Removes range of elements
+ */
+DListErr dlistRemMult(DList *list, int start, int count, DListFreeFunc);
+
+/*
  * Inserts an element at the index
+ * Note: Takes ownership of element
  */
 DListErr dlistIns(DList *list, const void *element, int index);
+
+/*
+ * Inserts a dlist into the dlist
+ * Note: Takes onwership and frees elements
+ */
+DListErr dlistInsMult(DList *list, DList const *elements, int index);
 
 void dlistRemAll(DList *list, DListFreeFunc);
 

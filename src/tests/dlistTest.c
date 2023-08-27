@@ -187,7 +187,7 @@ void dlistTestRem() {
 	freeDList(&list, NULL);
 }
 
-void dlistDynObj() {
+void dlistTestDynObj() {
 	_TestObj obj1;
 	_TestObj obj2;
 	_TestObj obj3;
@@ -235,12 +235,68 @@ void dlistDynObj() {
 	freeDList(&list2, (DListFreeFunc) _freeTestType);
 }
 
+void dlistTestRemMult() {
+	DList list;
+	int value;
+
+	tStartSection("Removing multiple from dlist");
+	initDList(&list, sizeof(int));
+	dlistApp(&list, (value=1, &value));
+	dlistApp(&list, (value=2, &value));
+	dlistApp(&list, (value=3, &value));
+	dlistApp(&list, (value=4, &value));
+	dlistApp(&list, (value=5, &value));
+	dlistApp(&list, (value=6, &value));
+	dlistApp(&list, (value=7, &value));
+
+	dlistRemMult(&list, 2, 3, NULL);
+	tAssert("index 0", *(int *) dlistGet(&list, 0) == 1);
+	tAssert("index 1", *(int *) dlistGet(&list, 1) == 2);
+	tAssert("index 2", *(int *) dlistGet(&list, 2) == 6);
+	tAssert("index 3", *(int *) dlistGet(&list, 3) == 7);
+
+	freeDList(&list, NULL);
+}
+
+void dlistTestInsMult() {
+	DList list, elements;
+	int value;
+
+	tStartSection("Insert multiple into dlist");
+	initDList(&list, sizeof(int));
+	initDList(&elements, sizeof(int));
+
+	dlistApp(&list, (value=1, &value));
+	dlistApp(&list, (value=2, &value));
+	dlistApp(&list, (value=3, &value));
+	dlistApp(&list, (value=4, &value));
+	dlistApp(&list, (value=5, &value));
+	dlistApp(&elements, (value=6, &value));
+	dlistApp(&elements, (value=7, &value));
+	dlistApp(&elements, (value=8, &value));
+
+	dlistInsMult(&list, &elements, 1);
+
+	tAssert("index 0", *(int *) dlistGet(&list, 0) == 1);
+	tAssert("index 1", *(int *) dlistGet(&list, 1) == 6);
+	tAssert("index 2", *(int *) dlistGet(&list, 2) == 7);
+	tAssert("index 3", *(int *) dlistGet(&list, 3) == 8);
+	tAssert("index 4", *(int *) dlistGet(&list, 4) == 2);
+	tAssert("index 5", *(int *) dlistGet(&list, 5) == 3);
+	tAssert("index 6", *(int *) dlistGet(&list, 6) == 4);
+	tAssert("index 7", *(int *) dlistGet(&list, 7) == 5);
+
+	freeDList(&list, NULL);
+}
+
 void dlistTest() {
 	dlistTestEmpty();
 	dlistTestCmp();
 	dlistTestApp();
 	dlistTestIns();
 	dlistTestRem();
-	dlistDynObj();
+	dlistTestDynObj();
+	dlistTestRemMult();
+	dlistTestInsMult();
 }
 
