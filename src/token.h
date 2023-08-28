@@ -174,6 +174,10 @@ void tokenDup(Token const *token, Token *dest);
 int tokenBracketDepth(TokenType type);
 
 void printToken(Token *token);
+/*
+ * Prints the token as it appears in the file
+ */
+int printrToken(Token *token);
 const char *tokTypeStr(TokenType type);
 
 /*

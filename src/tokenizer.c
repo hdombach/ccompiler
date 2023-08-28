@@ -2,6 +2,7 @@
 #include "token.h"
 #include "util/dlist.h"
 #include "util/dstr.h"
+#include "util/tokList.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,13 +26,13 @@ void initTokenzState(TokenzState *state, const char *filename) {
 	initDStr(&state->curWord);
 	state->isMacro = 0;
 	state->type = TOKENZ_STATE_NONE;
-	initDList(&state->tokens, sizeof(Token));
+	initTokList(&state->tokens);
 	state->lastSymbolType = TT_UNKNOWN;
 }
 
 void freeTokenzState(TokenzState *state) {
 	freeDStr(&state->curWord);
-	freeDList(&state->tokens, (DListFreeFunc) freeToken);
+	freeTokList(&state->tokens);
 }
 
 void _resetAccumulation(TokenzState *state) {
@@ -75,12 +76,12 @@ void _parseNumber(TokenzState *state) {
 			dstrApp(&state->curWord, state->curChar);
 		} else {
 			initNumbToken(&token, state);
-			dlistApp(&state->tokens, &token);
+			tokListApp(&state->tokens, &token);
 			_parseUnknown(state);
 		}
 	} else {
 			initNumbToken(&token, state);
-			dlistApp(&state->tokens, &token);
+			tokListApp(&state->tokens, &token);
 			_parseUnknown(state);
 	}
 }
@@ -103,12 +104,14 @@ void _parseString(TokenzState *state) {
 			dstrApp(&state->curWord, '\r');
 		} else if (state->curChar == 'f') {
 			dstrApp(&state->curWord, '\f');
+		} else if (state->curChar == '\\') {
+			dstrApp(&state->curWord, '\\');
 		} else {
 			fprintf(stderr, "Unrecognized character after backslash: %c\n", state->curChar);
 		}
 	} else if (state->curChar == '"') {
 		initStrToken(&token, state);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_resetAccumulation(state);
 	} else {
 		dstrApp(&state->curWord, state->curChar);
@@ -122,7 +125,7 @@ void _parseChar(TokenzState *state) {
 		dstrApp(&state->curWord, state->curChar);
 	} else {
 		initCharToken(&token, state);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_resetAccumulation(state);
 	}
 }
@@ -149,13 +152,13 @@ void _parseSymbol(TokenzState *state) {
 		//determaining punctionation based tokens.
 	} else if (state->lastSymbolType != TT_UNKNOWN) {
 		initSymToken(&token, state, state->lastSymbolType);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_parseUnknown(state);
 	} else if (!strchr(_SPECIAL_SYMB, state->curChar)) {
 		fprintf(stderr, "Unrecognized symbols %s\n", (char *) state->curWord.data);
 		initSymToken(&token, state, TT_UNKNOWN);
 		printToken(&token);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_parseUnknown(state);
 	}
 }
@@ -167,7 +170,7 @@ void _parseIdentifier(TokenzState *state) {
 		dstrApp(&state->curWord, state->curChar);
 	} else {
 		initIdentToken(&token, state);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_parseUnknown(state);
 	}
 }
@@ -196,7 +199,7 @@ void _parseMarco(TokenzState *state) {
 		dstrApp(&state->curWord, state->curChar);
 	} else {
 		initMacroToken(&token, state);
-		dlistApp(&state->tokens, &token);
+		tokListApp(&state->tokens, &token);
 		_parseUnknown(state);
 	}
 }
@@ -204,8 +207,8 @@ void _parseMarco(TokenzState *state) {
 /*
  * Generates tokens from file
  */
-DList tokenize(FILE *fp, const char *filename) {
-	DList result;
+TokList tokenize(FILE *fp, const char *filename) {
+	TokList result;
 	Token token;
 	TokenzState state;
 	int curChar_i;
@@ -255,7 +258,7 @@ DList tokenize(FILE *fp, const char *filename) {
 		if (!state.wasBackslash && state.curChar == '\n') {
 			if (state.isMacro) {
 				initNewlineToken(&token, &state);
-				dlistApp(&state.tokens, &token);
+				tokListApp(&state.tokens, &token);
 				state.isMacro = 0;
 			}
 		}
@@ -264,7 +267,7 @@ DList tokenize(FILE *fp, const char *filename) {
 	} while (curChar_i != EOF);
 
 	initEOFToken(&token, &state);
-	dlistApp(&state.tokens, &token);
+	tokListApp(&state.tokens, &token);
 
 	moveDList(&result, &state.tokens);
 	freeTokenzState(&state);

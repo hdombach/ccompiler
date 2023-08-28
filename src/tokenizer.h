@@ -3,6 +3,7 @@
 #include "token.h"
 #include "util/dlist.h"
 #include "util/dstr.h"
+#include "util/tokList.h"
 
 #include <stdio.h>
 
@@ -29,12 +30,12 @@ typedef struct _TokenzState {
 	DStr curWord;
 	int isMacro;
 	TokenzStateType type;
-	DList tokens;
+	TokList tokens;
 	TokenType lastSymbolType;
 } TokenzState;
 
 void initTokenzState(TokenzState *state, const char *filename);
 void freeTokenzState(TokenzState *state);
 
-DList tokenize(FILE *fp, const char *filename);
+TokList tokenize(FILE *fp, const char *filename);
 

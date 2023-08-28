@@ -8,12 +8,13 @@
 #include "preprocessor.h"
 #include "token.h"
 #include "tokenizer.h"
+#include "util/tokList.h"
 #include "util/dlist.h"
 #include "util/macroDict.h"
 
 int main(int argc, char **argv) {
 	Args args;
-	DList tokens;
+	TokList tokens;
 
 	initArgs(&args);
 
@@ -42,10 +43,11 @@ int main(int argc, char **argv) {
 		tokens = tokenize(fp, file);
 
 		//dlistPrint(&tokens, (DListPrintFunc) printToken);
+		//printrTokList(&tokens);
 
 		preprocessor(&tokens);
 
-		freeDList(&tokens, (DListFreeFunc) freeToken);
+		freeTokList(&tokens);
 	}
 
 	printf("\n");

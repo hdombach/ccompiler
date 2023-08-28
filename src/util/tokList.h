@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "dlist.h"
 #include "../token.h"
@@ -25,7 +26,8 @@ static inline const Token *tokListGet(TokList const *list, int index) {
 }
 
 static inline void tokListApp(TokList *list, Token *element) {
-	memcpy(tokListGetm(list, list->size - 1), element, sizeof(Token));
+	dlistApp(list, element);
+	//memcpy(tokListGetm(list, list->size - 1), element, sizeof(Token));
 }
 
 static inline DListErr tokListRem(TokList *list, int index) {
@@ -38,4 +40,27 @@ static inline DListErr tokListIns(TokList *list, Token *element, int index) {
 
 static inline void tokListRemAll(TokList *list) {
 	dlistRemAll(list, (DListFreeFunc) freeToken);
+}
+
+static inline void printrTokList(TokList *list) {
+	int curCol, curLine = -1;
+	Token *tok = tokListGetm(list, 0);
+	Token *tokEnd = tokListGetm(list, list->size - 1);
+	char const *content;
+	for (;tok != tokEnd; tok++) {
+		if (curLine != tok->posLine) {
+			curLine = tok->posLine;
+			printf("\n");
+			for (curCol = 1; curCol < tok->posColumn; curCol++) {
+				printf("\t");
+			}
+		} else {
+			while (curCol < tok->posColumn) {
+				printf(" ");
+				curCol++;
+			}
+		}
+
+		curCol += printrToken(tok);
+	}
 }

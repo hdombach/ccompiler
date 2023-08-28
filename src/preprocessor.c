@@ -13,6 +13,7 @@
 void preprocessor(DList *tokens) {
 	MacroDict macros;
 	ASTState state;
+	int currentIndex;
 	
 	initMacroDict(&macros);
 
@@ -20,6 +21,7 @@ void preprocessor(DList *tokens) {
 	while (state.tok->type != TT_EOF) {
 		ASTMacroDef def;
 		ASTMacroIncl include;
+		currentIndex = state.tok - (Token *) dlistGetm(tokens, 0);
 
 		initASTMacroDef(&def);
 		if (parseASTMacroDef(&def, &state)) {
@@ -29,6 +31,9 @@ void preprocessor(DList *tokens) {
 			freeASTMacroIncl(&include);
 		} else {
 			Token *tok = astPop(&state);
+			if (!tok) {
+			} else if (tok->type == TT_MACRO_IFDEF) {
+			}
 		}
 
 		if (state.status == AST_STATUS_ERROR) {

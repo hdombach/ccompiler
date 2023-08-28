@@ -154,6 +154,36 @@ void printToken(Token *token) {
 	printf("%d:%d\"}", token->posLine, token->posColumn);
 }
 
+int printrToken(Token *token) {
+	int res = 0;
+
+	switch (token->type) {
+		case TT_IDENTIFIER:
+			res += printf("%s", token->contents);
+			break;
+		case TT_INT_CONSTANT:
+			res += printf("%s", token->contents);
+			break;
+		case TT_CHAR_CONSTANT:
+			res += printf("'");
+			res += printf("%s", token->contents);
+			res += printf("'");
+			break;
+		case TT_STR_CONSTANT:
+			res += printrStr(token->contents);
+			break;
+		case TT_EOF:
+			break;
+		case TT_NEWLINE:
+			break;
+		default:
+			res += printf("%s", tokTypeStr(token->type));
+			break;
+	}
+
+	return res;
+}
+
 const char * TT_STRS[] = {
 	"UNKNOWN",
 	"Identifier",
