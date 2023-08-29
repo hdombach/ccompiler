@@ -80,6 +80,14 @@ DListErr dlistRem(DList *list, int index, DListFreeFunc freeFunc) {
 	return DLIST_SUCCESS;
 }
 
+void dlistRemLast(DList *list, DListFreeFunc freeFunc) {
+	if (list->size == 0) {
+		return;
+	}
+	freeFunc(dlistGetm(list, list->size - 1));
+	list->size--;
+}
+
 DListErr dlistRemMult(DList *list, int start, int count, DListFreeFunc freeFunc) {
 	size_t mvLen;
 

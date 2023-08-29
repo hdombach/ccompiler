@@ -136,6 +136,8 @@ int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
 		return 0;
 	}
 
+	initASTMacroDef(def);
+
 	state = *parentState;
 	astExpMacro(&state, TT_MACRO_DEFINE);
 

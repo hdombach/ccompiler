@@ -43,9 +43,10 @@ int main(int argc, char **argv) {
 		tokens = tokenize(fp, file);
 
 		//dlistPrint(&tokens, (DListPrintFunc) printToken);
-		//printrTokList(&tokens);
 
 		preprocessor(&tokens);
+
+		printrTokList(&tokens);
 
 		freeTokList(&tokens);
 	}

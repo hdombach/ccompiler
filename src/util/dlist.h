@@ -51,6 +51,8 @@ void dlistDecCap(DList *list);
  */
 DListErr dlistRem(DList *list, int index, DListFreeFunc);
 
+void dlistRemLast(DList *list, DListFreeFunc);
+
 /*
  * Removes range of elements
  */
