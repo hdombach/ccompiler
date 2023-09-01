@@ -16,13 +16,9 @@
 #include <libgen.h>
 
 FILE *_openDirectFile(ASTMacroIncl *include, Token *startTok) {
-	int filelength = strlen(startTok->filename) + strlen(include->name) + 2;
-	char *filename = malloc(sizeof(char) * filelength);
-	sprintf(filename, "%s/%s", dirname(startTok->filename), include->name);
-	FILE *result = fopen(filename, "r");
-	free(filename);
+	FILE *result = fopen(include->filename, "r");
 	if (!result) {
-		fprintf(stderr, "Can't open file %s", include->name);
+		fprintf(stderr, "Can't open file %s", include->filename);
 		return NULL;
 	}
 	return result;
@@ -34,18 +30,18 @@ static char *_libs = "/usr/include";
 FILE *_openLibraryFile(ASTMacroIncl *include) {
 	FILE *result = NULL;
 
-	int filenameLength = 256 + strlen(include->name);
+	int filenameLength = 256 + strlen(include->filename);
 	char *filename = malloc(sizeof(char) * filenameLength);
 	char *libs = _libs;
 
 	char *lib = strtok(libs, ":");
 	while (lib) {
-		int tempLength = (strlen(lib) + strlen(include->name) + 2) * sizeof(char);
+		int tempLength = (strlen(lib) + strlen(include->filename) + 2) * sizeof(char);
 		if (tempLength > filenameLength) {
 			filenameLength = tempLength;
 			filename = realloc(filename, tempLength);
 		}
-		sprintf(filename, "%s/%s", lib, include->name);
+		sprintf(filename, "%s/%s", lib, include->filename);
 		printf("Tyring to open file %s\n", filename);
 		result = fopen(filename, "r");
 		if (result) {
@@ -58,7 +54,7 @@ FILE *_openLibraryFile(ASTMacroIncl *include) {
 	
 	free(filename);
 	if (!result) {
-		fprintf(stderr, "Could not find library file %s\n", include->name);
+		fprintf(stderr, "Could not find library file %s\n", include->filename);
 	}
 	return result;
 }
@@ -84,7 +80,7 @@ void preprocessor(DList *tokens) {
 			macroDictInsert(&macros, strdup(def.name), def);
 			dlistRemMult(tokens, startIndex, res, (DListFreeFunc) freeToken);
 			state.tok = tokListGetm(tokens, startIndex);
-		} else if (parseASTMacroIncl(&include, &state)) {
+		} else if ((res = parseASTMacroIncl(&include, state.tok))) {
 			//printASTMacroIncl(&include);
 			FILE *fp;
 			if (include.type == AST_MIT_DIRECT) {
@@ -95,9 +91,9 @@ void preprocessor(DList *tokens) {
 			if (!fp) {
 				break;
 			}
-			TokList newTokens = tokenize(fp, include.name);
+			TokList newTokens = tokenize(fp, include.filename);
 			tokListRemLast(&newTokens); //remove EOF token
-			dlistRemMult(tokens, startIndex, state.tok - startTok, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, startIndex, res, (DListFreeFunc) freeToken);
 			dlistInsMult(tokens, &newTokens, startIndex);
 			state.tok = tokListGetm(tokens, startIndex);
 
@@ -127,6 +123,6 @@ void preprocessor(DList *tokens) {
 		}
 	}
 
-	printMacroDict(&macros);
+	//printMacroDict(&macros);
 	freeMacroDict(&macros);
 }

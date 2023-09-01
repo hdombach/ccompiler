@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
 		preprocessor(&tokens);
 
-		//printrTokList(&tokens);
+		printrTokList(&tokens);
 
 		freeTokList(&tokens);
 	}

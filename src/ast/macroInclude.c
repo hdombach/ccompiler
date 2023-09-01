@@ -2,75 +2,71 @@
 #include "astState.h"
 #include "../util/dstr.h"
 
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 void initASTMacroIncl(ASTMacroIncl *node) {
-	node->name = NULL;
+	node->filename = NULL;
 }
 
 void freeASTMacroIncl(ASTMacroIncl *node) {
-	if (node->name) {
-		free(node->name);
+	if (node->filename) {
+		free(node->filename);
 	}
 }
 
-int parseASTMacroIncl(ASTMacroIncl *node, ASTState *parentState) {
-	ASTState state;
-	Token *tempToken;
+int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 	DStr str;
-
-	if (!astValid(parentState)) {
-		return 0;
-	}
+	int n = 0;
 
 	initASTMacroIncl(node);
 
-	state = *parentState;
-	astExpMacro(&state, TT_MACRO_INCLUDE);
-	if (!astValid(&state)) {
+	if (astMacro(tok + n, TT_MACRO_INCLUDE)) {
+		n++;
+	} else if (astErrMsg) {
+		freeASTMacroIncl(node);
 		return 0;
 	}
 
-	tempToken = astPop(&state);
-	if (!astValid(&state)) {
-		astError(&state, "Expecting token following #include");
-	} else if (tempToken->type == TT_STR_CONSTANT) {
-		node->name = strdup(tempToken->contents);
+	if (astMacro(tok + n, TT_STR_CONSTANT)) {
+		int filelength = strlen(tok[n].filename) + strlen(tok[n].contents) + 2;
+		node->filename = malloc(sizeof(char) * filelength);
+		sprintf(node->filename, "%s/%s", dirname(tok[n].filename), tok[n].contents);
 		node->type = AST_MIT_DIRECT;
-	} else if (tempToken->type == TT_LESS) {
+		n++;
+	} else if (astMacro(tok + n, TT_LESS)) {
 		DStr currFile;
 
 		initDStr(&currFile);
 		while (1) {
-			tempToken = astPop(&state);
-			if (!astValid(&state) || tempToken->type == TT_GREATER) {
+			if (astMacro(tok + n, TT_GREATER)) {
+				n++;
 				break;
-			}
-
-			if (tempToken->type == TT_IDENTIFIER) {
-				dstrAppStr(&currFile, tempToken->contents);
-			} else if (tempToken->type == TT_PERIOD) {
+			} else if (astMacro(tok + n, TT_IDENTIFIER)) {
+				dstrAppStr(&currFile, tok[n].contents);
+			} else if (astMacro(tok + n, TT_PERIOD)) {
 				dstrApp(&currFile, '.');
-			} else if (tempToken->type == TT_DIV) {
+			} else if (astMacro(tok + n, TT_DIV)) {
 				dstrApp(&currFile, '/');
 			} else {
-				astError(&state, "Unexpected token in library file name.");
-				break;
+				astErrMsg = "Invalid file name";
+				freeDStr(&currFile);
+				freeASTMacroIncl(node);
+				return 0;
 			}
+			n++;
 		}
-		node->name = currFile.data;
+		node->filename = currFile.data;
 		node->type = AST_MIT_LIBRARY;
-
-		//Don'e need to free currFile since node now owns data
 	} else {
-		astError(&state, "Unexpected token following #include");
+		freeASTMacroIncl(node);
+		astErrMsg = "Invalid token following \%include";
+		return 0;
 	}
 
-	astMergeState(parentState, &state);
-
-	return 1;
+	return n;
 }
 
 void printASTMacroInclType(ASTMacroInclType type) {
@@ -90,7 +86,7 @@ void printASTMacroIncl(const ASTMacroIncl *node) {
 	printf("\"type\": \"Macro Include\"");
 
 	printf(", \"filename\": ");
-	printJsonStr(node->name);
+	printJsonStr(node->filename);
 
 	printf(", \"filetype\": \"");
 	printASTMacroInclType(node->type);

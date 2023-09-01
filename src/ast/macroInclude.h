@@ -8,13 +8,13 @@ typedef enum {
 
 typedef struct {
 	ASTMacroInclType type;
-	char *name;
+	char *filename;
 } ASTMacroIncl;
 
 void initASTMacroIncl(ASTMacroIncl *node);
 void freeASTMacroIncl(ASTMacroIncl *node);
 
-int parseASTMacroIncl(ASTMacroIncl *node, ASTState *state);
+int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok);
 
 void printASTMacroIncl(ASTMacroIncl const *node);
 void printASTMacroInclType(ASTMacroInclType type);
