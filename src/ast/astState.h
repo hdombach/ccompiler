@@ -27,6 +27,7 @@ void astMergeState(ASTState *main, ASTState const *b);
 Token *astReqMacro(ASTState *state, TokenType macroType);
 Token *astExpMacro(ASTState *state, TokenType macroType);
 Token *astPop(ASTState *state);
+Token *astPopMacro(ASTState *state);
 int astValid(ASTState *state);
 void astError(ASTState *state, char *msg);
 void fprintAstError(FILE *file, ASTState *state);

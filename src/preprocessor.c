@@ -1,6 +1,7 @@
 #include "preprocessor.h"
 #include "ast/astState.h"
 #include "ast/macroDef.h"
+#include "ast/macroIf.h"
 #include "ast/macroInclude.h"
 #include "ast/tokenParser.h"
 #include "token.h"
@@ -74,6 +75,7 @@ void preprocessor(DList *tokens) {
 	while (state.tok->type != TT_EOF) {
 		ASTMacroDef def;
 		ASTMacroIncl include;
+		ASTMacroIf macroIf;
 		startTok = state.tok;
 		startIndex = startTok - (Token *) dlistGetm(tokens, 0);
 
@@ -99,6 +101,18 @@ void preprocessor(DList *tokens) {
 			state.tok = tokListGetm(tokens, startIndex);
 
 			freeASTMacroIncl(&include);
+		} else if (parseASTMacroIf(&macroIf, &state, &macros)) {
+
+			ASTMacroIf *cur = &macroIf;
+			int curOffset = 0;
+			while (cur) {
+				dlistRemMult(tokens, startIndex + cur->start - curOffset, cur->end - cur->start, (DListFreeFunc) freeToken);
+				curOffset += cur->end - cur->start;
+				cur = cur->next;
+			}
+			state.tok = tokListGetm(tokens, startIndex);
+			astPop(&state);
+			freeASTMacroIf(&macroIf);
 		} else {
 			Token *tok = astPop(&state);
 			if (!tok) {

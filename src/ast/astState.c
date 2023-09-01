@@ -50,6 +50,19 @@ Token *astPop(ASTState *state) {
 	return state->tok++;
 }
 
+Token *astPopMacro(ASTState *state) {
+	if (state->status <= AST_STATUS_FAILED) {
+		return NULL;
+	}
+
+	Token *res = state->tok++;
+	if (res->isMacro) {
+		return res;
+	} else {
+		return NULL;
+	}
+}
+
 int astValid(ASTState *state) {
 	return state->status == AST_STATUS_NOMINAL;
 }
