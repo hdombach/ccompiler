@@ -95,34 +95,25 @@ int _parseParam(ASTMacroDef *def, Token *tok) {
 	return n;
 }
 
-void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
+int _parseReplList(ASTMacroDef *def, Token *tok) {
 	char *tempStr;
-	Token *tempTok;
-	ASTState state, subState;
+	int n = 0;
 
-	state = *parentState;
-
-	if (!astValid(&state)) {
-		return;
+	if (astErrMsg) {
+		return 0;
 	}
 
 
 	while (1) {
 		ASTMacroDefNode node;
 
-		subState = state;
-
-		tempTok = astPop(&subState);
-		if (!tempTok) break;
-		if (!tempTok->isMacro) subState.status = AST_STATUS_FAILED;
-
-		if (!astValid(&subState)) {
+		if (!tok[n].isMacro) {
 			break;
 		}
 
 		_initASTMacroDefNode(&node);
 		node.token = malloc(sizeof(Token));
-		tokenDup(tempTok, node.token);
+		tokenDup(tok + n, node.token);
 
 		if (node.token->type == TT_IDENTIFIER) {
 			for (int i = 0; i < def->paramNames.size; i++) {
@@ -134,9 +125,9 @@ void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
 		}
 
 		dlistApp(&def->nodes, &node);
-		astMergeState(&state, &subState);
+		n++;
 	}
-	astMergeState(parentState, &state);
+	return n;
 }
 
 int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
@@ -166,7 +157,11 @@ int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
 	} else if (astErrMsg) {
 		astError(&state, astErrMsg);
 	}
-	_parseReplList(def, &state);
+	if (astValid(&state) && (res = _parseReplList(def, state.tok))) {
+		state.tok += res;
+	} else if (astErrMsg) {
+		astError(&state, astErrMsg);
+	}
 
 	astMergeState(parentState, &state);
 	if (astValid(&state)) {
