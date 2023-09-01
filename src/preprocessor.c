@@ -98,7 +98,7 @@ void preprocessor(DList *tokens) {
 			state.tok = tokListGetm(tokens, startIndex);
 
 			freeASTMacroIncl(&include);
-		} else if (parseASTMacroIf(&macroIf, &state, &macros)) {
+		} else if ((res = parseASTMacroIf(&macroIf, state.tok, &macros))) {
 
 			ASTMacroIf *cur = &macroIf;
 			int curOffset = 0;

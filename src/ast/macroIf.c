@@ -5,6 +5,10 @@
 #include "astState.h"
 #include "../util/macroDict.h"
 
+void initASTMacroIf(ASTMacroIf *node) {
+	node->next = NULL;
+}
+
 void freeASTMacroIf(ASTMacroIf *node) {
 	if (node->next) {
 		freeASTMacroIf(node->next);
@@ -12,36 +16,35 @@ void freeASTMacroIf(ASTMacroIf *node) {
 	}
 }
 
-int parseASTMacroIf(ASTMacroIf *node, ASTState *parentState, MacroDict *macros) {
-	ASTState state;
-	Token *tok;
+int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 	char isTrue;
+	initASTMacroIf(node);
 	ASTMacroIf *last = node;
-	int i = 0;
+	int n = 0, resN = 0;
 
-	if (!astValid(parentState)) {
+	if (astErrMsg) {
 		return 0;
 	}
 
-	state = *parentState;
-
-	tok = astPopMacro(&state);
-	if (!tok) {
-		return 0;
-	} else if (tok->type == TT_MACRO_IF) {
+	if (astMacro(tok + n, TT_MACRO_IF)) {
 		fprintf(stderr, "Macro if is not implimented yet.\n");
-		//TODO
+		//TODO;
+		freeASTMacroIf(node);
 		return 0;
-	} else if (tok->type == TT_MACRO_IFDEF) {
-		last->start = i;
-		if ((tok = astExpMacro(&state, TT_IDENTIFIER))) {
-			isTrue = macroDictPresent(macros, tok->contents);
-			i += 2;
-			last->end = i;
+	} else if (astMacro(tok + n, TT_MACRO_IFDEF)) {
+		last->start = n;
+		n++;
+		if (astMacro(tok + n, TT_IDENTIFIER)) {
+			isTrue = macroDictPresent(macros, tok[n].contents);
+			n++;
+			last->end = n;
 		} else {
+			freeASTMacroIf(node);
 			return 0;
 		}
+		resN = n;
 	} else {
+		freeASTMacroIf(node);
 		return 0;
 	}
 
@@ -49,36 +52,36 @@ int parseASTMacroIf(ASTMacroIf *node, ASTState *parentState, MacroDict *macros) 
 		if (!isTrue) {
 			last->end++;
 		}
-		i++;
-		tok = astPop(&state);
-		if (!tok || tok->type == TT_EOF) {
-			astError(parentState, "Expecting #endif");
+		if (tok[n].type == TT_EOF) {
+			astErrMsg = "Expecting #endif";
+			freeASTMacroIf(node);
 			return 0;
-		}
-		if (tok->type == TT_MACRO_ELSE) {
+		} else if (tok[n].type == TT_MACRO_ELSE) {
 			if (isTrue) {
 				last->next = malloc(sizeof(ASTMacroIf));
 				last = last->next;
-				last->start = i-1;
-				last->end = i+1;
+				last->start = n;
+				last->end = n+2;
 			}
 			isTrue = !isTrue;
-		} else if (tok->type == TT_MACRO_ENDIF) {
+		} else if (tok[n].type == TT_MACRO_ENDIF) {
 			if (isTrue) {
 				last->next = malloc(sizeof(ASTMacroIf));
 				last = last->next;
-				last->start = i-1;
-				last->end = i+1;
+				last->start = n;
+				last->end = n+2;
 			}
 			break;
 		} else if (tok->type == TT_MACRO_ELIF) {
 			fprintf(stderr, "Macro elif is not implimented yet\n");
 			//TODO
+			freeASTMacroIf(node);
 			return 0;
 		}
+		n++;
 	}
 
-	return 1;
+	return resN;
 }
 
 void printASTMacroIf(const ASTMacroIf *node) {

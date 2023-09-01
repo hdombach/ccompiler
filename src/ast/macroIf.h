@@ -11,8 +11,9 @@ typedef struct _ASTMacroIf {
 	struct _ASTMacroIf *next;
 } ASTMacroIf;
 
+void initASTMacroIf(ASTMacroIf *node);
 void freeASTMacroIf(ASTMacroIf *node);
 
-int parseASTMacroIf(ASTMacroIf *node, ASTState *state, MacroDict *dict);
+int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *dict);
 
 void printASTMacroIf(ASTMacroIf const *node);
