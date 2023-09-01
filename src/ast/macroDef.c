@@ -42,7 +42,7 @@ void freeASTMacroDef(ASTMacroDef *def) {
 	freeDList(&def->nodes, (DListFreeFunc) _freeASTMacroDefNode);
 }
 
-int _parseParam(ASTMacroDef *def, Token *tok) {
+int _parseParam(ASTMacroDef *def, Token const *tok) {
 	char *tempStr;
 	int n = 0;
 
@@ -95,7 +95,7 @@ int _parseParam(ASTMacroDef *def, Token *tok) {
 	return n;
 }
 
-int _parseReplList(ASTMacroDef *def, Token *tok) {
+int _parseReplList(ASTMacroDef *def, Token const *tok) {
 	char *tempStr;
 	int n = 0;
 
@@ -130,46 +130,46 @@ int _parseReplList(ASTMacroDef *def, Token *tok) {
 	return n;
 }
 
-int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
-	ASTState state, subState;
-	Token *tempToken;
+int parseASTMacroDef(ASTMacroDef *def, Token const *tok) {
+	int n = 0, res;
 
-	if (!astValid(parentState)) {
+	if (astErrMsg) {
 		return 0;
 	}
 
 	initASTMacroDef(def);
 
-	state = *parentState;
-	astExpMacro(&state, TT_MACRO_DEFINE);
-
-	tempToken = astReqMacro(&state, TT_IDENTIFIER);
-	if (tempToken) {
-		def->name = strdup(tempToken->contents);
+	if (astMacro(tok + n, TT_MACRO_DEFINE)) {
+		n++;
 	} else {
 		freeASTMacroDef(def);
 		return 0;
 	}
 
-	int res;
-	if (astValid(&state) && (res = _parseParam(def, state.tok))) {
-		state.tok += res;
-	} else if (astErrMsg) {
-		astError(&state, astErrMsg);
-	}
-	if (astValid(&state) && (res = _parseReplList(def, state.tok))) {
-		state.tok += res;
-	} else if (astErrMsg) {
-		astError(&state, astErrMsg);
-	}
-
-	astMergeState(parentState, &state);
-	if (astValid(&state)) {
-		return 1;
+	if (astMacro(tok + n, TT_IDENTIFIER)) {
+		def->name = strdup(tok[n].contents);
+		n++;
 	} else {
+		astErrMsg = "Expected name after macro definition";
 		freeASTMacroDef(def);
 		return 0;
 	}
+
+	if ((res = _parseParam(def, tok + n))) {
+		n += res;
+	} else if (astErrMsg) {
+		freeASTMacroDef(def);
+		return 0;
+	}
+
+	if ((res = _parseReplList(def, tok + n))) {
+		n += res;
+	} else if (astErrMsg) {
+		freeASTMacroDef(def);
+		return 0;
+	}
+
+	return n;
 }
 
 void printASTMacroDefNode(ASTMacroDefNode const *node) {

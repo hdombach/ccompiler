@@ -67,6 +67,7 @@ void preprocessor(DList *tokens) {
 	MacroDict macros;
 	ASTState state;
 	int startIndex;
+	int res;
 	Token *startTok;
 	
 	initMacroDict(&macros);
@@ -79,9 +80,9 @@ void preprocessor(DList *tokens) {
 		startTok = state.tok;
 		startIndex = startTok - (Token *) dlistGetm(tokens, 0);
 
-		if (parseASTMacroDef(&def, &state)) {
+		if ((res = parseASTMacroDef(&def, state.tok))) {
 			macroDictInsert(&macros, strdup(def.name), def);
-			dlistRemMult(tokens, startIndex, state.tok - startTok, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, startIndex, res, (DListFreeFunc) freeToken);
 			state.tok = tokListGetm(tokens, startIndex);
 		} else if (parseASTMacroIncl(&include, &state)) {
 			//printASTMacroIncl(&include);

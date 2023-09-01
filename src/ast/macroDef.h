@@ -22,7 +22,7 @@ void initASTMacroDef(ASTMacroDef *def);
 void initASTMacroDefn(ASTMacroDef *def, char *name);
 void freeASTMacroDef(ASTMacroDef *def);
 
-int parseASTMacroDef(ASTMacroDef *def, ASTState *state);
+int parseASTMacroDef(ASTMacroDef *def, Token const *tok);
 
 void printASTMacroDefNode(ASTMacroDefNode const *node);
 void printASTMacroDef(ASTMacroDef const *def);
