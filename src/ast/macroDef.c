@@ -1,4 +1,5 @@
 #include <malloc/_malloc.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "macroDef.h"
@@ -41,47 +42,57 @@ void freeASTMacroDef(ASTMacroDef *def) {
 	freeDList(&def->nodes, (DListFreeFunc) _freeASTMacroDefNode);
 }
 
-void _parseParam(ASTMacroDef *def, ASTState *parentState) {
+int _parseParam(ASTMacroDef *def, Token *tok) {
 	char *tempStr;
-	Token *tempTok;
-	ASTState state, subState;
+	int n = 0;
 
-	if (astValid(&state)) {
-		return;
+	if (astErrMsg) {
+		return 0;
 	}
 
-	state = *parentState;
+	if (astMacro(tok + n, TT_O_PARAN)) {
+		n++;
+	} else {
+		return 0;
+	}
 
-	astExpMacro(&state, TT_O_PARAN);
-
-	tempTok = astReqMacro(&state, TT_IDENTIFIER);
-	if (tempTok) {
-		tempStr = strdup(tempTok->contents);
+	if (astMacro(tok + n, TT_IDENTIFIER)) {
+		tempStr = strdup(tok[n].contents);
 		dlistApp(&def->paramNames, &tempStr);
+		n++;
+	} else {
+		astErrMsg = "Expected param name";
+		return 0;
 	}
 
 	while (1) {
-		subState = state;
-		tempTok = astPop(&subState);
-		if (!tempTok) break;
-		if (!tempTok->isMacro) {
-			astError(&state, "Expected )");
+		int subN = n;
+		if (!tok[subN].isMacro) {
+			astErrMsg = "Expected )";
+			return 0;
 		}
-		if (tempTok->type != TT_COMMA) {
+		if (tok[subN].type != TT_COMMA) {
 			break;
 		}
+		subN++;
 
-		tempTok = astReqMacro(&subState, TT_IDENTIFIER);
-		if (!tempTok) break;
-		tempStr = strdup(tempTok->contents);
+		if (!astMacro(tok + subN, TT_IDENTIFIER)) {
+			astErrMsg = "Expected macro param name";
+			return 0;
+		}
+		tempStr = strdup(tok[subN].contents);
 		dlistApp(&def->paramNames, &tempStr);
+		subN++;
 
-		astMergeState(&state, &subState);
+		n = subN;
 	}
 
-	astReqMacro(&state, TT_C_PARAN);
+	if (!astMacro(tok + n, TT_C_PARAN)) {
+		return 0;
+	}
+	n++;
 
-	astMergeState(parentState, &state);
+	return n;
 }
 
 void _parseReplList(ASTMacroDef *def, ASTState *parentState) {
@@ -144,9 +155,17 @@ int parseASTMacroDef(ASTMacroDef *def, ASTState *parentState) {
 	tempToken = astReqMacro(&state, TT_IDENTIFIER);
 	if (tempToken) {
 		def->name = strdup(tempToken->contents);
+	} else {
+		freeASTMacroDef(def);
+		return 0;
 	}
 
-	_parseParam(def, &state);
+	int res;
+	if (astValid(&state) && (res = _parseParam(def, state.tok))) {
+		state.tok += res;
+	} else if (astErrMsg) {
+		astError(&state, astErrMsg);
+	}
 	_parseReplList(def, &state);
 
 	astMergeState(parentState, &state);

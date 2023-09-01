@@ -126,6 +126,6 @@ void preprocessor(DList *tokens) {
 		}
 	}
 
-	//printMacroDict(&macros);
+	printMacroDict(&macros);
 	freeMacroDict(&macros);
 }

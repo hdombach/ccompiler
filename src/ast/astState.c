@@ -18,6 +18,10 @@ void astMergeState(ASTState *main, const ASTState *b) {
 	}
 }
 
+int astMacro(Token *tok, TokenType type) {
+	return tok->isMacro && tok->type == type;
+}
+
 Token *astReqMacro(ASTState *state, TokenType macroType) {
 	if (state->status <= AST_STATUS_FAILED) {
 		return NULL;

@@ -13,7 +13,9 @@ enum {
 	AST_STATE_MSG_S = 256 
 };
 
+static char astErrMsgBuf[AST_STATE_MSG_S];
 static char ASTStateMsg[AST_STATE_MSG_S];
+static char *astErrMsg = NULL;
 
 typedef struct {
 	Token *tok;
@@ -24,6 +26,7 @@ typedef struct {
 void initASTState(ASTState *state, Token *toks);
 void astMergeState(ASTState *main, ASTState const *b);
 
+int astMacro(Token *tok, TokenType type);
 Token *astReqMacro(ASTState *state, TokenType macroType);
 Token *astExpMacro(ASTState *state, TokenType macroType);
 Token *astPop(ASTState *state);
