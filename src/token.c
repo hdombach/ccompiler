@@ -180,6 +180,9 @@ int printrToken(Token *token) {
 			res += printf("%s", tokTypeStr(token->type));
 			break;
 	}
+	if (token->type == TT_MACRO_ENDIF) {
+		res += printf(" line: %d", token->posLine);
+	}
 
 	return res;
 }

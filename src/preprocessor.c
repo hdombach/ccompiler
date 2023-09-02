@@ -3,6 +3,7 @@
 #include "ast/macroDef.h"
 #include "ast/macroIf.h"
 #include "ast/macroInclude.h"
+#include "ast/macroUndef.h"
 #include "ast/tokenParser.h"
 #include "token.h"
 #include "tokenizer.h"
@@ -62,42 +63,44 @@ FILE *_openLibraryFile(ASTMacroIncl *include) {
 void preprocessor(DList *tokens) {
 	MacroDict macros;
 	int res, n = 0;
-	Token *startTok, *tok;
+	Token *tok;
 	
 	initMacroDict(&macros);
 
 	tok = (Token *) dlistGetm(tokens, 0);
 	while (tok[n].type != TT_EOF) {
-		ASTMacroDef def;
-		ASTMacroIncl include;
-		ASTMacroIf macroIf;
-		startTok = tok;
+		union {
+			ASTMacroDef astDef;
+			ASTMacroIncl astIncl;
+			ASTMacroIf astIf;
+			ASTMacroUndef astUndef;
+		} u;
 
-		if ((res = parseASTMacroDef(&def, tok + n))) {
-			macroDictInsert(&macros, strdup(def.name), def);
+		if ((res = parseASTMacroDef(&u.astDef, tok + n))) {
+			macroDictInsert(&macros, strdup(u.astDef.name), u.astDef);
 			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
 			tok = (Token *) dlistGetm(tokens, 0);
-		} else if ((res = parseASTMacroIncl(&include, tok + n))) {
+		} else if ((res = parseASTMacroIncl(&u.astIncl, tok + n))) {
 			//printASTMacroIncl(&include);
 			FILE *fp;
-			if (include.type == AST_MIT_DIRECT) {
-				fp = _openDirectFile(&include, startTok);
-			} else if (include.type == AST_MIT_LIBRARY) {
-				fp = _openLibraryFile(&include);
+			if (u.astIncl.type == AST_MIT_DIRECT) {
+				fp = _openDirectFile(&u.astIncl, tok);
+			} else if (u.astIncl.type == AST_MIT_LIBRARY) {
+				fp = _openLibraryFile(&u.astIncl);
 			}
 			if (!fp) {
 				break;
 			}
-			TokList newTokens = tokenize(fp, include.filename);
+			TokList newTokens = tokenize(fp, u.astIncl.filename);
 			tokListRemLast(&newTokens); //remove EOF token
 			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
 			dlistInsMult(tokens, &newTokens, n);
 			tok = (Token *) dlistGetm(tokens, 0);
 
-			freeASTMacroIncl(&include);
-		} else if (parseASTMacroIf(&macroIf, tok + n, &macros)) {
+			freeASTMacroIncl(&u.astIncl);
+		} else if (parseASTMacroIf(&u.astIf, tok + n, &macros)) {
 
-			ASTMacroIf *cur = &macroIf;
+			ASTMacroIf *cur = &u.astIf;
 			int curOffset = 0;
 			while (cur) {
 				dlistRemMult(tokens, n + cur->start - curOffset, cur->end - cur->start, (DListFreeFunc) freeToken);
@@ -105,7 +108,12 @@ void preprocessor(DList *tokens) {
 				cur = cur->next;
 			}
 			tok = (Token *) dlistGetm(tokens, 0);
-			freeASTMacroIf(&macroIf);
+			freeASTMacroIf(&u.astIf);
+		} else if ((res = parseASTMacroUndef(&u.astUndef, tok + n))) {
+			macroDictDelete(&macros, u.astUndef.name);
+			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			tok = (Token *) dlistGetm(tokens, 0);
+			freeASTMacroUndef(&u.astUndef);
 		} else {
 			n++;
 		}
