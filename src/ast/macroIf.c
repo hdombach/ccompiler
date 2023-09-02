@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "macroIf.h"
-#include "astState.h"
+#include "astUtil.h"
 #include "../util/macroDict.h"
 
 void initASTMacroIf(ASTMacroIf *node) {

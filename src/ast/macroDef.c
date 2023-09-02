@@ -8,7 +8,7 @@
 #include "tokenParser.h"
 #include "../util/dstr.h"
 #include "../util/util.h"
-#include "astState.h"
+#include "astUtil.h"
 
 void _initASTMacroDefNode(ASTMacroDefNode *node) {
 	node->token = NULL;

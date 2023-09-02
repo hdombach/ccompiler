@@ -2,7 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
-#include "astState.h"
+#include "astUtil.h"
 
 typedef struct _MacroDefNode {
 	Token *token;

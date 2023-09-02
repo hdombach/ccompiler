@@ -2,7 +2,7 @@
 #include <sys/types.h>
 
 #include "argParser.h"
-#include "ast/astState.h"
+#include "ast/astUtil.h"
 #include "ast/macroDef.h"
 #include "ast/tokenParser.h"
 #include "preprocessor.h"

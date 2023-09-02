@@ -1,6 +1,6 @@
 #pragma once
 
-#include "astState.h"
+#include "astUtil.h"
 typedef enum {
 	AST_MIT_DIRECT,
 	AST_MIT_LIBRARY,

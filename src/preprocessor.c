@@ -1,5 +1,5 @@
 #include "preprocessor.h"
-#include "ast/astState.h"
+#include "ast/astUtil.h"
 #include "ast/macroDef.h"
 #include "ast/macroIf.h"
 #include "ast/macroInclude.h"
@@ -61,26 +61,23 @@ FILE *_openLibraryFile(ASTMacroIncl *include) {
 
 void preprocessor(DList *tokens) {
 	MacroDict macros;
-	ASTState state;
-	int startIndex;
-	int res;
-	Token *startTok;
+	int res, n = 0;
+	Token *startTok, *tok;
 	
 	initMacroDict(&macros);
 
-	initASTState(&state, (Token *) dlistGetm(tokens, 0));
-	while (state.tok->type != TT_EOF) {
+	tok = (Token *) dlistGetm(tokens, 0);
+	while (tok[n].type != TT_EOF) {
 		ASTMacroDef def;
 		ASTMacroIncl include;
 		ASTMacroIf macroIf;
-		startTok = state.tok;
-		startIndex = startTok - (Token *) dlistGetm(tokens, 0);
+		startTok = tok;
 
-		if ((res = parseASTMacroDef(&def, state.tok))) {
+		if ((res = parseASTMacroDef(&def, tok + n))) {
 			macroDictInsert(&macros, strdup(def.name), def);
-			dlistRemMult(tokens, startIndex, res, (DListFreeFunc) freeToken);
-			state.tok = tokListGetm(tokens, startIndex);
-		} else if ((res = parseASTMacroIncl(&include, state.tok))) {
+			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			tok = (Token *) dlistGetm(tokens, 0);
+		} else if ((res = parseASTMacroIncl(&include, tok + n))) {
 			//printASTMacroIncl(&include);
 			FILE *fp;
 			if (include.type == AST_MIT_DIRECT) {
@@ -93,32 +90,29 @@ void preprocessor(DList *tokens) {
 			}
 			TokList newTokens = tokenize(fp, include.filename);
 			tokListRemLast(&newTokens); //remove EOF token
-			dlistRemMult(tokens, startIndex, res, (DListFreeFunc) freeToken);
-			dlistInsMult(tokens, &newTokens, startIndex);
-			state.tok = tokListGetm(tokens, startIndex);
+			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistInsMult(tokens, &newTokens, n);
+			tok = (Token *) dlistGetm(tokens, 0);
 
 			freeASTMacroIncl(&include);
-		} else if ((res = parseASTMacroIf(&macroIf, state.tok, &macros))) {
+		} else if (parseASTMacroIf(&macroIf, tok + n, &macros)) {
 
 			ASTMacroIf *cur = &macroIf;
 			int curOffset = 0;
 			while (cur) {
-				dlistRemMult(tokens, startIndex + cur->start - curOffset, cur->end - cur->start, (DListFreeFunc) freeToken);
+				dlistRemMult(tokens, n + cur->start - curOffset, cur->end - cur->start, (DListFreeFunc) freeToken);
 				curOffset += cur->end - cur->start;
 				cur = cur->next;
 			}
-			state.tok = tokListGetm(tokens, startIndex);
-			astPop(&state);
+			tok = (Token *) dlistGetm(tokens, 0);
 			freeASTMacroIf(&macroIf);
 		} else {
-			Token *tok = astPop(&state);
-			if (!tok) {
-			} else if (tok->type == TT_MACRO_IFDEF) {
-			}
+			n++;
 		}
 
-		if (state.status == AST_STATUS_ERROR) {
-			fprintAstError(stderr, &state);
+		if (astErrMsg) {
+			fprintf(stderr, "%s", astErrMsg);
+			freeMacroDict(&macros);
 			exit(1);
 		}
 	}
