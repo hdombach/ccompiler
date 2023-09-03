@@ -78,6 +78,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 			n++;
 		} else {
 			astErrMsg = "Expected ( following macro name";
+			freeDList(&ranges, NULL);
 			return 0;
 		}
 
@@ -85,6 +86,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 		while (1) {
 			if (tok[n].type == TT_EOF) {
 				astErrMsg = "Expecting ) at end of macro";
+				freeDList(&ranges, NULL);
 				return 0;
 			} else if (tok[n].type == TT_COMMA && curDepth == 0) {
 				curRange.end = tok + n;
@@ -109,6 +111,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 					ranges.size,
 					macro->paramNames.size);
 			astErrMsg = astErrMsgBuf;
+			freeDList(&ranges, NULL);
 			return 0;
 		}
 	}
@@ -119,14 +122,22 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 		if (node->paramIndex >= 0) {
 			curRange = * (_TokenRange *) dlistGetm(&ranges, node->paramIndex);
 			for (Token const *t = curRange.start; t != curRange.end; t++) {
-				Token *new = dupToken(t);
-				dlistApp(insert, new);
+				Token new;
+				cpToken(&new, t);
+				new.posLine = tok->posLine;
+				dlistApp(insert, &new);
 			}
 		} else {
-			dlistApp(insert, dupToken(node->token));
+			Token new;
+			cpToken(&new, node->token);
+			new.posLine = tok->posLine;
+			dlistApp(insert, &new);
 		}
 	}
 
+	if (macro->paramNames.size > 0) {
+		freeDList(&ranges, NULL);
+	}
 	return n;
 }
 
@@ -187,7 +198,6 @@ void preprocessor(DList *tokens) {
 		} else if (tok[n].type == TT_IDENTIFIER && macroDictPresent(&macros, tok[n].contents)) {
 			TokList insert;
 			initTokList(&insert);
-			printf("about to examnd macro %s\n", macroDictGetm(&macros, tok[n].contents)->name);
 			res = _expandMacro(&insert, macroDictGetm(&macros, tok[n].contents), tok + n);
 			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
 			dlistInsMult(tokens, &insert, n);

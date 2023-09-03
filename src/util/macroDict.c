@@ -140,6 +140,7 @@ void macroDictDelete(MacroDict *macroDict, MacroDictKey key) {
 			temp = *curNode;
 			*curNode = temp->next;
 			freeMacroDictNode(temp);
+			free(temp);
 			return;
 		} else {
 			 curNode = &(*curNode)->next;
