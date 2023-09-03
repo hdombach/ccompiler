@@ -166,7 +166,9 @@ void initMacroToken(Token *token, const struct _TokenzState *state);
 void initEOFToken(Token *token, const struct _TokenzState *state);
 void initNewlineToken(Token *token, const struct _TokenzState *state);
 
-void tokenDup(Token const *token, Token *dest);
+void cpToken(Token *dest, Token const *tok);
+Token *dupToken(Token const *token);
+
 /*
  * Get a numeric value for if a token is a bracket and increases
  * or decreases depth

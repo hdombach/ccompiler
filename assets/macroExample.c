@@ -21,3 +21,10 @@ void func9();
 #else
 void func13();
 #endif
+
+#define MACRO_DEF_SIZE 256
+#define MACRO_MAX(X, Y) ((X) > (Y) ? (X) : (Y))
+
+static int MacroDefSize = MACRO_DEF_SIZE;
+static int MacroDefSize2 = MACRO_DEF_SIZE * 2;
+int MacroDefSizeMax = MACRO_MAX(MACRO_DEF_SIZE + (20 * 30), MACRO_DEF_SIZE);

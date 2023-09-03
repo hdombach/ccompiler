@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 enum {
-	AST_STATE_MSG_S = 256 
+	AST_ERR_MSG_S = 256 
 };
 
-static char astErrMsgBuf[AST_STATE_MSG_S];
+static char astErrMsgBuf[AST_ERR_MSG_S];
 static char *astErrMsg = NULL;
 
 

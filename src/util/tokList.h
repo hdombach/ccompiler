@@ -52,16 +52,17 @@ static inline void printrTokList(TokList *list) {
 	Token *tokEnd = tokListGetm(list, list->size - 1);
 	char const *content;
 	for (;tok != tokEnd; tok++) {
-		if (curLine != tok->posLine) {
+		if (curLine < tok->posLine) {
 			curLine = tok->posLine;
 			printf("\n");
 			for (curCol = 1; curCol < tok->posColumn; curCol++) {
 				printf("\t");
 			}
-		} else {
-			while (curCol < tok->posColumn) {
+			curCol = tok->posColumn;
+		} else  {
+			if (curCol < tok->posColumn) {
 				printf(" ");
-				curCol++;
+				curCol = tok->posColumn;
 			}
 		}
 

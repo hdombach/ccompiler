@@ -119,21 +119,42 @@ void initNewlineToken(Token *token, const struct _TokenzState *state) {
 	token->type = TT_NEWLINE;
 }
 
-void tokenDup(const Token *token, Token *dest) {
-	dest->type = token->type;
-	if (token->contents) {
-		dest->contents = strdup(token->contents);
+void cpToken(Token *dest, Token const *tok) {
+	dest->type = tok->type;
+	if (tok->contents) {
+		dest->contents = strdup(tok->contents);
 	} else {
 		dest->contents = NULL;
 	}
-	dest->posLine = token->posLine;
-	dest->posColumn = token->posColumn;
-	if (token->filename) {
-		dest->filename = strdup(token->filename);
+	dest->posLine = tok->posLine;
+	dest->posColumn = tok->posColumn;
+	if (tok->filename) {
+		dest->filename = strdup(tok->filename);
 	} else {
 		dest->filename = NULL;
 	}
-	dest->isMacro = token->isMacro;
+	dest->isMacro = tok->isMacro;
+}
+
+Token *dupToken(Token const *token) {
+	Token *result = malloc(sizeof(Token));
+	cpToken(result, token);
+	return result;
+}
+
+int tokenBracketDepth(TokenType type) {
+	switch (type) {
+		case TT_O_PARAN:
+		case TT_O_BRACE:
+		case TT_O_CURLY:
+			return 1;
+		case TT_C_PARAN:
+		case TT_C_BRACE:
+		case TT_C_CURLY:
+			return -1;
+		default:
+			return 0;
+	}
 }
 
 void printToken(Token *token) {

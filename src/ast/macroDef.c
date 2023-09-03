@@ -113,7 +113,7 @@ int _parseReplList(ASTMacroDef *def, Token const *tok) {
 
 		_initASTMacroDefNode(&node);
 		node.token = malloc(sizeof(Token));
-		tokenDup(tok + n, node.token);
+		cpToken(node.token, tok + n);
 
 		if (node.token->type == TT_IDENTIFIER) {
 			for (int i = 0; i < def->paramNames.size; i++) {

@@ -60,6 +60,76 @@ FILE *_openLibraryFile(ASTMacroIncl *include) {
 	return result;
 }
 
+typedef struct _TokenRange {
+	Token const *start;
+	Token const *end;
+} _TokenRange;
+
+
+int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
+	int n = 1, curDepth = 0;
+	DList ranges;
+	_TokenRange curRange;
+
+	if (macro->paramNames.size > 0) {
+		initDList(&ranges, sizeof(_TokenRange));
+
+		if (tok[n].type == TT_O_PARAN) {
+			n++;
+		} else {
+			astErrMsg = "Expected ( following macro name";
+			return 0;
+		}
+
+		curRange.start = tok + n;
+		while (1) {
+			if (tok[n].type == TT_EOF) {
+				astErrMsg = "Expecting ) at end of macro";
+				return 0;
+			} else if (tok[n].type == TT_COMMA && curDepth == 0) {
+				curRange.end = tok + n;
+				dlistApp(&ranges, &curRange);
+				curRange.start = tok + n + 1;
+			} else if (tok[n].type == TT_C_PARAN && curDepth == 0) {
+				curRange.end = tok + n;
+				dlistApp(&ranges, &curRange);
+				n++;
+				break;
+			} else {
+				curDepth += tokenBracketDepth(tok[n].type);
+			}
+			n++;
+		}
+
+		if (ranges.size != macro->paramNames.size) {
+			snprintf(
+					astErrMsgBuf,
+					AST_ERR_MSG_S,
+					"Incorrect number of paran names (%d != %d)",
+					ranges.size,
+					macro->paramNames.size);
+			astErrMsg = astErrMsgBuf;
+			return 0;
+		}
+	}
+
+	for (int i = 0; i < macro->nodes.size; i++) {
+		ASTMacroDefNode *node;
+		node = dlistGetm(&macro->nodes, i);
+		if (node->paramIndex >= 0) {
+			curRange = * (_TokenRange *) dlistGetm(&ranges, node->paramIndex);
+			for (Token const *t = curRange.start; t != curRange.end; t++) {
+				Token *new = dupToken(t);
+				dlistApp(insert, new);
+			}
+		} else {
+			dlistApp(insert, dupToken(node->token));
+		}
+	}
+
+	return n;
+}
+
 void preprocessor(DList *tokens) {
 	MacroDict macros;
 	int res, n = 0;
@@ -114,6 +184,14 @@ void preprocessor(DList *tokens) {
 			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
 			tok = (Token *) dlistGetm(tokens, 0);
 			freeASTMacroUndef(&u.astUndef);
+		} else if (tok[n].type == TT_IDENTIFIER && macroDictPresent(&macros, tok[n].contents)) {
+			TokList insert;
+			initTokList(&insert);
+			printf("about to examnd macro %s\n", macroDictGetm(&macros, tok[n].contents)->name);
+			res = _expandMacro(&insert, macroDictGetm(&macros, tok[n].contents), tok + n);
+			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistInsMult(tokens, &insert, n);
+			tok = tokListGetm(tokens, 0);
 		} else {
 			n++;
 		}
