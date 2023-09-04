@@ -45,6 +45,11 @@ int macroDictInsert(
 		MacroDictMKey key,
 		MacroDictValue value);
 
+/*
+ * Inserts the macros that are defined by compiler
+ */
+void macroDictInsertDefault(MacroDict *macros);
+
 int macroDictPresent(MacroDict const *macroDict, MacroDictKey key);
 
 MacroDictValue const *macroDictGet(MacroDict const *macroDict, MacroDictKey key);

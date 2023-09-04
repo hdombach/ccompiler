@@ -6,6 +6,11 @@ const int globalVar2 = 5;
 #include "includeExample.h"
 void func8();
 
+int line1 = __LINE__;
+int line2 = __LINE__;
+int line3 = __LINE__;
+
+
 #ifndef MACRO_DEF_TEST_1
 #ifdef MACRO_DEF_TEST_2
 void func11();
@@ -28,3 +33,9 @@ void func13();
 static int MacroDefSize = MACRO_DEF_SIZE;
 static int MacroDefSize2 = MACRO_DEF_SIZE * 2;
 int MacroDefSizeMax = MACRO_MAX(MACRO_DEF_SIZE + (20 * 30), MACRO_DEF_SIZE);
+
+char *thing = "Hello world";
+char *filename = __FILE__;
+
+char *date = __DATE__;
+char *time = __TIME__;

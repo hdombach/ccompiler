@@ -135,6 +135,10 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 		}
 	}
 
+	if (macro->insertFunc) {
+		macro->insertFunc(insert, tok);
+	}
+
 	if (macro->paramNames.size > 0) {
 		freeDList(&ranges, NULL);
 	}
@@ -147,6 +151,7 @@ void preprocessor(DList *tokens) {
 	Token *tok;
 	
 	initMacroDict(&macros);
+	macroDictInsertDefault(&macros);
 
 	tok = (Token *) dlistGetm(tokens, 0);
 	while (tok[n].type != TT_EOF) {

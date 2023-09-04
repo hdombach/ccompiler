@@ -24,12 +24,25 @@ void _freeASTMacroDefNode(ASTMacroDefNode *node) {
 
 void initASTMacroDef(ASTMacroDef *def) {
 	def->name = NULL;
+	def->insertFunc = NULL;
 	initDList(&def->paramNames, sizeof(char *));
 	initDList(&def->nodes, sizeof(ASTMacroDefNode));
 }
 
 void initASTMacroDefn(ASTMacroDef *def, char *name) {
 	def->name = name;
+	def->insertFunc = NULL;
+	initDList(&def->paramNames, sizeof(char *));
+	initDList(&def->nodes, sizeof(ASTMacroDefNode));
+}
+
+void initASTMacroDefDefault(
+		ASTMacroDef *def,
+		char *name,
+		ASTMacroDefInsert insertFunc)
+{
+	def->name = name;
+	def->insertFunc = insertFunc;
 	initDList(&def->paramNames, sizeof(char *));
 	initDList(&def->nodes, sizeof(ASTMacroDefNode));
 }

@@ -2,10 +2,14 @@
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
+#include <limits.h>
+#include <math.h>
+#include <time.h>
 
 #include "dstr.h"
 #include "hash.h"
 #include "macroDict.h"
+#include "tokList.h"
 
 const int MACRO_DICT_INIT_SIZE = 16;
 
@@ -81,6 +85,100 @@ int macroDictInsert(
 	*curNode = malloc(sizeof(MacroDictNode));
 	initMacroDictNode(*curNode, key, value);
 	return 1;
+}
+
+void _insertFile(TokList *list, Token const *tok) {
+	Token new;
+	cpToken(&new, tok);
+	new.type = TT_STR_CONSTANT;
+	new.contents = realloc(new.contents, PATH_MAX);
+	realpath(new.filename, new.contents);
+
+	tokListApp(list, &new);
+}
+
+void _insertLine(TokList *list, Token const *tok) {
+	Token new;
+	cpToken(&new, tok);
+	new.type = TT_INT_CONSTANT;
+	int strLength = log10(tok->posLine) + 2;
+	new.contents = malloc(strLength * sizeof(char));
+	snprintf(new.contents, strLength, "%d", new.posLine);
+
+	tokListApp(list, &new);
+}
+
+void _insertDate(TokList *list, Token const *tok) {
+	Token new;
+	cpToken(&new, tok);
+	new.type = TT_STR_CONSTANT;
+	int strLength = strlen("mmm dd yyyy") + 1;
+	new.contents = malloc(strLength * sizeof(char));
+
+	time_t curTime = time(NULL);
+	struct tm *curLoc = localtime(&curTime);
+
+	char *months[12] = {
+		"Jan",
+		"Feb",
+		"Mar",
+		"Apr",
+		"May",
+		"Jun",
+		"Jul",
+		"Aug",
+		"Sep",
+		"Oct",
+		"Nov",
+		"Dec"
+	};
+
+	snprintf(
+			new.contents,
+			strLength,
+			"%s %2d %4d",
+			months[curLoc->tm_mon],
+			curLoc->tm_mday,
+			curLoc->tm_year + 1900);
+
+	tokListApp(list, &new);
+}
+
+void _insertTime(TokList *list, Token const *tok) {
+	Token new;
+	cpToken(&new, tok);
+	new.type = TT_STR_CONSTANT;
+	int strLength = strlen("hh:mm:ss") + 1;
+	new.contents = malloc(strLength * sizeof(char));
+
+	time_t curTime = time(NULL);
+	struct tm *curLoc = localtime(&curTime);
+
+	snprintf(
+			new.contents,
+			strLength,
+			"%02d:%02d:%02d",
+			curLoc->tm_hour,
+			curLoc->tm_min,
+			curLoc->tm_sec);
+
+	tokListApp(list, &new);
+}
+
+void macroDictInsertDefault(MacroDict *macros) {
+	ASTMacroDef macro;
+
+	initASTMacroDefDefault(&macro, strdup("__FILE__"), _insertFile);
+	macroDictInsert(macros, strdup("__FILE__"), macro);
+
+	initASTMacroDefDefault(&macro, strdup("__LINE__"), _insertLine);
+	macroDictInsert(macros, strdup("__LINE__"), macro);
+
+	initASTMacroDefDefault(&macro, strdup("__DATE__"), _insertDate);
+	macroDictInsert(macros, strdup("__DATE__"), macro);
+
+	initASTMacroDefDefault(&macro, strdup("__TIME__"), _insertTime);
+	macroDictInsert(macros, strdup("__TIME__"), macro);
 }
 
 int macroDictPresent(const MacroDict *macroDict, MacroDictKey key) {
