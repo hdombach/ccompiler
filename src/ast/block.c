@@ -19,6 +19,11 @@ int parseASTBlock(ASTBlock *node, const Token *tok) {
 		return 0;
 	}
 
+	if (tok[n].type != TT_O_CURLY) {
+		return 0;
+	}
+	n++;
+
 	initASTBlock(node);
 	while (!astErrMsg) {
 		if ((res = parseASTStm(&stm, tok + n))) {
@@ -28,6 +33,13 @@ int parseASTBlock(ASTBlock *node, const Token *tok) {
 			break;
 		}
 	}
+
+	if (tok[n].type != TT_C_CURLY) {
+		freeASTBlock(node);
+		return 0;
+	}
+	n++;
+
 
 	return n;
 }

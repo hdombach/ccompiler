@@ -29,6 +29,7 @@ int parseASTStm(ASTStm *node, const Token *tok) {
 			freeASTExp(&node->c.exp);
 			return 0;
 		}
+		n++;
 	}
 	return n;
 }
