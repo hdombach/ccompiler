@@ -21,7 +21,7 @@ typedef enum {
 typedef void (*DListFreeFunc)(void*);
 typedef int (*DListCmpFunc)(void const*, void const*);
 typedef void (*DListCpFunc)(void *, void const*);
-typedef void (*DListPrintFunc)(void const*);
+typedef int (*DListPrintFunc)(void const*);
 
 void initDList(DList *list, size_t elementSize);
 void freeDList(DList *list, DListFreeFunc freeFunc);
@@ -77,4 +77,4 @@ void dlistRemAll(DList *list, DListFreeFunc);
  */
 int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc);
 
-void dlistPrint(const DList *list, DListPrintFunc printFunc);
+int printDList(const DList *list, DListPrintFunc printFunc);

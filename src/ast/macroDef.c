@@ -185,34 +185,39 @@ int parseASTMacroDef(ASTMacroDef *def, Token const *tok) {
 	return n;
 }
 
-void printASTMacroDefNode(ASTMacroDefNode const *node) {
+int printASTMacroDefNode(ASTMacroDefNode const *node) {
+	int n = 0;
 	if (node->paramIndex >= 0) {
-		printf("{");
+		n += printf("{");
 
-		printf("\"paramIndex\": %d", node->paramIndex);
+		n += printf("\"paramIndex\": %d", node->paramIndex);
 
-		printf(", \"token\": ");
-		printToken(node->token);
+		n += printf(", \"token\": ");
+		n += printToken(node->token);
 
-		printf("}");
+		n += printf("}");
 	} else {
-		printToken(node->token);
+		n += printToken(node->token);
 	}
+
+	return n;
 }
 
-void printASTMacroDef(ASTMacroDef const *def) {
-	printf("{");
+int printASTMacroDef(ASTMacroDef const *def) {
+	int n = 0;
+	n += printf("{");
 
-	printf("\"type\": \"Macro Definition\"");
+	n += printf("\"type\": \"Macro Definition\"");
 
-	printf(", \"name\": ");
-	printJsonStr(def->name);
+	n += printf(", \"name\": ");
+	n += printJsonStr(def->name);
 
-	printf(", \"params\": ");
-	dlistPrint(&def->paramNames, (DListPrintFunc) printJsonStrp);
+	n += printf(", \"params\": ");
+	n += printDList(&def->paramNames, (DListPrintFunc) printJsonStrp);
 
-	printf(", \"content\": ");
-	dlistPrint(&def->nodes, (DListPrintFunc) printASTMacroDefNode);
+	n += printf(", \"content\": ");
+	n += printDList(&def->nodes, (DListPrintFunc) printASTMacroDefNode);
 
-	printf("}");
+	n += printf("}");
+	return n;
 }

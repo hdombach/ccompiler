@@ -26,7 +26,7 @@ void freeToken(Token *token) {
 
 void initNumbToken(Token *token, const TokenzState *state) {
 	initToken(token);
-	token->type = TT_INT_CONSTANT;
+	token->type = TT_NUMB_CONSTANT;
 	token->contents = strdup(state->curWord.data);
 	token->posColumn = state->startColumn;
 	token->posLine = state->startLine;
@@ -157,22 +157,24 @@ int tokenBracketDepth(TokenType type) {
 	}
 }
 
-void printToken(Token *token) {
-	printf("{\"type\": \"%s\"", tokTypeStr(token->type));
+int printToken(Token *token) {
+	int n = 0;
+	n += printf("{\"type\": \"%s\"", tokTypeStr(token->type));
 	if (token->contents) {
-		printf(", \"contents\": ");
-		printJsonStr(token->contents);
+		n += printf(", \"contents\": ");
+		n += printJsonStr(token->contents);
 	}
 
 	if (token->isMacro) {
-		printf(", \"isMacro\": \"true\"");
+		n += printf(", \"isMacro\": \"true\"");
 	}
 
-	printf(", \"position\": \"");
+	n += printf(", \"position\": \"");
 	if (token->filename) {
-		printf("%s:", token->filename);
+		n += printf("%s:", token->filename);
 	}
-	printf("%d:%d\"}", token->posLine, token->posColumn);
+	n += printf("%d:%d\"}", token->posLine, token->posColumn);
+	return n;
 }
 
 int printrToken(Token *token) {
@@ -182,7 +184,7 @@ int printrToken(Token *token) {
 		case TT_IDENTIFIER:
 			res += printf("%s", token->contents);
 			break;
-		case TT_INT_CONSTANT:
+		case TT_NUMB_CONSTANT:
 			res += printf("%s", token->contents);
 			break;
 		case TT_CHAR_CONSTANT:
@@ -211,7 +213,7 @@ int printrToken(Token *token) {
 const char * TT_STRS[] = {
 	"UNKNOWN",
 	"Identifier",
-	"Int Constant",
+	"Number Constant",
 	"Char Constant",
 	"String Constant",
 	"#if",

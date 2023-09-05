@@ -35,8 +35,8 @@ int _parseArg(int argc, char **argv, Args *args) {
 	}
 }
 
-void _printStr(char **str) {
-	printf("%s", *str);
+int _printStr(char **str) {
+	return printf("%s", *str);
 }
 
 void initArgs(Args *args) {
@@ -67,10 +67,12 @@ int parseArgs(int argc, char **argv, Args *args) {
 	return 1;
 }
 
-void argsPrint(const Args *args) {
-	printf("{");
-	printf("\"help\": %d", args->help);
-	printf(", \"files\": ");
-	dlistPrint(&args->files, (DListPrintFunc) _printStr);
-	printf("}");
+int argsPrint(const Args *args) {
+	int n = 0;
+	n += printf("{");
+	n += printf("\"help\": %d", args->help);
+	n += printf(", \"files\": ");
+	n += printDList(&args->files, (DListPrintFunc) _printStr);
+	n += printf("}");
+	return n;
 }

@@ -6,7 +6,7 @@
 typedef enum {
 	TT_UNKNOWN = 0,
 	TT_IDENTIFIER = 1,
-	TT_INT_CONSTANT = 2,
+	TT_NUMB_CONSTANT = 2,
 	TT_CHAR_CONSTANT,
 	TT_STR_CONSTANT,
 	TT_MACRO_IF,
@@ -175,7 +175,7 @@ Token *dupToken(Token const *token);
  */
 int tokenBracketDepth(TokenType type);
 
-void printToken(Token *token);
+int printToken(Token *token);
 /*
  * Prints the token as it appears in the file
  */

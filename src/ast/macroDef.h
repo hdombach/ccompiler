@@ -32,5 +32,5 @@ void freeASTMacroDef(ASTMacroDef *def);
 
 int parseASTMacroDef(ASTMacroDef *def, Token const *tok);
 
-void printASTMacroDefNode(ASTMacroDefNode const *node);
-void printASTMacroDef(ASTMacroDef const *def);
+int printASTMacroDefNode(ASTMacroDefNode const *node);
+int printASTMacroDef(ASTMacroDef const *def);

@@ -119,6 +119,6 @@ static inline int printrStr(char const *str) {
 	return res;
 }
 
-static inline void printJsonStrp(char const **str) {
-	printJsonStr(*str);
+static inline int printJsonStrp(char const **str) {
+	return printJsonStr(*str);
 }

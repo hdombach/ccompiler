@@ -171,13 +171,15 @@ int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
 	return 1;
 }
 
-void dlistPrint(const DList *list, DListPrintFunc printFunc) {
-	printf("[");
+int printDList(const DList *list, DListPrintFunc printFunc) {
+	int n = 0;
+	n += printf("[");
 	for (int i = 0; i < list->size; i++) {
-		printFunc(dlistGet(list, i));
+		n += printFunc(dlistGet(list, i));
 		if (i < list->size - 1) {
-			printf(", ");
+			n += printf(", ");
 		}
 	}
-	printf("]");
+	n += printf("]");
+	return n;
 }

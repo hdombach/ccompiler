@@ -14,4 +14,4 @@ void freeArgs(Args *args);
 
 int parseArgs(int argc, char **argv, Args *args);
 
-void argsPrint(Args const *args);
+int argsPrint(Args const *args);
