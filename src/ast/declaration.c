@@ -4,6 +4,7 @@
 
 #include "astUtil.h"
 #include "declaration.h"
+#include "initializer.h"
 
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 	*qualifiers = AST_TQ_NONE;
@@ -343,6 +344,7 @@ int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
 
 void initASTDeclarator(ASTDeclarator *declarator) {
 	declarator->type = AST_DT_UNKNOWN;
+	declarator->initializer = NULL;
 }
 
 void freeASTDeclarator(ASTDeclarator *declarator) {
@@ -352,6 +354,11 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			break;
 		default:
 			break;
+	}
+	if (declarator->initializer) {
+		freeASTInitializer(declarator->initializer);
+		free(declarator->initializer);
+		declarator->initializer = NULL;
 	}
 }
 
@@ -374,17 +381,39 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 	declarator->c.identifier = strdup(tok[n].contents);
 	n++;
 
+	if (tok[n].type == TT_EQL) {
+		n++;
+		declarator->initializer = malloc(sizeof(ASTInitializer));
+		if ((res = parseASTInitializer(declarator->initializer, tok + n))) {
+			n += res;
+		} else {
+			free(declarator->initializer);
+			declarator->initializer = NULL;
+			freeASTDeclarator(declarator);
+			return 0;
+		}
+	}
+
 	return n;
 }
 
 int printASTDeclarator(const ASTDeclarator *declarator) {
 	int n = 0;
 
+	n += printf("{");
+
+	n += printf("\"name\": ");
 	if (declarator->type == AST_DT_IDENTIFIER) {
 		n += printf("\"%s\"", declarator->c.identifier);
 	} else {
 		n += printf("\"unknown\"");
 	}
+
+	if (declarator->initializer) {
+		n += printf(", \"initializer\": ");
+		n += printASTInitializer(declarator->initializer);
+	}
+	n += printf("}");
 
 	return n;
 }

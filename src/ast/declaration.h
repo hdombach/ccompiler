@@ -2,6 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "initializer.h"
 
 // https://en.cppreference.com/w/c/language/declarations
 
@@ -68,6 +69,7 @@ typedef struct {
 	union {
 		char *identifier;
 	} c;
+	ASTInitializer *initializer;
 } ASTDeclarator;
 
 typedef struct {

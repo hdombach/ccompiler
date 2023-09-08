@@ -13,11 +13,12 @@ void freeASTExp(ASTExp *node) {
 int parseASTExp(ASTExp *node, Token const *tok) {
 	int res, n = 0;
 
+	initASTExp(node);
+
 	if (astHasErr()) {
 		return 0;
 	}
 
-	initASTExp(node);
 	if ((res = parseASTIntConstant(&node->c.intConstant, tok))) {
 		node->type = ASTE_INT_CONSTANT;
 		return res;
