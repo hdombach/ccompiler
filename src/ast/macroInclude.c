@@ -25,7 +25,7 @@ int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 
 	if (astMacro(tok + n, TT_MACRO_INCLUDE)) {
 		n++;
-	} else if (astErrMsg) {
+	} else {
 		freeASTMacroIncl(node);
 		return 0;
 	}

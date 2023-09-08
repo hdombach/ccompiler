@@ -100,7 +100,7 @@ void _insertFile(TokList *list, Token const *tok) {
 void _insertLine(TokList *list, Token const *tok) {
 	Token new;
 	cpToken(&new, tok);
-	new.type = TT_INT_CONSTANT;
+	new.type = TT_NUMB_CONSTANT;
 	int strLength = log10(tok->posLine) + 2;
 	new.contents = malloc(strLength * sizeof(char));
 	snprintf(new.contents, strLength, "%d", new.posLine);

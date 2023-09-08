@@ -409,6 +409,7 @@ int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
 	}
 
 	if (tok[n].type != TT_SEMI_COLON) {
+		astErrMsg = "Expecteding ; at end of statement";
 		freeASTDeclaration(declaration);
 		return 0;
 	}

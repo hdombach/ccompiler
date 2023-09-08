@@ -7,8 +7,8 @@ enum {
 	AST_ERR_MSG_S = 256 
 };
 
-static char astErrMsgBuf[AST_ERR_MSG_S];
-static char *astErrMsg = NULL;
+extern char astErrMsgBuf[AST_ERR_MSG_S];
+extern char *astErrMsg;
 
 
 int astMacro(Token const *tok, TokenType type);
