@@ -52,7 +52,7 @@ int _parseBin(ASTIntConstant *node, char const *content) {
 }
 
 int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 

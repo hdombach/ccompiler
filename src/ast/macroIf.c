@@ -28,7 +28,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 	ASTMacroIf *last = node;
 	int n = 0, resN = 0;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -71,7 +71,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 			last->end++;
 		}
 		if (tok[n].type == TT_EOF) {
-			astErrMsg = "Expecting #endif";
+			astErr("Expecting #endif", tok + n);
 			freeASTMacroIf(node);
 			return 0;
 		} else if (_isMacroIf(tok[n].type)) {
@@ -81,7 +81,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 					last->end++;
 				}
 				if (tok[n].type == TT_EOF) {
-					astErrMsg = "Expecting #endif";
+					astErr("Expected #endif", tok + n);
 					freeASTMacroIf(node);
 					return 0;
 				} else if (tok[n].type == TT_MACRO_ENDIF) {

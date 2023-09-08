@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");
-			if (astErrMsg) {
-				printf("%s\n", astErrMsg);
+			if (astHasErr()) {
+				fprintASTErr(stderr);
 			}
 		}
 

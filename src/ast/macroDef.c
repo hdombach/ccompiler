@@ -59,7 +59,7 @@ int _parseParam(ASTMacroDef *def, Token const *tok) {
 	char *tempStr;
 	int n = 0;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -74,14 +74,14 @@ int _parseParam(ASTMacroDef *def, Token const *tok) {
 		dlistApp(&def->paramNames, &tempStr);
 		n++;
 	} else {
-		astErrMsg = "Expected param name";
+		astErr("Expected param name", tok + n);
 		return 0;
 	}
 
 	while (1) {
 		int subN = n;
 		if (!tok[subN].isMacro) {
-			astErrMsg = "Expected )";
+			astErr("Expected )", tok + n);
 			return 0;
 		}
 		if (tok[subN].type != TT_COMMA) {
@@ -90,7 +90,7 @@ int _parseParam(ASTMacroDef *def, Token const *tok) {
 		subN++;
 
 		if (!astMacro(tok + subN, TT_IDENTIFIER)) {
-			astErrMsg = "Expected macro param name";
+			astErr("Expected macro param name", tok + n);
 			return 0;
 		}
 		tempStr = strdup(tok[subN].contents);
@@ -112,7 +112,7 @@ int _parseReplList(ASTMacroDef *def, Token const *tok) {
 	char *tempStr;
 	int n = 0;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -146,7 +146,7 @@ int _parseReplList(ASTMacroDef *def, Token const *tok) {
 int parseASTMacroDef(ASTMacroDef *def, Token const *tok) {
 	int n = 0, res;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -163,21 +163,21 @@ int parseASTMacroDef(ASTMacroDef *def, Token const *tok) {
 		def->name = strdup(tok[n].contents);
 		n++;
 	} else {
-		astErrMsg = "Expected name after macro definition";
+		astErr("Expected name after macro definition", tok + n);
 		freeASTMacroDef(def);
 		return 0;
 	}
 
 	if ((res = _parseParam(def, tok + n))) {
 		n += res;
-	} else if (astErrMsg) {
+	} else if (astHasErr()) {
 		freeASTMacroDef(def);
 		return 0;
 	}
 
 	if ((res = _parseReplList(def, tok + n))) {
 		n += res;
-	} else if (astErrMsg) {
+	} else if (astHasErr()) {
 		freeASTMacroDef(def);
 		return 0;
 	}

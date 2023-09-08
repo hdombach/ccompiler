@@ -77,7 +77,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 		if (tok[n].type == TT_O_PARAN) {
 			n++;
 		} else {
-			astErrMsg = "Expected ( following macro name";
+			astErr("Expected ( following macro name", tok + n);
 			freeDList(&ranges, NULL);
 			return 0;
 		}
@@ -85,7 +85,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 		curRange.start = tok + n;
 		while (1) {
 			if (tok[n].type == TT_EOF) {
-				astErrMsg = "Expecting ) at end of macro";
+				astErr("Expected ) at end of macro", tok + n);
 				freeDList(&ranges, NULL);
 				return 0;
 			} else if (tok[n].type == TT_COMMA && curDepth == 0) {
@@ -110,7 +110,7 @@ int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 					"Incorrect number of paran names (%d != %d)",
 					ranges.size,
 					macro->paramNames.size);
-			astErrMsg = astErrMsgBuf;
+			astErr(astErrMsgBuf, tok + n);
 			freeDList(&ranges, NULL);
 			return 0;
 		}
@@ -211,8 +211,8 @@ void preprocessor(DList *tokens) {
 			n++;
 		}
 
-		if (astErrMsg) {
-			fprintf(stderr, "%s", astErrMsg);
+		if (astHasErr()) {
+			fprintASTErr(stderr);
 			freeMacroDict(&macros);
 			exit(1);
 		}

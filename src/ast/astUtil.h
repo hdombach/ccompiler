@@ -8,7 +8,8 @@ enum {
 };
 
 extern char astErrMsgBuf[AST_ERR_MSG_S];
-extern char *astErrMsg;
 
-
+void astErr(char *msg, Token const *tok);
+int astHasErr();
+int fprintASTErr(FILE *fp);
 int astMacro(Token const *tok, TokenType type);

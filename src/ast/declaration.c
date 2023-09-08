@@ -12,7 +12,7 @@ void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 //TODO: implimenet warning when there are duplicate things
 
 int parseASTTypeQualifier(ASTTypeQualifier *qualifiers, const Token *tok) {
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -56,7 +56,7 @@ void initASTStorageClassSpec(ASTStorageClassSpec *specs) {
 }
 
 int parseASTStorageClassSpec(ASTStorageClassSpec *specs, const Token *tok) {
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -144,7 +144,7 @@ char _isArith(TokenType tokType) {
 }
 
 int parseASTArithType(ASTArithType *type, const Token *tok) {
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -228,7 +228,7 @@ int printASTArithType(const ASTArithType *type) {
 }
 
 int _parseASTIdentifier(char **identifier, const Token *tok) {
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -253,18 +253,26 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 		default:
 			break;
 	}
+	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 }
 
 int parseASTTypeSpec(ASTTypeSpec *typeSpec, const Token *tok) {
 	int n = 0, res;
-	if (astErrMsg) {
+
+	initASTTypeSpec(typeSpec);
+	if (astHasErr()) {
+		freeASTTypeSpec(typeSpec);
 		return 0;
 	}
 
-	initASTTypeSpec(typeSpec);
 
 	while (1) {
 		if (tok[n].type == TT_VOID) {
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
+				astErr("Multiple types in type specifier", tok + n);
+				freeASTTypeSpec(typeSpec);
+				return 0;
+			}
 			typeSpec->typeSpecType = AST_TST_VOID;
 			n++;
 		} else if (_isArith(tok[n].type)) {
@@ -275,7 +283,8 @@ int parseASTTypeSpec(ASTTypeSpec *typeSpec, const Token *tok) {
 			} else if (typeSpec->typeSpecType == AST_TST_ARITH) {
 				n +=  parseASTArithType(&typeSpec->c.arith, tok + n);
 			} else {
-				astErrMsg = "Multiple types in type specifier";
+				astErr("Multiple types in type specifier", tok + n);
+				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
 		} else if (tok[n].type == TT_IDENTIFIER) {
@@ -352,6 +361,10 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 
 	initASTDeclarator(declarator);
 
+	if (astHasErr()) {
+		return 0;
+	}
+
 	if (tok[n].type != TT_IDENTIFIER) {
 		return 0;
 	}
@@ -392,6 +405,11 @@ int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
 
 	initASTDeclaration(declaration);
 
+	if (astHasErr()) {
+		freeASTDeclaration(declaration);
+		return 0;
+	}
+
 	if ((res = parseASTTypeSpec(&declaration->typeSpec, tok + n))) {
 		n += res;
 	} else {
@@ -409,7 +427,7 @@ int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
 	}
 
 	if (tok[n].type != TT_SEMI_COLON) {
-		astErrMsg = "Expecteding ; at end of statement";
+		astErr("Expected ; at end of statmeent", tok + n);
 		freeASTDeclaration(declaration);
 		return 0;
 	}

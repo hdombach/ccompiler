@@ -18,7 +18,7 @@ void freeASTStm(ASTStm *node) {
 int parseASTStm(ASTStm *node, const Token *tok) {
 	int res, n = 0;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 

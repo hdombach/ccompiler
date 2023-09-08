@@ -15,7 +15,7 @@ int parseASTBlock(ASTBlock *node, const Token *tok) {
 	int res, n = 0;
 	ASTStm stm;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
@@ -25,7 +25,7 @@ int parseASTBlock(ASTBlock *node, const Token *tok) {
 	n++;
 
 	initASTBlock(node);
-	while (!astErrMsg) {
+	while (!astHasErr()) {
 		if ((res = parseASTStm(&stm, tok + n))) {
 			dlistApp(&node->statements, &stm);
 			n += res;

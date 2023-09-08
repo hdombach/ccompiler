@@ -51,7 +51,7 @@ int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 			} else if (astMacro(tok + n, TT_DIV)) {
 				dstrApp(&currFile, '/');
 			} else {
-				astErrMsg = "Invalid file name";
+				astErr("Invalid file name", tok + n);
 				freeDStr(&currFile);
 				freeASTMacroIncl(node);
 				return 0;
@@ -62,7 +62,7 @@ int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 		node->type = AST_MIT_LIBRARY;
 	} else {
 		freeASTMacroIncl(node);
-		astErrMsg = "Invalid token following \%include";
+		astErr("Invalid token following #include", tok + n);
 		return 0;
 	}
 

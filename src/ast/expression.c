@@ -13,7 +13,7 @@ void freeASTExp(ASTExp *node) {
 int parseASTExp(ASTExp *node, Token const *tok) {
 	int res, n = 0;
 
-	if (astErrMsg) {
+	if (astHasErr()) {
 		return 0;
 	}
 
