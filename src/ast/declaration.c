@@ -418,12 +418,20 @@ int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
 	}
 
 	//TODO: impliment multiple declarators
-	if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
-		n += res;
-		dlistApp(&declaration->declarators, &tempDeclarator);
-	} else {
-		freeASTDeclaration(declaration);
-		return 0;
+	while (1) {
+		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
+			n += res;
+			dlistApp(&declaration->declarators, &tempDeclarator);
+		} else {
+			freeASTDeclaration(declaration);
+			return 0;
+		}
+
+		if (tok[n].type == TT_COMMA) {
+			n++;
+		} else {
+			break;
+		}
 	}
 
 	if (tok[n].type != TT_SEMI_COLON) {
