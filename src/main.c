@@ -5,7 +5,7 @@
 #include "ast/astUtil.h"
 #include "ast/macroDef.h"
 #include "ast/tokenParser.h"
-#include "ast/block.h"
+#include "ast/file.h"
 #include "preprocessor.h"
 #include "token.h"
 #include "tokenizer.h"
@@ -47,19 +47,23 @@ int main(int argc, char **argv) {
 
 		preprocessor(&tokens);
 
-		printrTokList(&tokens);
-		printf("\n");
+		//printrTokList(&tokens);
+		//printf("\n");
 
-		ASTBlock block;
-		if (parseASTBlock(&block, tokListGetm(&tokens, 0))) {
-			printASTBlock(&block);
-			freeASTBlock(&block);
+		ASTFile astFile;
+		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
+			printASTFile(&astFile);
+			freeASTFile(&astFile);
+		} else {
+			printf("not successful\n");
+			if (astErrMsg) {
+				printf("%s\n", astErrMsg);
+			}
 		}
 
 		freeTokList(&tokens);
 	}
 
-	printf("\n");
 	freeArgs(&args);
 	return 0;
 }
