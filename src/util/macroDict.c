@@ -35,8 +35,8 @@ int macroDictInsert(
 			&value,
 			sizeof(char*),
 			sizeof(ASTMacroDef),
-			(HashFunc) hashStr,
-			(CmpFunc) cmpStr,
+			(HashFunc) hashStrp,
+			(CmpFunc) cmpStrp,
 			(FreeFunc) freeStr,
 			(FreeFunc) freeASTMacroDef);
 }
@@ -136,23 +136,23 @@ void macroDictInsertDefault(MacroDict *macros) {
 }
 
 int macroDictPresent(const MacroDict *macroDict, char const *key) {
-	return dictPresent(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
+	return dictPresent(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp);
 }
 
 ASTMacroDef const *macroDictGet(const MacroDict *macroDict, char const *key) {
-	return dictGet(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
+	return dictGet(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp);
 }
 
 ASTMacroDef *macroDictGetm(MacroDict *macroDict, char const *key) {
-	return dictGetm(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
+	return dictGetm(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp);
 }
 
 void macroDictDelete(MacroDict *macroDict, char const *key) {
-	dictDelete(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr, (FreeFunc) freeStr, (FreeFunc) freeASTMacroDef);
+	dictDelete(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp, (FreeFunc) freeStr, (FreeFunc) freeASTMacroDef);
 }
 
 ASTMacroDef *macroDictRemove(MacroDict *macroDict, char const *key) {
-	return dictRemove(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr, (FreeFunc) freeStr);
+	return dictRemove(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp, (FreeFunc) freeStr);
 }
 
 int printMacroDictV(const MacroDict *dict) {

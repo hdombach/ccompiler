@@ -12,3 +12,7 @@ void freeStr(char **str) {
 int cmpStr(const char *a, const char *b) {
 	return 0 == strcmp(a, b);
 }
+
+int cmpStrp(const char **a, const char **b) {
+	return cmpStr(*a, *b);
+}

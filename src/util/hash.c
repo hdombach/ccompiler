@@ -10,3 +10,7 @@ hash_t hashStr(const unsigned char *str) {
 
 	return hash;
 }
+
+hash_t hashStrp(const unsigned char **str) {
+	return hashStr(*str);
+}
