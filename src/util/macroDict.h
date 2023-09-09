@@ -3,37 +3,16 @@
 #include <stddef.h>
 
 #include "../ast/macroDef.h"
+#include "dict.h"
 
-typedef char const * MacroDictKey;
-typedef char * MacroDictMKey;
-typedef ASTMacroDef MacroDictValue;
+//typedef char const * MacroDictKey;
+//typedef char * MacroDictMKey;
+//typedef ASTMacroDef MacroDictValue;
 
-struct _MacroDictNode;
-
-typedef struct _MacroDictNode {
-	struct _MacroDictNode *next;
-	MacroDictMKey key;
-	MacroDictValue *value;
-} MacroDictNode;
-
-typedef struct {
-	size_t allocatedSize;	
-	size_t elementCount;
-
-	MacroDictNode **nodes;
-} MacroDict;
+typedef Dict MacroDict;
 
 void initMacroDict(MacroDict *macroDict);
 void freeMacroDict(MacroDict *macroDict);
-
-void initMacroDictNode(
-		MacroDictNode *node,
-		MacroDictMKey key,
-		MacroDictValue value);
-/*
- * Frees a node and returns the next
- */
-void freeMacroDictNode(MacroDictNode *node);
 
 /*
  * Inserts an item with the given key into the hash table
@@ -42,33 +21,33 @@ void freeMacroDictNode(MacroDictNode *node);
  */
 int macroDictInsert(
 		MacroDict *macroDict,
-		MacroDictMKey key,
-		MacroDictValue value);
+		char *key,
+		ASTMacroDef value);
 
 /*
  * Inserts the macros that are defined by compiler
  */
 void macroDictInsertDefault(MacroDict *macros);
 
-int macroDictPresent(MacroDict const *macroDict, MacroDictKey key);
+int macroDictPresent(MacroDict const *macroDict, char const *key);
 
-MacroDictValue const *macroDictGet(MacroDict const *macroDict, MacroDictKey key);
+ASTMacroDef const *macroDictGet(MacroDict const *macroDict, char const *key);
 
-MacroDictValue *macroDictGetm(MacroDict *macroDict, MacroDictKey key);
+ASTMacroDef *macroDictGetm(MacroDict *macroDict, char const *key);
 
 /*
  * Looks up an element by key and deletes it
  */
-void macroDictDelete(MacroDict *macroDict, MacroDictKey key);
+void macroDictDelete(MacroDict *macroDict, char const *key);
 
 /*
  * Removes an element and returns it
  */
-MacroDictValue *macroDictRemove(MacroDict *macroDict, MacroDictKey key);
+ASTMacroDef *macroDictRemove(MacroDict *macroDict, char const *key);
 
 /*
  * Verbose print with info about layout
  */
-void printMacroDictV(MacroDict const *macroDict);
+int printMacroDictV(MacroDict const *macroDict);
 
-void printMacroDict(MacroDict const *macroDict);
+int printMacroDict(MacroDict const *macroDict);

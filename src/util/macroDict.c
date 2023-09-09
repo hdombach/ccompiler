@@ -6,85 +6,39 @@
 #include <math.h>
 #include <time.h>
 
+#include "callbacks.h"
+#include "dict.h"
 #include "dstr.h"
 #include "hash.h"
 #include "macroDict.h"
 #include "tokList.h"
+#include "util.h"
 
 const int MACRO_DICT_INIT_SIZE = 16;
 
-int _cmpKey(MacroDictKey lhs, MacroDictKey rhs) {
-	return strcmp(lhs, rhs) == 0;
-}
-
-int _hashKey(MacroDictKey key) {
-	return hashStr((unsigned char const *) key);
-}
-
 void initMacroDict(MacroDict *macroDict) {
-	macroDict->allocatedSize = 16;
-	macroDict->elementCount = 0;
-	macroDict->nodes = malloc(sizeof(MacroDictNode) * macroDict->allocatedSize);
-	for (int i = 0; i < macroDict->allocatedSize; i++) {
-		macroDict->nodes[i] = NULL;
-	}
+	initDict(macroDict);
 }
 
 void freeMacroDict(MacroDict *macroDict) {
-	for (int i = 0; i < macroDict->allocatedSize; i++) {
-		MacroDictNode *curNode;
-		MacroDictNode *nextNode;
-
-		curNode = macroDict->nodes[i];
-		while (curNode) {
-			nextNode = curNode->next;
-			freeMacroDictNode(curNode);
-			free(curNode);
-			curNode = nextNode;
-		}
-	}
-	free(macroDict->nodes);
-}
-
-void initMacroDictNode(
-		MacroDictNode *node,
-		MacroDictMKey key,
-		MacroDictValue value)
-{
-	node->key = key;
-
-	node->value = malloc(sizeof(MacroDictValue));
-	*node->value = value;
-	node->next = NULL;
-}
-
-void freeMacroDictNode(MacroDictNode *node) {
-	free(node->key);
-	freeASTMacroDef(node->value);
-	free(node->value);
+	freeDict(macroDict, (FreeFunc) freeStr, (FreeFunc) freeASTMacroDef);
 }
 
 int macroDictInsert(
 		MacroDict *macroDict,
-		MacroDictMKey key,
-		MacroDictValue value)
+		char *key,
+		ASTMacroDef value)
 {
-	hash_t index;
-	MacroDictNode **curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = &macroDict->nodes[index];
-	while (*curNode) {
-		if (_cmpKey((*curNode)->key, key)) {
-			free(key);
-			freeASTMacroDef(&value);
-			return 0;
-		}
-		curNode = &((*curNode)->next);
-	}
-	*curNode = malloc(sizeof(MacroDictNode));
-	initMacroDictNode(*curNode, key, value);
-	return 1;
+	return dictInsert(
+			macroDict,
+			&key,
+			&value,
+			sizeof(char*),
+			sizeof(ASTMacroDef),
+			(HashFunc) hashStr,
+			(CmpFunc) cmpStr,
+			(FreeFunc) freeStr,
+			(FreeFunc) freeASTMacroDef);
 }
 
 void _insertFile(TokList *list, Token const *tok) {
@@ -181,140 +135,30 @@ void macroDictInsertDefault(MacroDict *macros) {
 	macroDictInsert(macros, strdup("__TIME__"), macro);
 }
 
-int macroDictPresent(const MacroDict *macroDict, MacroDictKey key) {
-	hash_t index;
-	MacroDictNode *curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = macroDict->nodes[index];
-	while (curNode) {
-		if (_cmpKey(curNode->key, key)) {
-			return 1;
-		}
-		curNode = curNode->next;
-	}
-	return 0;
+int macroDictPresent(const MacroDict *macroDict, char const *key) {
+	return dictPresent(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
 }
 
-MacroDictValue const *macroDictGet(const MacroDict *macroDict, MacroDictKey key) {
-	hash_t index;
-	MacroDictNode *curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = macroDict->nodes[index];
-	while (curNode) {
-		if (_cmpKey(curNode->key, key)) {
-			return curNode->value;
-		}
-		curNode = curNode->next;
-	}
-	return NULL;
+ASTMacroDef const *macroDictGet(const MacroDict *macroDict, char const *key) {
+	return dictGet(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
 }
 
-MacroDictValue *macroDictGetm(MacroDict *macroDict, MacroDictKey key) {
-	hash_t index;
-	MacroDictNode *curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = macroDict->nodes[index];
-	while (curNode) {
-		if (_cmpKey(curNode->key, key)) {
-			return curNode->value;
-		}
-		curNode = curNode->next;
-	}
-	return NULL;
+ASTMacroDef *macroDictGetm(MacroDict *macroDict, char const *key) {
+	return dictGetm(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr);
 }
 
-void macroDictDelete(MacroDict *macroDict, MacroDictKey key) {
-	hash_t index;
-	MacroDictNode **curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = &macroDict->nodes[index];
-	while (*curNode) {
-		if (_cmpKey((*curNode)->key, key)) {
-			MacroDictNode *temp;
-			temp = *curNode;
-			*curNode = temp->next;
-			freeMacroDictNode(temp);
-			free(temp);
-			return;
-		} else {
-			 curNode = &(*curNode)->next;
-		}
-	}
+void macroDictDelete(MacroDict *macroDict, char const *key) {
+	dictDelete(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr, (FreeFunc) freeStr, (FreeFunc) freeASTMacroDef);
 }
 
-MacroDictValue *macroDictRemove(MacroDict *macroDict, MacroDictKey key) {
-	hash_t index;
-	MacroDictNode **curNode;
-
-	index = _hashKey(key) % macroDict->allocatedSize;
-	curNode = &macroDict->nodes[index];
-	while (*curNode) {
-		if (_cmpKey((*curNode)->key, key)) {
-			MacroDictNode *temp;
-			MacroDictValue *tempValue;
-
-			temp = *curNode;
-			*curNode = temp->next;
-
-			free(temp->key);
-			tempValue = temp->value;
-			free(temp);
-			return tempValue;
-		} else {
-			 curNode = &(*curNode)->next;
-		}
-	}
-	return NULL;
+ASTMacroDef *macroDictRemove(MacroDict *macroDict, char const *key) {
+	return dictRemove(macroDict, key, (HashFunc) hashStr, (CmpFunc) cmpStr, (FreeFunc) freeStr);
 }
 
-void printMacroDictV(const MacroDict *dict) {
-	printf("[");
-	for (int i = 0; i < dict->allocatedSize; i++) {
-		MacroDictNode *curNode;
-		curNode = dict->nodes[i];
-		printf("[");
-		while (curNode) {
-			printf("{");
-			printJsonStr(curNode->key);
-			printf(": ");
-			printASTMacroDef(curNode->value);
-			printf("}");
-			if (curNode->next) {
-				printf(", ");
-			}
-			curNode = curNode->next;
-		}
-		printf("]");
-		
-		if (i < dict->allocatedSize - 1) {
-			printf(",");
-		}
-	}
-	printf("]");
+int printMacroDictV(const MacroDict *dict) {
+	return printDictV(dict, (PrintFunc) printJsonStr, (PrintFunc) printASTMacroDef);
 }
 
-void printMacroDict(MacroDict const *dict) {
-	int isFirst = 1;
-
-	printf("{");
-	for (int i = 0; i < dict->allocatedSize; i++) {
-		MacroDictNode *curNode;
-		curNode = dict->nodes[i];
-		while (curNode) {
-			if (isFirst) {
-				isFirst = 0;
-			} else {
-				printf(", ");
-			}
-			printJsonStr(curNode->key);
-			printf(": ");
-			printASTMacroDef(curNode->value);
-			curNode = curNode->next;
-		}
-	}
-	printf("}");
+int printMacroDict(MacroDict const *dict) {
+	return printDict(dict, (PrintFunc) printJsonStr, (PrintFunc) printASTMacroDef);
 }
