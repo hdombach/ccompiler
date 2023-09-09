@@ -6,11 +6,11 @@
 #include <math.h>
 #include <time.h>
 
+#include "macroDict.h"
 #include "callbacks.h"
 #include "dict.h"
 #include "dstr.h"
 #include "hash.h"
-#include "macroDict.h"
 #include "tokList.h"
 #include "util.h"
 
