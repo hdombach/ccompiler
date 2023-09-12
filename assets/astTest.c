@@ -5,6 +5,4 @@ unsigned char multTest1 = 2, multTest2, multTest3 = 23;
 typedef char char_t;
 
 char_t typedefTest;
-
-char multTest4, exampFunc();
-
+char_t typedefTest2;

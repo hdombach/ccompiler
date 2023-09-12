@@ -2,6 +2,7 @@
 #include "declaration.h"
 #include "scope.h"
 #include "type.h"
+#include "astUtil.h"
 
 void initASTFileItem(ASTFileItem *item) {
 	item->type = AST_FIT_UNKNOWN;
@@ -25,6 +26,9 @@ int parseASTFileItem(
 	int n = 0, res;
 
 	initASTFileItem(item);
+	if (astHasErr()) {
+		return 0;
+	}
 
 	if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
 		n += res;
@@ -87,10 +91,13 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 			dlistApp(&file->items, &tempItem);
 
 			DList newTypes = astFileItemTypes(&tempItem);
-			astScopeInsertMult(&file->scope, &newTypes);
+			if (!astScopeInsertMult(&file->scope, &newTypes)) break;
 		} else {
 			break;
 		}
+	}
+	if (astHasErr()) {
+		fprintASTErr(stderr);
 	}
 
 	return n;

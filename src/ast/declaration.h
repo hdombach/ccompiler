@@ -57,6 +57,7 @@ typedef struct {
 		ASTArithType arith;
 		char *typedefName;
 	} c;
+	Token const *tok;
 } ASTTypeSpec;
 
 //TODO: add other declerator types

@@ -11,6 +11,7 @@ void initASTType(ASTType *type) {
 	type->storage = AST_SC_NONE;
 	type->name = NULL;
 	type->type = AST_TT_UNKNOWN;
+	type->tok = NULL;
 }
 
 void initASTTypePart(
@@ -18,6 +19,7 @@ void initASTTypePart(
 		const ASTTypeSpec *spec,
 		const ASTDeclarator *declarator)
 {
+	type->tok = spec->tok;
 	if (spec->storage & AST_SC_TYPEDEF) {
 		ASTTypeSpec newSpec;
 		type->type = AST_TT_TYPEDEF;
@@ -101,6 +103,64 @@ int printASTType(ASTType *type) {
 
 	return n;
 }
+
+int cmpASTType(const ASTType *lhs, const ASTType *rhs) {
+	if (lhs->qualifiers != rhs->qualifiers) {
+		return 0;
+	}
+	if (lhs->storage != rhs->storage) {
+		return 0;
+	}
+
+	if (!lhs->name != !rhs->name) {
+		return 0;
+	}
+	if (lhs->name) {
+		if (0 != strcmp(lhs->name, rhs->name)) {
+			return 0;
+		}
+	}
+
+	if (lhs->type != rhs->type) {
+		return 0;
+	}
+
+	switch (lhs->type) {
+		case AST_TT_ARITH:
+			if (lhs->c.arith != rhs->c.arith) {
+				return 0;
+			}
+			break;
+		case AST_TT_TYPEDEF:
+			if (!cmpASTType(lhs->c.tdef, rhs->c.tdef)) {
+				return 0;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return 1;
+}
+
+ASTType *astTypeComp(ASTType *lhs, ASTType *rhs) {
+	if (lhs->type != rhs->type) {
+		return NULL;
+	}
+	switch (lhs->type) {
+		case AST_TT_ARITH:
+			return NULL;
+		case AST_TT_TYPEDEF:
+			if (cmpASTType(lhs, rhs)) {
+				return lhs;
+			} else {
+				return NULL;
+			}
+		default:
+			return NULL;
+	}
+}
+
 ASTType **getASTTypes(ASTDeclaration const *declaration) {
 	ASTType **result = malloc(sizeof(ASTType *) * (declaration->declarators.size + 1));
 	int i = 0;

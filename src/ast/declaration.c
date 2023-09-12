@@ -254,6 +254,7 @@ void initASTTypeSpec(ASTTypeSpec *typeSpec) {
 	initASTTypeQualifier(&typeSpec->qualifiers);
 	initASTStorageClassSpec(&typeSpec->storage);
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
+	typeSpec->tok = NULL;
 }
 
 void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
@@ -280,7 +281,7 @@ int parseASTTypeSpec(
 		return 0;
 	}
 
-
+	typeSpec->tok = tok + n;
 	while (1) {
 		if (tok[n].type == TT_VOID) {
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
@@ -302,10 +303,14 @@ int parseASTTypeSpec(
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
-		} else if ((res = _parseASTIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
-			n += res;
-			typeSpec->typeSpecType = AST_TST_TYPEDEF;
-			break;
+		} else if (tok[n].type == TT_IDENTIFIER) {
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
+
+			if ((res = _parseASTIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
+				n += res;
+				typeSpec->typeSpecType = AST_TST_TYPEDEF;
+				break;
+			}
 		} else if (tok[n].type == TT_STRUCT) {
 			//TODO
 		} else if (tok[n].type == TT_UNION) {

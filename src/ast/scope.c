@@ -1,3 +1,6 @@
+#include <stdio.h>
+
+#include "astUtil.h"
 #include "scope.h"
 #include "../util/typeDict.h"
 #include "type.h"
@@ -16,7 +19,25 @@ int printASTScope(ASTScope const *scope) {
 }
 
 int astScopeInsert(ASTScope *scope, ASTType type) {
-	return typeDictInsert(&scope->types, type);
+	if (typeDictPresent(&scope->types, type.name)) {
+		ASTType *old = astScopeGetmLoc(scope, type.name);
+		ASTType *res = astTypeComp(old, &type);
+		if (!res) {
+			snprintf(astErrMsgBuf, AST_ERR_MSG_S, "Duplicate symbol %s", type.name);
+			astErr(astErrMsgBuf, type.tok);
+			freeASTType(&type);
+			return 0;
+		}
+		if (old == res) {
+			freeASTType(&type);
+		} else {
+			freeASTType(old);
+			*old = type;
+		}
+		return 1;
+	} else {
+		return typeDictInsert(&scope->types, type);
+	}
 }
 
 int astScopeInsertMult(ASTScope *scope, DList *types) {
@@ -60,4 +81,8 @@ ASTType *astScopeGetm(ASTScope *scope, char const *name) {
 	} else {
 		return NULL;
 	}
+}
+
+ASTType *astScopeGetmLoc(ASTScope *scope, char *name) {
+	return typeDictGetm(&scope->types, name);
 }

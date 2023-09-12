@@ -20,6 +20,9 @@ static void freeTypeDict(TypeDict *dict) {
 }
 
 /*
+ * Inserts an item with the given key into the hash table
+ * Returns 1 on success
+ * Returns 0 if item already exists
  * Takes ownership of key and value
  */
 static int typeDictInsert(

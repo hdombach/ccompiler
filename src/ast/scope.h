@@ -24,3 +24,5 @@ ASTType const *astScopeGet(ASTScope const *scope, char const *name);
  * Note: dict does not update if you change name
  */
 ASTType *astScopeGetm(ASTScope *scope, char const *name);
+
+ASTType *astScopeGetmLoc(ASTScope *scope, char *name);

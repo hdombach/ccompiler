@@ -17,6 +17,7 @@ typedef struct ASTType {
 		ASTArithType arith;
 		struct ASTType *tdef;
 	} c;
+	Token const *tok;
 } ASTType;
 
 void initASTType(ASTType *type);
@@ -26,6 +27,13 @@ void initASTTypePart(
 		ASTDeclarator const *declarator);
 void freeASTType(ASTType *type);
 int printASTType(ASTType *type);
+int cmpASTType(ASTType const *lhs, ASTType const *rhs);
+
+/*
+ * Whether the two types can exist in the same scope
+ * If they can, return the preferred type
+ */
+ASTType *astTypeComp(ASTType *lhs, ASTType *rhs);
 
 ASTType **getASTTypes(ASTDeclaration const *declaration);
 
