@@ -258,7 +258,11 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 }
 
-int parseASTTypeSpec(ASTTypeSpec *typeSpec, const Token *tok) {
+int parseASTTypeSpec(
+		ASTTypeSpec *typeSpec,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int n = 0, res;
 
 	initASTTypeSpec(typeSpec);
@@ -341,6 +345,22 @@ int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
 	n += printf("}");
 
 	return n;
+}
+
+void cpASTTypeSpec(ASTTypeSpec *dest, const ASTTypeSpec *src) {
+	dest->qualifiers = src->qualifiers;
+	dest->storage = src->storage;
+	dest->typeSpecType = src->typeSpecType;
+	switch (dest->typeSpecType) {
+		case AST_TST_ARITH:
+			dest->c.arith = src->c.arith;
+			break;
+		case AST_TST_TYPEDEF:
+			dest->c.typedefName = strdup(src->c.typedefName);
+			break;
+		default:
+			break;
+	}
 }
 
 void initASTDeclarator(ASTDeclarator *declarator) {
@@ -429,7 +449,11 @@ void freeASTDeclaration(ASTDeclaration *declaration) {
 	freeDList(&declaration->declarators, (DListFreeFunc) freeASTDeclarator);
 }
 
-int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
+int parseASTDeclaration(
+		ASTDeclaration *declaration,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int n = 0, res;
 	ASTDeclarator tempDeclarator;
 
@@ -440,7 +464,7 @@ int parseASTDeclaration(ASTDeclaration *declaration, const Token *tok) {
 		return 0;
 	}
 
-	if ((res = parseASTTypeSpec(&declaration->typeSpec, tok + n))) {
+	if ((res = parseASTTypeSpec(&declaration->typeSpec, tok + n, scope))) {
 		n += res;
 	} else {
 		freeASTDeclaration(declaration);

@@ -17,12 +17,16 @@ void freeASTFileItem(ASTFileItem *item) {
 	}
 }
 
-int parseASTFileItem(ASTFileItem *item, const Token *tok) {
+int parseASTFileItem(
+		ASTFileItem *item,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int n = 0, res;
 
 	initASTFileItem(item);
 
-	if ((res = parseASTDeclaration(&item->c.declaration, tok + n))) {
+	if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
 		n += res;
 		item->type = AST_FIT_DECL;
 	} else {
@@ -78,7 +82,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 	initASTFile(file);
 
 	while (1) {
-		if ((res = parseASTFileItem(&tempItem, tok + n))) {
+		if ((res = parseASTFileItem(&tempItem, tok + n, &file->scope))) {
 			n += res;
 			dlistApp(&file->items, &tempItem);
 

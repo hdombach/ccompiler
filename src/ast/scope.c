@@ -29,6 +29,17 @@ int astScopeInsertMult(ASTScope *scope, DList *types) {
 	return result;
 }
 
+int astScopePresent(const ASTScope *scope, const char *name) {
+	int result = typeDictPresent(&scope->types, name);
+	if (result) {
+		return result;
+	} else if (scope->parent) {
+		return astScopePresent(scope->parent, name);
+	} else {
+		return result;
+	}
+}
+
 ASTType const *astScopeGet(ASTScope const *scope, char const *name) {
 	ASTType const *result = typeDictGet(&scope->types, name);
 	if (result) {

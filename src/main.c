@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 			printASTFile(&astFile);
+			printf("\n");
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");

@@ -6,6 +6,8 @@
 
 // https://en.cppreference.com/w/c/language/declarations
 
+typedef struct ASTScope ASTScope;
+
 typedef enum  {
 	AST_TQ_NONE = 0b0,
 	AST_TQ_CONST = 0b1,
@@ -91,8 +93,12 @@ int printASTArithType(ASTArithType const *type);
 
 void initASTTypeSpec(ASTTypeSpec *typeSpec);
 void freeASTTypeSpec(ASTTypeSpec *typeSpec);
-int parseASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok);
+int parseASTTypeSpec(
+		ASTTypeSpec *typeSpec,
+		Token const *tok,
+		ASTScope const *scope);
 int printASTTypeSpec(ASTTypeSpec const *typeSpec);
+void cpASTTypeSpec(ASTTypeSpec *dest, ASTTypeSpec const *src);
 
 void initASTDeclarator(ASTDeclarator *declarator);
 void freeASTDeclarator(ASTDeclarator *declarator);
@@ -101,7 +107,10 @@ int printASTDeclarator(ASTDeclarator const *declarator);
 
 void initASTDeclaration(ASTDeclaration *declaration);
 void freeASTDeclaration(ASTDeclaration *declaration);
-int parseASTDeclaration(ASTDeclaration *declaration, Token const *tok);
+int parseASTDeclaration(
+		ASTDeclaration *declaration,
+		Token const *tok,
+		ASTScope const *scope);
 int printASTDeclaration(ASTDeclaration const *declaration);
 
 DList astDeclarationTypes(ASTDeclaration const *declaration);

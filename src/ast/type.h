@@ -5,6 +5,7 @@
 typedef enum {
 	AST_TT_UNKNOWN,
 	AST_TT_ARITH,
+	AST_TT_TYPEDEF,
 } ASTTypeType;
 
 typedef struct ASTType {
@@ -14,6 +15,7 @@ typedef struct ASTType {
 	ASTTypeType type;
 	union {
 		ASTArithType arith;
+		struct ASTType *tdef;
 	} c;
 } ASTType;
 

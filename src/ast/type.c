@@ -18,6 +18,22 @@ void initASTTypePart(
 		const ASTTypeSpec *spec,
 		const ASTDeclarator *declarator)
 {
+	if (spec->storage & AST_SC_TYPEDEF) {
+		ASTTypeSpec newSpec;
+		type->type = AST_TT_TYPEDEF;
+		type->c.tdef = malloc(sizeof(ASTType));
+		if (type->c.tdef->name) {
+			type->name = strdup(type->c.tdef->name);
+		} else {
+			type->name = NULL;
+		}
+
+		cpASTTypeSpec(&newSpec, spec);
+		newSpec.storage &= ~AST_SC_TYPEDEF;
+		initASTTypePart(type->c.tdef, &newSpec, declarator);
+		freeASTTypeSpec(&newSpec);
+		return;
+	}
 	//TODO: definitely update this function
 	type->qualifiers = spec->qualifiers;
 	type->storage = spec->storage;
@@ -51,15 +67,31 @@ int printASTType(ASTType *type) {
 
 	n += printf("{");
 
-	n += printf("\"qualifiers\": ");
-	n += printASTTypeQualifier(&type->qualifiers);
+	if (type->type == AST_TT_TYPEDEF) {
+		n += printf("\"typedef\": ");
+		n += printASTType(type->c.tdef);
+	} else {
 
-	n += printf(", \"storage\": ");
-	n += printASTStorageClassSpec(&type->storage);
+		n += printf("\"qualifiers\": ");
+		n += printASTTypeQualifier(&type->qualifiers);
 
-	if (type->name) {
-		n += printf(", \"name\": ");
-		n += printJsonStr(type->name);
+		n += printf(", \"storage\": ");
+		n += printASTStorageClassSpec(&type->storage);
+
+		switch (type->type) {
+			case AST_TT_ARITH:
+				n += printf(", \"type\": ");
+				n += printASTArithType(&type->c.arith);
+				break;
+			default:
+				break;
+		}
+
+		if (type->name) {
+			n += printf(", \"name\": ");
+			n += printJsonStr(type->name);
+		}
+
 	}
 
 	n += printf("}");

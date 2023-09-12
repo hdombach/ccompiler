@@ -22,7 +22,7 @@ typedef struct {
 
 void initASTFileItem(ASTFileItem *item);
 void freeASTFileItem(ASTFileItem *item);
-int parseASTFileItem(ASTFileItem *item, Token const *tok);
+int parseASTFileItem(ASTFileItem *item, Token const *tok, ASTScope const *scope);
 int printASTFileItem(ASTFileItem const *item);
 
 DList astFileItemTypes(ASTFileItem const *item);
