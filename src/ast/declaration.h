@@ -104,3 +104,4 @@ void freeASTDeclaration(ASTDeclaration *declaration);
 int parseASTDeclaration(ASTDeclaration *declaration, Token const *tok);
 int printASTDeclaration(ASTDeclaration const *declaration);
 
+DList astDeclarationTypes(ASTDeclaration const *declaration);

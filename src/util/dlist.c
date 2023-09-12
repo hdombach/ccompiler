@@ -14,6 +14,20 @@ void initDList(DList *list, size_t elementSize) {
 	list->data = malloc(list->elSize * list->capacity);
 }
 
+void initDListCap(DList *list, size_t elementSize, size_t initialCap) {
+	list->size = 0;
+	list->capacity = initialCap;
+	list->elSize = elementSize;
+	list->data = malloc(list->elSize * list->capacity);
+}
+
+void initDListEmpty(DList *list, size_t elementSize) {
+	list->size = 0;
+	list->capacity = 0;
+	list->elSize = elementSize;
+	list->data = NULL;
+}
+
 void freeDList(DList *list, DListFreeFunc freeFunc) {
 	if (!list->data) {
 		return;
@@ -50,8 +64,13 @@ void dlistApp(DList *list, const void *element) {
 }
 
 void dlistIncCap(DList *list) {
-	list->capacity *= 2;
-	list->data = realloc(list->data, list->capacity * list->elSize);
+	if (list->data) {
+		list->capacity *= 2;
+		list->data = realloc(list->data, list->capacity * list->elSize);
+	} else {
+		list->capacity = 4;
+		list->data = malloc(list->capacity * list->elSize);
+	}
 }
 
 void dlistDecCap(DList *list) {

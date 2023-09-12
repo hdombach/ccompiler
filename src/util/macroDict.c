@@ -15,8 +15,6 @@
 #include "tokList.h"
 #include "util.h"
 
-const int MACRO_DICT_INIT_SIZE = 16;
-
 void initMacroDict(MacroDict *macroDict) {
 	initDict(macroDict);
 }
@@ -149,11 +147,22 @@ ASTMacroDef *macroDictGetm(MacroDict *macroDict, char const *key) {
 }
 
 void macroDictDelete(MacroDict *macroDict, char const *key) {
-	dictDelete(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp, (FreeFunc) freeStr, (FreeFunc) freeASTMacroDef);
+	dictDelete(
+			macroDict,
+			&key,
+			(HashFunc) hashStrp,
+			(CmpFunc) cmpStrp,
+			(FreeFunc) freeStr,
+			(FreeFunc) freeASTMacroDef);
 }
 
 ASTMacroDef *macroDictRemove(MacroDict *macroDict, char const *key) {
-	return dictRemove(macroDict, &key, (HashFunc) hashStrp, (CmpFunc) cmpStrp, (FreeFunc) freeStr);
+	return dictRemove(
+			macroDict,
+			&key,
+			(HashFunc) hashStrp,
+			(CmpFunc) cmpStrp,
+			(FreeFunc) freeStr);
 }
 
 int printMacroDictV(const MacroDict *dict) {

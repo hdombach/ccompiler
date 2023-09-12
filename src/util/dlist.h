@@ -24,6 +24,8 @@ typedef void (*DListCpFunc)(void *, void const*);
 typedef int (*DListPrintFunc)(void const*);
 
 void initDList(DList *list, size_t elementSize);
+void initDListCap(DList *list, size_t elementSize, size_t initialCap);
+void initDListEmpty(DList *list, size_t elementSize);
 void freeDList(DList *list, DListFreeFunc freeFunc);
 void moveDList(DList *dest, DList *src);
 

@@ -17,4 +17,13 @@ typedef struct ASTType {
 	} c;
 } ASTType;
 
+void initASTType(ASTType *type);
+void initASTTypePart(
+		ASTType *type,
+		ASTTypeSpec const *spec,
+		ASTDeclarator const *declarator);
+void freeASTType(ASTType *type);
+int printASTType(ASTType *type);
+
 ASTType **getASTTypes(ASTDeclaration const *declaration);
+

@@ -5,6 +5,7 @@
 #include "astUtil.h"
 #include "declaration.h"
 #include "initializer.h"
+#include "type.h"
 
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 	*qualifiers = AST_TQ_NONE;
@@ -487,4 +488,19 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	n += printf("}");
 
 	return n;
+}
+
+DList astDeclarationTypes(const ASTDeclaration *declaration) {
+	DList result;
+
+	initDListCap(&result, sizeof(ASTType), declaration->declarators.size);
+
+	for (int i = 0; i < declaration->declarators.size; i++) {
+		ASTDeclarator *declarator = (ASTDeclarator *) dlistGet(&declaration->declarators, i);
+		ASTType type;
+		initASTTypePart(&type, &declaration->typeSpec, declarator);
+		dlistApp(&result, &type);
+	}
+
+	return result;
 }
