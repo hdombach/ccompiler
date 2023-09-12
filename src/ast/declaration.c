@@ -230,6 +230,51 @@ int printASTArithType(const ASTArithType *type) {
 	return n;
 }
 
+int astArithTypeNormalize(const ASTArithType *type) {
+	switch (*type) {
+		case AST_AT_CHAR:
+			return AST_AT_CHAR;
+
+		case (AST_AT_SIGNED | AST_AT_CHAR):
+			return AST_AT_SIGNED | AST_AT_CHAR;
+
+		case (AST_AT_UNSIGNED | AST_AT_CHAR):
+			return AST_AT_UNSIGNED | AST_AT_CHAR;
+
+		case (AST_AT_SHORT):
+		case (AST_AT_SHORT | AST_AT_INT):
+		case (AST_AT_SIGNED | AST_AT_SHORT):
+		case (AST_AT_SIGNED | AST_AT_SHORT | AST_AT_INT):
+			return AST_AT_SHORT | AST_AT_INT;
+
+		case (AST_AT_UNSIGNED | AST_AT_SHORT):
+		case (AST_AT_UNSIGNED | AST_AT_SHORT | AST_AT_INT):
+			return AST_AT_UNSIGNED | AST_AT_SHORT | AST_AT_INT;
+
+		case (AST_AT_INT):
+		case (AST_AT_SIGNED):
+		case (AST_AT_SIGNED | AST_AT_INT):
+			return AST_AT_INT;
+
+		case (AST_AT_UNSIGNED):
+		case (AST_AT_UNSIGNED | AST_AT_INT):
+			return AST_AT_UNSIGNED | AST_AT_INT;
+
+		case (AST_AT_LONG):
+		case (AST_AT_LONG | AST_AT_INT):
+		case (AST_AT_SIGNED | AST_AT_LONG):
+		case (AST_AT_SIGNED | AST_AT_LONG | AST_AT_INT):
+			return AST_AT_LONG | AST_AT_INT;
+
+		case (AST_AT_UNSIGNED | AST_AT_LONG):
+		case (AST_AT_UNSIGNED | AST_AT_LONG | AST_AT_INT):
+			return AST_AT_UNSIGNED | AST_AT_LONG | AST_AT_INT;
+
+		default:
+			return AST_AT_NONE;
+	}
+}
+
 int _parseASTIdentifier(
 		char **identifier,
 		const Token *tok,

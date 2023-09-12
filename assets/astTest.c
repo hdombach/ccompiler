@@ -6,3 +6,6 @@ typedef char char_t;
 
 char_t typedefTest;
 char_t typedefTest2;
+
+typedef short short_t;
+typedef signed short int short_t;

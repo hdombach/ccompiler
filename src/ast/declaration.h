@@ -91,6 +91,7 @@ int printASTStorageClassSpec(ASTStorageClassSpec const *specs);
 void initASTArithType(ASTArithType *type);
 int parseASTArithType(ASTArithType *type, Token const *tok);
 int printASTArithType(ASTArithType const *type);
+int astArithTypeNormalize(ASTArithType const *type);
 
 void initASTTypeSpec(ASTTypeSpec *typeSpec);
 void freeASTTypeSpec(ASTTypeSpec *typeSpec);

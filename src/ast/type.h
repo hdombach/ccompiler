@@ -35,5 +35,3 @@ int cmpASTType(ASTType const *lhs, ASTType const *rhs);
  */
 ASTType *astTypeComp(ASTType *lhs, ASTType *rhs);
 
-ASTType **getASTTypes(ASTDeclaration const *declaration);
-
