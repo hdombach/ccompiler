@@ -1,7 +1,10 @@
-extern const long unsigned int test;
+extern const long unsigned int arithTest;
 
-unsigned char test2 = 2, anotherTest, moreTests = 23;
+unsigned char multTest1 = 2, multTest2, multTest3 = 23;
+
 typedef char char_t;
 
+char_t typedefTest;
 
-char exampleVar, exampFunc();
+char multTest4, exampFunc();
+

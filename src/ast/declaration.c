@@ -6,6 +6,7 @@
 #include "declaration.h"
 #include "initializer.h"
 #include "type.h"
+#include "scope.h"
 
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 	*qualifiers = AST_TQ_NONE;
@@ -229,7 +230,11 @@ int printASTArithType(const ASTArithType *type) {
 	return n;
 }
 
-int _parseASTIdentifier(char **identifier, const Token *tok) {
+int _parseASTIdentifier(
+		char **identifier,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	if (astHasErr()) {
 		return 0;
 	}
@@ -237,8 +242,12 @@ int _parseASTIdentifier(char **identifier, const Token *tok) {
 	if (tok->type != TT_IDENTIFIER) {
 		return 0;
 	}
-	*identifier = strdup(tok->contents);
-	return 1;
+	if (astScopePresent(scope, tok->contents)) {
+		*identifier = strdup(tok->contents);
+		return 1;
+	} else {
+		return 0;
+	}
 }
 
 void initASTTypeSpec(ASTTypeSpec *typeSpec) {
@@ -293,10 +302,9 @@ int parseASTTypeSpec(
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
-		} else if (tok[n].type == TT_IDENTIFIER) {
-			//TODO: need to have dictionary of typedefs
-			//typeSpec->typeSpecType = AST_TST_TYPEDEF;
-			//n += _parseASTIdentifier(&typeSpec->c.typedefName, tok + n);
+		} else if ((res = _parseASTIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
+			n += res;
+			typeSpec->typeSpecType = AST_TST_TYPEDEF;
 			break;
 		} else if (tok[n].type == TT_STRUCT) {
 			//TODO

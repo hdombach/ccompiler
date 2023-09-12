@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include <string.h>
 
 #include "callbacks.h"
@@ -26,6 +27,7 @@ static int typeDictInsert(
 		ASTType value)
 {
 	if (!value.name) {
+		fprintf(stderr, "INTERNAL type dict insert without name\n");
 		return 0;
 	}
 	char *newName = strdup(value.name);

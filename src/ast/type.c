@@ -22,16 +22,19 @@ void initASTTypePart(
 		ASTTypeSpec newSpec;
 		type->type = AST_TT_TYPEDEF;
 		type->c.tdef = malloc(sizeof(ASTType));
+
+		cpASTTypeSpec(&newSpec, spec);
+		newSpec.storage &= ~AST_SC_TYPEDEF;
+
+		initASTTypePart(type->c.tdef, &newSpec, declarator);
+		freeASTTypeSpec(&newSpec);
+
 		if (type->c.tdef->name) {
 			type->name = strdup(type->c.tdef->name);
 		} else {
 			type->name = NULL;
 		}
 
-		cpASTTypeSpec(&newSpec, spec);
-		newSpec.storage &= ~AST_SC_TYPEDEF;
-		initASTTypePart(type->c.tdef, &newSpec, declarator);
-		freeASTTypeSpec(&newSpec);
 		return;
 	}
 	//TODO: definitely update this function
