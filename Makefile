@@ -5,8 +5,8 @@ DEPFLAGS = -MMD -MP
 SRC = src
 OBJECTS := $(patsubst $(SRC)/%.c, build/%.o, $(wildcard $(SRC)/*.c))
 DEPENDS := $(OBJECTS:.o=.d)
-COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@
-COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^)
+COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@ -lm
+COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^) -lm
 
 
 
@@ -22,16 +22,13 @@ DEPS_ALL_TESTS = $(DEPS_GEN)\
 DEPS_MACRO_DICT_TEST = $(DEPS_GEN) build/tests/macroDictTest.o build/tests/test.o
 
 
-all: build/ccompiler assets testAssets build/allTests build/macroDictTest
+all: build/ccompiler assets testAssets build/allTests
 
 build/ccompiler: build $(DEPS_CCOMPILER)
 	$(COMPILE_EXE) -o build/ccompiler
 
 build/allTests: build $(DEPS_ALL_TESTS)
 	$(COMPILE_EXE) -o build/allTests
-
-build/macroDictTest: build $(DEPS_MACRO_DICT_TEST)
-	$(COMPILE_EXE) -o build/macroDictTest  -Wl,-e,_macroDictPlayground
 
 build/%.o: $(SRC)/%.c
 	$(COMPILE.c) $<
