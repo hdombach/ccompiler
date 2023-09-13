@@ -289,6 +289,28 @@ void dlistTestInsMult() {
 	freeDList(&list, NULL);
 }
 
+void dlistTestCp() {
+	DList src, dest;
+	int value;
+
+	tStartSection("Copy dlist");
+	initDList(&src, sizeof(int));
+
+	dlistApp(&src, (value=1, &value));
+	dlistApp(&src, (value=2, &value));
+	dlistApp(&src, (value=3, &value));
+
+	cpDList(&dest, &src, NULL);
+
+	tAssert("size", 3 == dest.size);
+	tAssert("index 0", *(int *) dlistGet(&dest, 0) == 1);
+	tAssert("index 1", *(int *) dlistGet(&dest, 1) == 2);
+	tAssert("index 2", *(int *) dlistGet(&dest, 2) == 3);
+
+	freeDList(&src, NULL);
+	freeDList(&dest, NULL);
+}
+
 void dlistTest() {
 	dlistTestEmpty();
 	dlistTestCmp();
@@ -298,5 +320,6 @@ void dlistTest() {
 	dlistTestDynObj();
 	dlistTestRemMult();
 	dlistTestInsMult();
+	dlistTestCp();
 }
 

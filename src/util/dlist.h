@@ -25,6 +25,7 @@ void initDListCap(DList *list, size_t elementSize, size_t initialCap);
 void initDListEmpty(DList *list, size_t elementSize);
 void freeDList(DList *list, FreeFunc freeFunc);
 void moveDList(DList *dest, DList *src);
+void cpDList(DList *dest, DList const *src, CpFunc cpFunc);
 
 void *dlistGetm(DList *list, int index);
 const void *dlistGet(DList const *list, int index);

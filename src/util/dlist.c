@@ -46,6 +46,21 @@ void moveDList(DList *dest, DList *src) {
 	src->data = NULL;
 }
 
+void cpDList(DList *dest, const DList *src, CpFunc cpFunc) {
+	dest->size = src->size;
+	dest->capacity = src->capacity;
+	dest->elSize = src->elSize;
+	dest->data = malloc(sizeof(dest->capacity * dest->elSize));
+
+	for (int i = 0; i < dest->size; i++) {
+		if (cpFunc) {
+			cpFunc(dlistGetm(dest, i), dlistGet(src, i));
+		} else {
+			memcpy(dlistGetm(dest, i), dlistGet(src, i), dest->elSize);
+		}
+	}
+}
+
 void *dlistGetm(DList *list, int index) {
 	//TODO: add debug boundary tests
 	return list->data + index * list->elSize;

@@ -8,6 +8,7 @@ void dlistTestRem();
 void dlistTestDynObj();
 void dlistTestRemMult();
 void dlistTestInsMult();
+void dlistTestCp();
 
 void dlistTest();
 int dlistTestMain();
