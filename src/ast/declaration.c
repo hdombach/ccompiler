@@ -275,7 +275,7 @@ int astArithTypeNormalize(const ASTArithType *type) {
 	}
 }
 
-int _parseASTIdentifier(
+int _parseTypedefIdentifier(
 		char **identifier,
 		const Token *tok,
 		ASTScope const *scope)
@@ -351,7 +351,7 @@ int parseASTTypeSpec(
 		} else if (tok[n].type == TT_IDENTIFIER) {
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
 
-			if ((res = _parseASTIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
+			if ((res = _parseTypedefIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
 				break;
@@ -409,6 +409,7 @@ void cpASTTypeSpec(ASTTypeSpec *dest, const ASTTypeSpec *src) {
 	dest->qualifiers = src->qualifiers;
 	dest->storage = src->storage;
 	dest->typeSpecType = src->typeSpecType;
+	dest->tok = src->tok;
 	switch (dest->typeSpecType) {
 		case AST_TST_ARITH:
 			dest->c.arith = src->c.arith;
@@ -504,7 +505,7 @@ void initASTDeclaration(ASTDeclaration *declaration) {
 
 void freeASTDeclaration(ASTDeclaration *declaration) {
 	freeASTTypeSpec(&declaration->typeSpec);
-	freeDList(&declaration->declarators, (DListFreeFunc) freeASTDeclarator);
+	freeDList(&declaration->declarators, (FreeFunc) freeASTDeclarator);
 }
 
 int parseASTDeclaration(
@@ -529,7 +530,6 @@ int parseASTDeclaration(
 		return 0;
 	}
 
-	//TODO: impliment multiple declarators
 	while (1) {
 		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
 			n += res;
@@ -565,7 +565,7 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	n += printASTTypeSpec(&declaration->typeSpec);
 
 	n += printf(", \"Declarators\": ");
-	n += printDList(&declaration->declarators, (DListPrintFunc) printASTDeclarator);
+	n += printDList(&declaration->declarators, (PrintFunc) printASTDeclarator);
 
 	n += printf("}");
 

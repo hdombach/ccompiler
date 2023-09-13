@@ -9,6 +9,7 @@
 #include "../util/dstr.h"
 #include "../util/util.h"
 #include "astUtil.h"
+#include "../util/callbacks.h"
 
 void _initASTMacroDefNode(ASTMacroDefNode *node) {
 	node->token = NULL;
@@ -51,8 +52,8 @@ void freeASTMacroDef(ASTMacroDef *def) {
 	if (def->name) {
 		free(def->name);
 	}
-	freeDList(&def->paramNames, (DListFreeFunc) freeStr);
-	freeDList(&def->nodes, (DListFreeFunc) _freeASTMacroDefNode);
+	freeDList(&def->paramNames, (FreeFunc) freeStr);
+	freeDList(&def->nodes, (FreeFunc) _freeASTMacroDefNode);
 }
 
 int _parseParam(ASTMacroDef *def, Token const *tok) {
@@ -213,10 +214,10 @@ int printASTMacroDef(ASTMacroDef const *def) {
 	n += printJsonStr(def->name);
 
 	n += printf(", \"params\": ");
-	n += printDList(&def->paramNames, (DListPrintFunc) printJsonStrp);
+	n += printDList(&def->paramNames, (PrintFunc) printJsonStrp);
 
 	n += printf(", \"content\": ");
-	n += printDList(&def->nodes, (DListPrintFunc) printASTMacroDefNode);
+	n += printDList(&def->nodes, (PrintFunc) printASTMacroDefNode);
 
 	n += printf("}");
 	return n;

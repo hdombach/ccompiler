@@ -3,6 +3,7 @@
 #include "scope.h"
 #include "type.h"
 #include "astUtil.h"
+#include "../util/callbacks.h"
 
 void initASTFileItem(ASTFileItem *item) {
 	item->type = AST_FIT_UNKNOWN;
@@ -75,7 +76,7 @@ void initASTFile(ASTFile *file) {
 }
 
 void freeASTFile(ASTFile *file) {
-	freeDList(&file->items, (DListFreeFunc) freeASTFileItem);
+	freeDList(&file->items, (FreeFunc) freeASTFileItem);
 	freeASTScope(&file->scope);
 }
 
@@ -112,7 +113,7 @@ int printASTFile(const ASTFile *file) {
 	n += printASTScope(&file->scope);
 
 	n += printf(", \"declerations\": ");
-	n += printDList(&file->items, (DListPrintFunc) printASTFileItem);
+	n += printDList(&file->items, (PrintFunc) printASTFileItem);
 
 	n += printf("}");
 

@@ -6,6 +6,7 @@
 
 #include "dlist.h"
 #include "../token.h"
+#include "callbacks.h"
 
 typedef DList TokList;
 
@@ -14,7 +15,7 @@ static inline void initTokList(TokList *list) {
 }
 
 static inline void freeTokList(TokList *list) {
-	freeDList(list, (DListFreeFunc) freeToken);
+	freeDList(list, (FreeFunc) freeToken);
 }
 
 static inline Token *tokListGetm(TokList *list, int index) {
@@ -31,11 +32,11 @@ static inline void tokListApp(TokList *list, Token *element) {
 }
 
 static inline DListErr tokListRem(TokList *list, int index) {
-	return dlistRem(list, index, (DListFreeFunc) freeToken);
+	return dlistRem(list, index, (FreeFunc) freeToken);
 }
 
 static inline void tokListRemLast(TokList *list) {
-	dlistRemLast(list, (DListFreeFunc) freeToken);
+	dlistRemLast(list, (FreeFunc) freeToken);
 }
 
 static inline DListErr tokListIns(TokList *list, Token *element, int index) {
@@ -43,7 +44,7 @@ static inline DListErr tokListIns(TokList *list, Token *element, int index) {
 }
 
 static inline void tokListRemAll(TokList *list) {
-	dlistRemAll(list, (DListFreeFunc) freeToken);
+	dlistRemAll(list, (FreeFunc) freeToken);
 }
 
 static inline void printrTokList(TokList *list) {

@@ -3,6 +3,7 @@
 
 #include "dlistTest.h"
 #include "test.h"
+#include "../util/callbacks.h"
 
 /*
  * Struct for testing with
@@ -78,29 +79,28 @@ void dlistTestCmp() {
 
 	initDList(&list1, sizeof(int));
 	initDList(&list2, sizeof(int));
-
-	tAssert("empty are equal", dlistCmp(&list1, &list2, (DListCmpFunc) _intCmp));
+	tAssert("empty are equal", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 1;
 	dlistApp(&list1, &value);
-	tAssert("check 2", !dlistCmp(&list1, &list2, (DListCmpFunc) _intCmp));
+	tAssert("check 2", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 	dlistApp(&list2, &value);
-	tAssert("check 3", dlistCmp(&list1, &list2, (DListCmpFunc) _intCmp));
+	tAssert("check 3", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 2;
 	dlistApp(&list2, &value);
 	value = 3;
 	dlistApp(&list2, &value);
-	tAssert("check 4", !dlistCmp(&list1, &list2, (DListCmpFunc) _intCmp));
+	tAssert("check 4", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 2;
 	dlistApp(&list1, &value);
 	value = 3;
 	dlistApp(&list1, &value);
-	tAssert("check 5", dlistCmp(&list1, &list2, (DListCmpFunc) _intCmp));
+	tAssert("check 5", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
-	freeDList(&list1, (DListFreeFunc) NULL);
-	freeDList(&list2, (DListFreeFunc) NULL);
+	freeDList(&list1, (FreeFunc) NULL);
+	freeDList(&list2, (FreeFunc) NULL);
 }
 
 void dlistTestApp() {
@@ -213,7 +213,7 @@ void dlistTestDynObj() {
 	dlistIns(&list2, &obj1, 0); //1, 2
 	dlistIns(&list2, &obj3, 2); //1, 2, 3
 
-	tAssert("compare 1", dlistCmp(&list1, &list2, (DListCmpFunc) _testTypeCmp));
+	tAssert("compare 1", dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
 
 	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
 	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
@@ -223,16 +223,16 @@ void dlistTestDynObj() {
 	tAssert("valid 6", _validTestType(dlistGet(&list2, 2)));
 
 	_testObjCpy(&tempObj, dlistGet(&list1, 0));
-	dlistRem(&list1, 1, (DListFreeFunc) _freeTestType);
+	dlistRem(&list1, 1, (FreeFunc) _freeTestType);
 	dlistIns(&list1, &tempObj, 1);
 	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
 	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
 	tAssert("valid 3", _validTestType(dlistGet(&list1, 2)));
 	tAssert("compare 2", _testTypeCmp(dlistGet(&list1, 0), dlistGet(&list1, 1)));
-	tAssert("compare 3", !dlistCmp(&list1, &list2, (DListCmpFunc) _testTypeCmp));
+	tAssert("compare 3", !dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
 
-	freeDList(&list1, (DListFreeFunc) _freeTestType);
-	freeDList(&list2, (DListFreeFunc) _freeTestType);
+	freeDList(&list1, (FreeFunc) _freeTestType);
+	freeDList(&list2, (FreeFunc) _freeTestType);
 }
 
 void dlistTestRemMult() {

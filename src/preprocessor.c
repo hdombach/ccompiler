@@ -10,6 +10,7 @@
 #include "util/dlist.h"
 #include "util/macroDict.h"
 #include "util/tokList.h"
+#include "util/callbacks.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -164,7 +165,7 @@ void preprocessor(DList *tokens) {
 
 		if ((res = parseASTMacroDef(&u.astDef, tok + n))) {
 			macroDictInsert(&macros, strdup(u.astDef.name), u.astDef);
-			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, n, res, (FreeFunc) freeToken);
 			tok = (Token *) dlistGetm(tokens, 0);
 		} else if ((res = parseASTMacroIncl(&u.astIncl, tok + n))) {
 			//printASTMacroIncl(&include);
@@ -179,7 +180,7 @@ void preprocessor(DList *tokens) {
 			}
 			TokList newTokens = tokenize(fp, u.astIncl.filename);
 			tokListRemLast(&newTokens); //remove EOF token
-			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, n, res, (FreeFunc) freeToken);
 			dlistInsMult(tokens, &newTokens, n);
 			tok = (Token *) dlistGetm(tokens, 0);
 
@@ -189,7 +190,7 @@ void preprocessor(DList *tokens) {
 			ASTMacroIf *cur = &u.astIf;
 			int curOffset = 0;
 			while (cur) {
-				dlistRemMult(tokens, n + cur->start - curOffset, cur->end - cur->start, (DListFreeFunc) freeToken);
+				dlistRemMult(tokens, n + cur->start - curOffset, cur->end - cur->start, (FreeFunc) freeToken);
 				curOffset += cur->end - cur->start;
 				cur = cur->next;
 			}
@@ -197,14 +198,14 @@ void preprocessor(DList *tokens) {
 			freeASTMacroIf(&u.astIf);
 		} else if ((res = parseASTMacroUndef(&u.astUndef, tok + n))) {
 			macroDictDelete(&macros, u.astUndef.name);
-			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, n, res, (FreeFunc) freeToken);
 			tok = (Token *) dlistGetm(tokens, 0);
 			freeASTMacroUndef(&u.astUndef);
 		} else if (tok[n].type == TT_IDENTIFIER && macroDictPresent(&macros, tok[n].contents)) {
 			TokList insert;
 			initTokList(&insert);
 			res = _expandMacro(&insert, macroDictGetm(&macros, tok[n].contents), tok + n);
-			dlistRemMult(tokens, n, res, (DListFreeFunc) freeToken);
+			dlistRemMult(tokens, n, res, (FreeFunc) freeToken);
 			dlistInsMult(tokens, &insert, n);
 			tok = tokListGetm(tokens, 0);
 		} else {

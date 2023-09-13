@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include "callbacks.h"
+
 /*
  * A generic dynamic list implimentation
  */
@@ -18,15 +20,10 @@ typedef enum {
 	DLIST_INVALID_INDEX = 2,
 } DListErr;
 
-typedef void (*DListFreeFunc)(void*);
-typedef int (*DListCmpFunc)(void const*, void const*);
-typedef void (*DListCpFunc)(void *, void const*);
-typedef int (*DListPrintFunc)(void const*);
-
 void initDList(DList *list, size_t elementSize);
 void initDListCap(DList *list, size_t elementSize, size_t initialCap);
 void initDListEmpty(DList *list, size_t elementSize);
-void freeDList(DList *list, DListFreeFunc freeFunc);
+void freeDList(DList *list, FreeFunc freeFunc);
 void moveDList(DList *dest, DList *src);
 
 void *dlistGetm(DList *list, int index);
@@ -51,14 +48,14 @@ void dlistDecCap(DList *list);
 /*
  * Removes an element at the index
  */
-DListErr dlistRem(DList *list, int index, DListFreeFunc);
+DListErr dlistRem(DList *list, int index, FreeFunc);
 
-void dlistRemLast(DList *list, DListFreeFunc);
+void dlistRemLast(DList *list, FreeFunc);
 
 /*
  * Removes range of elements
  */
-DListErr dlistRemMult(DList *list, int start, int count, DListFreeFunc);
+DListErr dlistRemMult(DList *list, int start, int count, FreeFunc);
 
 /*
  * Inserts an element at the index
@@ -72,11 +69,11 @@ DListErr dlistIns(DList *list, const void *element, int index);
  */
 DListErr dlistInsMult(DList *list, DList const *elements, int index);
 
-void dlistRemAll(DList *list, DListFreeFunc);
+void dlistRemAll(DList *list, FreeFunc);
 
 /*
  * Compares two lists
  */
-int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc);
+int dlistCmp(const DList *lhs, const DList *rhs, CmpFunc cmpFunc);
 
-int printDList(const DList *list, DListPrintFunc printFunc);
+int printDList(const DList *list, PrintFunc printFunc);
