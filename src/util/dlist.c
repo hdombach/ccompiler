@@ -4,6 +4,7 @@
 #include <strings.h>
 
 #include "dlist.h"
+#include "callbacks.h"
 
 const int DLIST_INITIAL_CAP = 2;
 
@@ -28,7 +29,7 @@ void initDListEmpty(DList *list, size_t elementSize) {
 	list->data = NULL;
 }
 
-void freeDList(DList *list, DListFreeFunc freeFunc) {
+void freeDList(DList *list, FreeFunc freeFunc) {
 	if (!list->data) {
 		return;
 	}
@@ -80,7 +81,7 @@ void dlistDecCap(DList *list) {
 	}
 }
 
-DListErr dlistRem(DList *list, int index, DListFreeFunc freeFunc) {
+DListErr dlistRem(DList *list, int index, FreeFunc freeFunc) {
 	size_t mvLen;
 
 	if (index < 0 || index >= list->size) {
@@ -99,7 +100,7 @@ DListErr dlistRem(DList *list, int index, DListFreeFunc freeFunc) {
 	return DLIST_SUCCESS;
 }
 
-void dlistRemLast(DList *list, DListFreeFunc freeFunc) {
+void dlistRemLast(DList *list, FreeFunc freeFunc) {
 	if (list->size == 0) {
 		return;
 	}
@@ -107,7 +108,7 @@ void dlistRemLast(DList *list, DListFreeFunc freeFunc) {
 	list->size--;
 }
 
-DListErr dlistRemMult(DList *list, int start, int count, DListFreeFunc freeFunc) {
+DListErr dlistRemMult(DList *list, int start, int count, FreeFunc freeFunc) {
 	size_t mvLen;
 
 	if (start < 0 || start + count > list->size) {
@@ -166,7 +167,7 @@ DListErr dlistInsMult(DList *list, const DList *elements, int index) {
 	return DLIST_SUCCESS;
 }
 
-void dlistRemAll(DList *list, DListFreeFunc freeFunc) {
+void dlistRemAll(DList *list, FreeFunc freeFunc) {
 	if (freeFunc) {
 		for (int i = 0; i < list->size; i++) {
 			freeFunc(dlistGetm(list, i));;
@@ -178,7 +179,7 @@ void dlistRemAll(DList *list, DListFreeFunc freeFunc) {
 	list->size = 0;
 }
 
-int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
+int dlistCmp(const DList *lhs, const DList *rhs, CmpFunc cmpFunc) {
 	if (lhs->size != rhs->size) {
 		return 0;
 	}
@@ -190,7 +191,7 @@ int dlistCmp(const DList *lhs, const DList *rhs, DListCmpFunc cmpFunc) {
 	return 1;
 }
 
-int printDList(const DList *list, DListPrintFunc printFunc) {
+int printDList(const DList *list, PrintFunc printFunc) {
 	int n = 0;
 	n += printf("[");
 	for (int i = 0; i < list->size; i++) {
