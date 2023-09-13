@@ -9,3 +9,7 @@ char_t typedefTest2;
 
 typedef short short_t;
 typedef signed short int short_t;
+
+struct testStruct {
+	int value;
+};

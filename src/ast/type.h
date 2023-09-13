@@ -1,11 +1,14 @@
 #pragma once
 
 #include "declaration.h"
+#include "structDecl.h"
 
 typedef enum {
 	AST_TT_UNKNOWN,
 	AST_TT_ARITH,
 	AST_TT_TYPEDEF,
+	AST_TT_STRUCT,
+	AST_TT_TYPEDEFREF,
 } ASTTypeType;
 
 typedef struct ASTType {
@@ -16,6 +19,8 @@ typedef struct ASTType {
 	union {
 		ASTArithType arith;
 		struct ASTType *tdef;
+		ASTStructDecl structDecl;
+		char *tdefRef;
 	} c;
 	Token const *tok;
 } ASTType;

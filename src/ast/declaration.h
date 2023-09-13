@@ -3,6 +3,7 @@
 #include "../token.h"
 #include "../util/dlist.h"
 #include "initializer.h"
+#include "structDecl.h"
 
 // https://en.cppreference.com/w/c/language/declarations
 
@@ -56,6 +57,7 @@ typedef struct {
 	union {
 		ASTArithType arith;
 		char *typedefName;
+		ASTStructDecl structDecl;
 	} c;
 	Token const *tok;
 } ASTTypeSpec;
@@ -75,7 +77,7 @@ typedef struct {
 	ASTInitializer *initializer;
 } ASTDeclarator;
 
-typedef struct {
+typedef struct ASTDeclaration {
 	ASTTypeSpec typeSpec;
 	DList declarators;
 } ASTDeclaration;
@@ -106,6 +108,7 @@ void initASTDeclarator(ASTDeclarator *declarator);
 void freeASTDeclarator(ASTDeclarator *declarator);
 int parseASTDeclarator(ASTDeclarator *declarator, Token const *tok);
 int printASTDeclarator(ASTDeclarator const *declarator);
+void cpASTDeclarator(ASTDeclarator *dest, ASTDeclarator const *src);
 
 void initASTDeclaration(ASTDeclaration *declaration);
 void freeASTDeclaration(ASTDeclaration *declaration);
@@ -114,5 +117,6 @@ int parseASTDeclaration(
 		Token const *tok,
 		ASTScope const *scope);
 int printASTDeclaration(ASTDeclaration const *declaration);
+void cpASTDeclaration(ASTDeclaration *dest, ASTDeclaration const *src);
 
 DList astDeclarationTypes(ASTDeclaration const *declaration);

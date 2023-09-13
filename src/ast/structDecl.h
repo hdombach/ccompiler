@@ -1,9 +1,7 @@
 #pragma once
 
-#include "declaration.h"
 #include "../util/dlist.h"
 #include "../token.h"
-#include "scope.h"
 
 typedef enum {
 	AST_SDT_UNKNOWN,
@@ -13,15 +11,19 @@ typedef enum {
 	AST_SDT_BIT,
 } ASTStructDeclItemType;
 
+typedef struct ASTDeclaration ASTDeclaration;
+typedef struct ASTScope ASTScope;
+
 typedef struct ASTStructDeclItem {
 	ASTStructDeclItemType type;
 	union {
-		ASTDeclaration declaration;
+		ASTDeclaration *declaration;
 	} c;
 } ASTStructDeclItem;
 
 void initASTStructDeclItem(ASTStructDeclItem *item);
 void freeASTStructDeclItem(ASTStructDeclItem *item);
+void cpASTStructDeclItem(ASTStructDeclItem *dest, ASTStructDeclItem const *src);
 int parseASTStructDeclItem(
 		ASTStructDeclItem *item,
 		Token const *tok,
@@ -31,10 +33,11 @@ int printASTStructDeclItem(ASTStructDeclItem const *item);
 typedef struct {
 	char *name;
 	DList items;
-	ASTScope scope;
+	ASTScope *scope;
 } ASTStructDecl;
 
 void initASTStructDecl(ASTStructDecl *decl);
 void freeASTStructDecl(ASTStructDecl *decl);
-int parseASTStructDecl(ASTStructDecl *decl, Token const *tok, ASTScope *scope);
+void cpASTStructDecl(ASTStructDecl *dest, ASTStructDecl const *src);
+int parseASTStructDecl(ASTStructDecl *decl, Token const *tok, ASTScope const *scope);
 int printASTStructDecl(ASTStructDecl const *decl);

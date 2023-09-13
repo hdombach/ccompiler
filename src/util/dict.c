@@ -32,6 +32,39 @@ void freeDict(Dict *dict, FreeFunc freeKeyFunc, FreeFunc freeValueFunc) {
 	free(dict->nodes);
 }
 
+void cpDict(
+		Dict *dest,
+		Dict const *src,
+		CpFunc cpKey,
+		CpFunc cpValue,
+		size_t keySize,
+		size_t valueSize)
+{
+	dest->allocatedSize = src->allocatedSize;
+	dest->elementCount = src->elementCount;
+
+	dest->nodes = malloc(sizeof(DictNode*) * dest->allocatedSize);
+
+	for (int i = 0; i < dest->allocatedSize; i++) {
+		DictNode *curSrc = src->nodes[i];
+		DictNode **curDest = dest->nodes + i;
+		while (curSrc) {
+			*curDest = malloc(sizeof(DictNode));
+
+			(*curDest)->key = malloc(keySize);
+			cpKey(&(*curDest)->key, curSrc->key);
+
+			(*curDest)->value = malloc(valueSize);
+			cpValue(&(*curDest)->value, curSrc->value);
+
+			(*curDest)->next = NULL;
+
+			curDest = &(*curDest)->next;
+			curSrc = curSrc->next;
+		}
+	}
+}
+
 void initDictNode(
 		DictNode *node,
 		void *key,

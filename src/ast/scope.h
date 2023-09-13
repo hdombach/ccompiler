@@ -9,6 +9,7 @@ typedef struct ASTScope {
 
 void initASTScope(ASTScope *scope);
 void freeASTScope(ASTScope *scope);
+void cpASTScope(ASTScope *dest, ASTScope const *src);
 int printASTScope(ASTScope const *scope);
 
 int astScopeInsert(ASTScope *scope, ASTType type);

@@ -5,6 +5,7 @@
 #include "astUtil.h"
 #include "declaration.h"
 #include "initializer.h"
+#include "structDecl.h"
 #include "type.h"
 #include "scope.h"
 
@@ -307,6 +308,9 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 		case AST_TST_TYPEDEF:
 			free(typeSpec->c.typedefName);
 			break;
+		case AST_TST_STRUCT:
+			freeASTStructDecl(&typeSpec->c.structDecl);
+			break;
 		default:
 			break;
 	}
@@ -355,9 +359,23 @@ int parseASTTypeSpec(
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
 				break;
+			} else {
+				astErr("Unexpected identifier", tok + n);
+				freeASTTypeSpec(typeSpec);
+				return 0;
 			}
 		} else if (tok[n].type == TT_STRUCT) {
-			//TODO
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
+
+			if ((res = parseASTStructDecl(&typeSpec->c.structDecl, tok + n, scope))) {
+				n += res;
+				typeSpec->typeSpecType = AST_TST_STRUCT;
+			} else {
+				if (!astHasErr()) {
+					astErr("Invalid struct declaration", tok + n);
+				}
+			}
+			break;
 		} else if (tok[n].type == TT_UNION) {
 			//TODO
 		} else if (tok[n].type == TT_ENUM) {
@@ -396,6 +414,9 @@ int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
 		case AST_TST_TYPEDEF:
 			n += printf("\"%s\"", typeSpec->c.typedefName);
 			break;
+		case AST_TST_STRUCT:
+			n += printASTStructDecl(&typeSpec->c.structDecl);
+			break;
 		default:
 			n += printf("\"unknown\"");
 	}
@@ -416,6 +437,9 @@ void cpASTTypeSpec(ASTTypeSpec *dest, const ASTTypeSpec *src) {
 			break;
 		case AST_TST_TYPEDEF:
 			dest->c.typedefName = strdup(src->c.typedefName);
+			break;
+		case AST_TST_STRUCT:
+			cpASTStructDecl(&dest->c.structDecl, &src->c.structDecl);
 			break;
 		default:
 			break;
@@ -530,6 +554,11 @@ int parseASTDeclaration(
 		return 0;
 	}
 
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+		return n;
+	}
+
 	while (1) {
 		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
 			n += res;
@@ -572,10 +601,26 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	return n;
 }
 
+void test() {
+	struct TestStruct;
+	struct TestStruct {
+		int value;
+	} test1, test2;
+	struct {
+		int value;
+	} test3;
+	struct {
+		int value;
+	} test4;
+
+	struct TestStruct TestStruct();
+}
+
+
 DList astDeclarationTypes(const ASTDeclaration *declaration) {
 	DList result;
 
-	initDListCap(&result, sizeof(ASTType), declaration->declarators.size);
+	initDListCap(&result, sizeof(ASTType), declaration->declarators.size + 1);
 
 	for (int i = 0; i < declaration->declarators.size; i++) {
 		ASTDeclarator *declarator = (ASTDeclarator *) dlistGet(&declaration->declarators, i);

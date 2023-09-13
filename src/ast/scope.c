@@ -14,6 +14,11 @@ void freeASTScope(ASTScope *scope) {
 	freeTypeDict(&scope->types);
 }
 
+void cpASTScope(ASTScope *dest, const ASTScope *src) {
+	dest->parent = src->parent;
+	cpTypeDict(&dest->types, &src->types);
+}
+
 int printASTScope(ASTScope const *scope) {
 	return printTypeDict(&scope->types);
 }

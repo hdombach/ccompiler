@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 
 #include "structDecl.h"
@@ -13,7 +14,19 @@ void initASTStructDeclItem(ASTStructDeclItem *item) {
 void freeASTStructDeclItem(ASTStructDeclItem *item) {
 	switch (item->type) {
 		case AST_SDT_VAR:
-			freeASTDeclaration(&item->c.declaration);
+			freeASTDeclaration(item->c.declaration);
+			free(item->c.declaration);
+			break;
+		default:
+			break;
+	}
+}
+
+void cpASTStructDeclItem(ASTStructDeclItem *dest, const ASTStructDeclItem *src) {
+	dest->type = src->type;
+	switch (dest->type) {
+		case AST_SDT_VAR:
+			//TODO: finish
 			break;
 		default:
 			break;
@@ -33,7 +46,10 @@ int parseASTStructDeclItem(
 		return 0;
 	}
 
-	if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
+	ASTDeclaration tempDeclaration;
+	if ((res = parseASTDeclaration(&tempDeclaration, tok + n, scope))) {
+		item->c.declaration = malloc(sizeof(ASTDeclaration));
+		*item->c.declaration = tempDeclaration;
 		item->type = AST_SDT_VAR;
 		n += res;
 	}
@@ -44,7 +60,7 @@ int parseASTStructDeclItem(
 int printASTStructDeclItem(const ASTStructDeclItem *item) {
 	switch (item->type) {
 		case AST_SDT_VAR:
-			return printASTDeclaration(&item->c.declaration);
+			return printASTDeclaration(item->c.declaration);
 		default:
 			return 0;
 	}
@@ -53,7 +69,8 @@ int printASTStructDeclItem(const ASTStructDeclItem *item) {
 void initASTStructDecl(ASTStructDecl *decl) {
 	decl->name = NULL;
 	initDList(&decl->items, sizeof(ASTStructDeclItem));
-	initASTScope(&decl->scope);
+	decl->scope = malloc(sizeof(ASTScope));
+	initASTScope(decl->scope);
 }
 
 void freeASTStructDecl(ASTStructDecl *decl) {
@@ -61,10 +78,20 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 		free(decl->name);
 	}
 	freeDList(&decl->items, (FreeFunc) freeASTStructDeclItem);
-	freeASTScope(&decl->scope);
+	freeASTScope(decl->scope);
+	free(decl->scope);
 }
 
-int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope *scope) {
+void cpASTStructDecl(ASTStructDecl *dest, const ASTStructDecl *src) {
+	if (src->name) {
+		dest->name = strdup(src->name);
+	}
+	cpDList(&dest->items, &src->items, (CpFunc) cpASTStructDeclItem);
+	dest->scope = malloc(sizeof(ASTScope));
+	cpASTScope(dest->scope, src->scope);
+}
+
+int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *scope) {
 	int res, n = 0;
 
 	if (astHasErr()) {
@@ -72,7 +99,7 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope *scope) {
 	}
 
 	initASTStructDecl(decl);
-	decl->scope.parent = scope;
+	decl->scope->parent = (ASTScope *) scope; //is const in this context
 
 	if (tok[n].type == TT_STRUCT) {
 		n++;
@@ -95,7 +122,7 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope *scope) {
 
 	while (1) {
 		ASTStructDeclItem item;
-		if ((res = parseASTStructDeclItem(&item, tok + n, &decl->scope))) {
+		if ((res = parseASTStructDeclItem(&item, tok + n, decl->scope))) {
 			n += res;
 			dlistApp(&decl->items, &item);
 		} else {
@@ -119,7 +146,8 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	n += printf("{");
 
 	if (decl->name) {
-		n += printf("\"struct name\": %s", decl->name);
+		n += printf("\"struct name\": ");
+		n += printJsonStr(decl->name);
 		isFirst = 0;
 	}
 

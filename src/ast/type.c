@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "structDecl.h"
 #include "type.h"
 #include "declaration.h"
 #include "../util/dstr.h"
@@ -22,6 +23,8 @@ void initASTTypePart(
 	type->tok = spec->tok;
 	if (spec->storage & AST_SC_TYPEDEF) {
 		ASTTypeSpec newSpec;
+		type->qualifiers = AST_TQ_NONE;
+		type->storage = AST_SC_NONE;
 		type->type = AST_TT_TYPEDEF;
 		type->c.tdef = malloc(sizeof(ASTType));
 
@@ -55,6 +58,14 @@ void initASTTypePart(
 			type->type = AST_TT_ARITH;
 			type->c.arith = astArithTypeNormalize(&spec->c.arith);
 			break;
+		case AST_TST_STRUCT:
+			type->type = AST_TT_STRUCT;
+			cpASTStructDecl(&type->c.structDecl, &spec->c.structDecl);
+			break;
+		case AST_TST_TYPEDEF:
+			type->c.tdefRef = strdup(spec->c.typedefName);
+			type->type = AST_TT_TYPEDEFREF;
+			break;
 		default:
 			type->type = AST_TT_UNKNOWN;
 			break;
@@ -64,6 +75,20 @@ void initASTTypePart(
 void freeASTType(ASTType *type) {
 	if (type->name) {
 		free(type->name);
+	}
+	switch (type->type) {
+		case AST_TT_TYPEDEF:
+			freeASTType(type->c.tdef);
+			free(type->c.tdef);
+			break;
+		case AST_TT_STRUCT:
+			freeASTStructDecl(&type->c.structDecl);
+			break;
+		case AST_TT_TYPEDEFREF:
+			free(type->c.tdefRef);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -87,6 +112,14 @@ int printASTType(ASTType *type) {
 			case AST_TT_ARITH:
 				n += printf(", \"type\": ");
 				n += printASTArithType(&type->c.arith);
+				break;
+			case AST_TT_TYPEDEFREF:
+				n += printf(", \"typedef\": ");
+				n += printJsonStr(type->c.tdefRef);
+				break;
+			case AST_TT_STRUCT:
+				n += printf(", \"struct\": ");
+				n += printASTStructDecl(&type->c.structDecl);
 				break;
 			default:
 				break;
@@ -136,9 +169,16 @@ int cmpASTType(const ASTType *lhs, const ASTType *rhs) {
 				return 0;
 			}
 			break;
+		case AST_TT_TYPEDEFREF:
+			if (0 != strcmp(lhs->c.tdefRef, rhs->c.tdefRef)) {
+				return 0;
+			}
+			break;
 		default:
 			break;
 	}
+
+	//TODO: impliment struct
 
 	return 1;
 }
@@ -148,8 +188,6 @@ ASTType *astTypeComp(ASTType *lhs, ASTType *rhs) {
 		return NULL;
 	}
 	switch (lhs->type) {
-		case AST_TT_ARITH:
-			return NULL;
 		case AST_TT_TYPEDEF:
 			if (cmpASTType(lhs, rhs)) {
 				return lhs;
@@ -160,3 +198,4 @@ ASTType *astTypeComp(ASTType *lhs, ASTType *rhs) {
 			return NULL;
 	}
 }
+

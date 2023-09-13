@@ -19,6 +19,16 @@ static void freeTypeDict(TypeDict *dict) {
 	freeDict(dict, (FreeFunc) freeStr, (FreeFunc) freeASTType);
 }
 
+static void cpTypeDict(TypeDict *dest, TypeDict const *src) {
+	cpDict(
+			dest,
+			src,
+			(CpFunc) cpStrp,
+			(CpFunc) cmpASTType,
+			sizeof(char *),
+			sizeof(ASTType));
+}
+
 /*
  * Inserts an item with the given key into the hash table
  * Returns 1 on success

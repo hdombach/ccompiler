@@ -18,6 +18,13 @@ typedef struct {
 
 void initDict(Dict *dict);
 void freeDict(Dict *dict, FreeFunc freeKeyFunc, FreeFunc freeValueFunc);
+void cpDict(
+		Dict *dest,
+		Dict const *src,
+		CpFunc cpKey,
+		CpFunc cpValue,
+		size_t keySize,
+		size_t valueSize);
 
 void initDictNode(
 		DictNode *node,
