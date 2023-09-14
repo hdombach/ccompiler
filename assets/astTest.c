@@ -20,3 +20,12 @@ struct TestBitField {
 	int : 0, :3;
 	unsigned value2 : 2;
 };
+
+union TestUnion {
+	int option1;
+	char_t option2;
+	struct {
+		int id;
+		int index;
+	};
+};

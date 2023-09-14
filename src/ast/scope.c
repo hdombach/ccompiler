@@ -14,7 +14,13 @@ void freeASTScope(ASTScope *scope) {
 }
 
 int astScopeIsTypedef(const ASTScope *scope, const char *name) {
-	return wordDictPresent(&scope->typedefNames, name);
+	if (wordDictPresent(&scope->typedefNames, name)) {
+		return 1;
+	} else if (scope->parent) {
+		return astScopeIsTypedef(scope->parent, name);
+	} else {
+		return 0;
+	}
 }
 
 void astScopeAddTypedefName(ASTScope *scope, char *name) {

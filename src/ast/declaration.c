@@ -365,7 +365,7 @@ int parseASTTypeSpec(
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
-		} else if (tok[n].type == TT_STRUCT) {
+		} else if (tok[n].type == TT_STRUCT || tok[n].type == TT_UNION) {
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
 
 			if ((res = parseASTStructDecl(&typeSpec->c.structDecl, tok + n, scope))) {
@@ -377,8 +377,6 @@ int parseASTTypeSpec(
 				}
 			}
 			break;
-		} else if (tok[n].type == TT_UNION) {
-			//TODO
 		} else if (tok[n].type == TT_ENUM) {
 			//TODO
 		} else if ((res = parseASTStorageClassSpec(&typeSpec->storage, tok + n))) {
@@ -389,40 +387,6 @@ int parseASTTypeSpec(
 			break;
 		}
 	}
-
-	return n;
-}
-
-int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"Type Qualifiers\": ");
-	n += printASTTypeQualifier(&typeSpec->qualifiers);
-
-	n += printf(", \"Storage Class Specifiers\": ");
-	n += printASTStorageClassSpec(&typeSpec->storage);
-
-	printf(", \"type\": ");
-	switch (typeSpec->typeSpecType) {
-		case AST_TST_VOID:
-			n += printf("\"void\"");
-			break;
-		case AST_TST_ARITH:
-			n += printASTArithType(&typeSpec->c.arith);
-			break;
-		case AST_TST_TYPEDEF:
-			n += printf("\"%s\"", typeSpec->c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			n += printASTStructDecl(&typeSpec->c.structDecl);
-			break;
-		default:
-			n += printf("\"unknown\"");
-	}
-
-	n += printf("}");
 
 	return n;
 }
@@ -589,12 +553,48 @@ int parseASTDeclaration(
 }
 
 int printASTDeclaration(const ASTDeclaration *declaration) {
-	int n = 0;
+	int n = 0, isFirst = 1;
 
 	n += printf("{");
 
-	n += printf("\"Type Specification\": ");
-	n += printASTTypeSpec(&declaration->typeSpec);
+	if (declaration->typeSpec.qualifiers) {
+		isFirst = 0;
+		n += printf("\"Type Qualifiers\": ");
+		n += printASTTypeQualifier(&declaration->typeSpec.qualifiers);
+	}
+
+	if (declaration->typeSpec.storage) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"Storage Class Specifiers\": ");
+		n += printASTStorageClassSpec(&declaration->typeSpec.storage);
+	}
+
+	if (isFirst) {
+		isFirst = 0;
+	} else {
+		n += printf(", ");
+	}
+	n += printf("\"type\": ");
+	switch (declaration->typeSpec.typeSpecType) {
+		case AST_TST_VOID:
+			n += printf("\"void\"");
+			break;
+		case AST_TST_ARITH:
+			n += printASTArithType(&declaration->typeSpec.c.arith);
+			break;
+		case AST_TST_TYPEDEF:
+			n += printf("\"%s\"", declaration->typeSpec.c.typedefName);
+			break;
+		case AST_TST_STRUCT:
+			n += printASTStructDecl(&declaration->typeSpec.c.structDecl);
+			break;
+		default:
+			n += printf("\"unknown\"");
+	}
 
 	n += printf(", \"Declarators\": ");
 	n += printDList(&declaration->declarators, (PrintFunc) printASTDeclarator);

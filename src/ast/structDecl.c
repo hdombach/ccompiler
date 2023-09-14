@@ -60,6 +60,7 @@ void initASTStructDecl(ASTStructDecl *decl) {
 	initDList(&decl->items, sizeof(ASTStructDeclItem));
 	decl->scope = malloc(sizeof(ASTScope));
 	initASTScope(decl->scope);
+	decl->isUnion = 0;
 }
 
 void freeASTStructDecl(ASTStructDecl *decl) {
@@ -82,6 +83,9 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *sc
 	decl->scope->parent = (ASTScope *) scope; //is const in this context
 
 	if (tok[n].type == TT_STRUCT) {
+		n++;
+	} else if (tok[n].type == TT_UNION) {
+		decl->isUnion = 1;
 		n++;
 	} else {
 		freeASTStructDecl(decl);
@@ -126,7 +130,11 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	n += printf("{");
 
 	if (decl->name) {
-		n += printf("\"struct name\": ");
+		if (decl->isUnion) {
+			n += printf("\"union name\": ");
+		} else {
+			n += printf("\"struct name\": ");
+		}
 		n += printJsonStr(decl->name);
 		isFirst = 0;
 	}
@@ -134,7 +142,11 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	if (!isFirst) {
 		n += printf(", ");
 	}
-	n += printf("\"struct declarations\": ");
+		if (decl->isUnion) {
+			n += printf("\"union declarations\": ");
+		} else {
+			n += printf("\"struct declarations\": ");
+		}
 	n += printDList(&decl->items, (PrintFunc) printASTStructDeclItem);
 
 	n += printf("}");

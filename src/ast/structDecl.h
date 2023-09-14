@@ -33,6 +33,7 @@ typedef struct {
 	char *name;
 	DList items;
 	ASTScope *scope;
+	int isUnion;
 } ASTStructDecl;
 
 void initASTStructDecl(ASTStructDecl *decl);
