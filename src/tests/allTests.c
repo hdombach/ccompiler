@@ -6,6 +6,7 @@
 #include "dlistTest.h"
 #include "dstrTest.h"
 #include "macroDictTest.h"
+#include "wordDictTest.h"
 
 int main() {
 	tInit();
@@ -13,6 +14,7 @@ int main() {
 	dlistTest();
 	dstrTest();
 	macroDictTest();
+	wordDictTest();
 
 	tPrintResult();
 }

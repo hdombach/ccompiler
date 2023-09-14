@@ -85,9 +85,13 @@ void freeDictNode(
 		FreeFunc freeKeyFunc,
 		FreeFunc freeValueFunc)
 {
-	freeKeyFunc(node->key);
+	if (freeKeyFunc) {
+		freeKeyFunc(node->key);
+	}
 	free(node->key);
-	freeValueFunc(node->value);
+	if (freeValueFunc) {
+		freeValueFunc(node->value);
+	}
 	free(node->value);
 }
 
@@ -109,8 +113,12 @@ int dictInsert(
 	curNode = &dict->nodes[index];
 	while (*curNode) {
 		if (keyCmpFunc((*curNode)->key, key)) {
-			freeKeyFunc(key);
-			freeValueFunc(value);
+			if (freeKeyFunc) {
+				freeKeyFunc(key);
+			}
+			if (freeValueFunc) {
+				freeValueFunc(value);
+			}
 			return 0;
 		}
 		curNode = &((*curNode)->next);
@@ -218,7 +226,9 @@ void *dictRemove(
 			temp = *curNode;
 			*curNode = temp->next;
 
-			freeKeyFunc(temp->key);
+			if (freeKeyFunc) {
+				freeKeyFunc(temp->key);
+			}
 			tempValue = temp->value;
 			free(temp);
 			return tempValue;

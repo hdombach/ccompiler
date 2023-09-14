@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "util.h"
 
@@ -20,4 +21,8 @@ int cmpStrp(const char **a, const char **b) {
 void cpStrp(char **dest, const char **src) {
 	*dest = malloc(sizeof(char *));
 	*dest = strdup(*src);
+}
+
+int printIntp(int const *value) {
+	return printf("%d", *value);
 }
