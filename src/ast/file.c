@@ -1,7 +1,6 @@
 #include "file.h"
 #include "declaration.h"
 #include "scope.h"
-#include "type.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
 
@@ -60,10 +59,10 @@ DList astFileItemTypes(const ASTFileItem *item) {
 
 	switch (item->type) {
 		case AST_FIT_DECL:
-			result = astDeclarationTypes(&item->c.declaration);
+			result = astDeclarationTypedefNames(&item->c.declaration);
 			break;
 		default:
-			initDListEmpty(&result, sizeof(ASTType));
+			initDListEmpty(&result, sizeof(char *));
 			break;
 	}
 
@@ -92,7 +91,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 			dlistApp(&file->items, &tempItem);
 
 			DList newTypes = astFileItemTypes(&tempItem);
-			if (!astScopeInsertMult(&file->scope, &newTypes)) break;
+			astScopeAddTypedefNames(&file->scope, newTypes);
 		} else {
 			break;
 		}
@@ -109,10 +108,7 @@ int printASTFile(const ASTFile *file) {
 
 	n += printf("{");
 
-	n += printf("\"scope\": ");
-	n += printASTScope(&file->scope);
-
-	n += printf(", \"declerations\": ");
+	n += printf("\"declerations\": ");
 	n += printDList(&file->items, (PrintFunc) printASTFileItem);
 
 	n += printf("}");

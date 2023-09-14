@@ -24,6 +24,7 @@ typedef enum {
 	AST_SC_EXTERN = 0b10000,
 } ASTStorageClassSpec;
 
+//TODO: add float
 typedef enum {
 	AST_AT_NONE = 0b0,
 	AST_AT_CHAR = 0b1,
@@ -38,17 +39,23 @@ typedef enum {
 
 typedef enum {
 	AST_TST_UNKNOWN,
+	/* The declaration references void */
 	AST_TST_VOID,
+	/* The declaration referneces a number */
 	AST_TST_ARITH,
+	/* The declaration references a typedef */
 	AST_TST_TYPEDEF,
+	/* The declaration introduces or references a struct */
 	AST_TST_STRUCT,
+	/* The declaration introduces or references an union */
 	AST_TST_UNION,
+	/* The declaration introduces or references an enum */
 	AST_TST_ENUM,
 } ASTTypeSpecType;
 
 /*
  * A type specifier
- * (The first chunk of a decleration)
+ * (The first chunk of a declaration)
  */
 typedef struct {
 	ASTTypeQualifier qualifiers;
@@ -102,13 +109,11 @@ int parseASTTypeSpec(
 		Token const *tok,
 		ASTScope const *scope);
 int printASTTypeSpec(ASTTypeSpec const *typeSpec);
-void cpASTTypeSpec(ASTTypeSpec *dest, ASTTypeSpec const *src);
 
 void initASTDeclarator(ASTDeclarator *declarator);
 void freeASTDeclarator(ASTDeclarator *declarator);
 int parseASTDeclarator(ASTDeclarator *declarator, Token const *tok);
 int printASTDeclarator(ASTDeclarator const *declarator);
-void cpASTDeclarator(ASTDeclarator *dest, ASTDeclarator const *src);
 
 void initASTDeclaration(ASTDeclaration *declaration);
 void freeASTDeclaration(ASTDeclaration *declaration);
@@ -117,6 +122,7 @@ int parseASTDeclaration(
 		Token const *tok,
 		ASTScope const *scope);
 int printASTDeclaration(ASTDeclaration const *declaration);
-void cpASTDeclaration(ASTDeclaration *dest, ASTDeclaration const *src);
 
-DList astDeclarationTypes(ASTDeclaration const *declaration);
+DList astDeclarationTypedefNames(ASTDeclaration const *declaration);
+/* Caller needs to free result */
+char * astDeclaratorTypedefName(ASTDeclarator const *declarator);

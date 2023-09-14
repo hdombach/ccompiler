@@ -10,6 +10,6 @@ char_t typedefTest2;
 typedef short short_t;
 typedef signed short int short_t;
 
-struct testStruct {
+struct TestStruct {
 	int value;
-};
+} testStruct1, testStruct2;

@@ -6,7 +6,6 @@
 #include "declaration.h"
 #include "initializer.h"
 #include "structDecl.h"
-#include "type.h"
 #include "scope.h"
 
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
@@ -277,7 +276,7 @@ int astArithTypeNormalize(const ASTArithType *type) {
 }
 
 int _parseTypedefIdentifier(
-		char **identifier,
+		char **typedefName,
 		const Token *tok,
 		ASTScope const *scope)
 {
@@ -288,8 +287,9 @@ int _parseTypedefIdentifier(
 	if (tok->type != TT_IDENTIFIER) {
 		return 0;
 	}
-	if (astScopePresent(scope, tok->contents)) {
-		*identifier = strdup(tok->contents);
+
+	if (astScopeIsTypedef(scope, tok->contents)) {
+		*typedefName = strdup(tok->contents);
 		return 1;
 	} else {
 		return 0;
@@ -424,26 +424,6 @@ int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
 	n += printf("}");
 
 	return n;
-}
-
-void cpASTTypeSpec(ASTTypeSpec *dest, const ASTTypeSpec *src) {
-	dest->qualifiers = src->qualifiers;
-	dest->storage = src->storage;
-	dest->typeSpecType = src->typeSpecType;
-	dest->tok = src->tok;
-	switch (dest->typeSpecType) {
-		case AST_TST_ARITH:
-			dest->c.arith = src->c.arith;
-			break;
-		case AST_TST_TYPEDEF:
-			dest->c.typedefName = strdup(src->c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			cpASTStructDecl(&dest->c.structDecl, &src->c.structDecl);
-			break;
-		default:
-			break;
-	}
 }
 
 void initASTDeclarator(ASTDeclarator *declarator) {
@@ -601,33 +581,27 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	return n;
 }
 
-void test() {
-	struct TestStruct;
-	struct TestStruct {
-		int value;
-	} test1, test2;
-	struct {
-		int value;
-	} test3;
-	struct {
-		int value;
-	} test4;
-
-	struct TestStruct TestStruct();
+DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
+	DList result;
+	if (declaration->typeSpec.storage & AST_SC_TYPEDEF) {
+		initDListCap(&result, sizeof(char *), declaration->declarators.size);
+		for (int i = 0; i < declaration->declarators.size; i++) {
+			ASTDeclarator const *declarator = dlistGet(&declaration->declarators, i);
+			char *newName = astDeclaratorTypedefName(declarator);
+			dlistApp(&result, &newName);
+		}
+	} else {
+		initDListEmpty(&result, sizeof(char *));
+	}
+	return result;
 }
 
-
-DList astDeclarationTypes(const ASTDeclaration *declaration) {
-	DList result;
-
-	initDListCap(&result, sizeof(ASTType), declaration->declarators.size + 1);
-
-	for (int i = 0; i < declaration->declarators.size; i++) {
-		ASTDeclarator *declarator = (ASTDeclarator *) dlistGet(&declaration->declarators, i);
-		ASTType type;
-		initASTTypePart(&type, &declaration->typeSpec, declarator);
-		dlistApp(&result, &type);
+char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
+	switch (declarator->type) {
+		case AST_DT_IDENTIFIER:
+			return strdup(declarator->c.identifier);
+		default:
+			fprintf(stderr, "Unimplimented stuff in declaration.c\n");
+			return NULL;
 	}
-
-	return result;
 }

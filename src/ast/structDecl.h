@@ -23,7 +23,6 @@ typedef struct ASTStructDeclItem {
 
 void initASTStructDeclItem(ASTStructDeclItem *item);
 void freeASTStructDeclItem(ASTStructDeclItem *item);
-void cpASTStructDeclItem(ASTStructDeclItem *dest, ASTStructDeclItem const *src);
 int parseASTStructDeclItem(
 		ASTStructDeclItem *item,
 		Token const *tok,
@@ -38,6 +37,5 @@ typedef struct {
 
 void initASTStructDecl(ASTStructDecl *decl);
 void freeASTStructDecl(ASTStructDecl *decl);
-void cpASTStructDecl(ASTStructDecl *dest, ASTStructDecl const *src);
 int parseASTStructDecl(ASTStructDecl *decl, Token const *tok, ASTScope const *scope);
 int printASTStructDecl(ASTStructDecl const *decl);

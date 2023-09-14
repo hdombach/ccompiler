@@ -22,17 +22,6 @@ void freeASTStructDeclItem(ASTStructDeclItem *item) {
 	}
 }
 
-void cpASTStructDeclItem(ASTStructDeclItem *dest, const ASTStructDeclItem *src) {
-	dest->type = src->type;
-	switch (dest->type) {
-		case AST_SDT_VAR:
-			//TODO: finish
-			break;
-		default:
-			break;
-	}
-}
-
 int parseASTStructDeclItem(
 		ASTStructDeclItem *item,
 		const Token *tok,
@@ -80,15 +69,6 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 	freeDList(&decl->items, (FreeFunc) freeASTStructDeclItem);
 	freeASTScope(decl->scope);
 	free(decl->scope);
-}
-
-void cpASTStructDecl(ASTStructDecl *dest, const ASTStructDecl *src) {
-	if (src->name) {
-		dest->name = strdup(src->name);
-	}
-	cpDList(&dest->items, &src->items, (CpFunc) cpASTStructDeclItem);
-	dest->scope = malloc(sizeof(ASTScope));
-	cpASTScope(dest->scope, src->scope);
 }
 
 int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *scope) {
