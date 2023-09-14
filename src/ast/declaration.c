@@ -4,6 +4,7 @@
 
 #include "astUtil.h"
 #include "declaration.h"
+#include "expression.h"
 #include "initializer.h"
 #include "structDecl.h"
 #include "scope.h"
@@ -429,6 +430,7 @@ int printASTTypeSpec(const ASTTypeSpec *typeSpec) {
 void initASTDeclarator(ASTDeclarator *declarator) {
 	declarator->type = AST_DT_UNKNOWN;
 	declarator->initializer = NULL;
+	declarator->bitField = NULL;
 }
 
 void freeASTDeclarator(ASTDeclarator *declarator) {
@@ -444,6 +446,11 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 		free(declarator->initializer);
 		declarator->initializer = NULL;
 	}
+	if (declarator->bitField) {
+		freeASTExp(declarator->bitField);
+		free(declarator->bitField);
+		declarator->bitField = NULL;
+	}
 }
 
 //TODO: add other declarators 
@@ -456,14 +463,13 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 		return 0;
 	}
 
-	if (tok[n].type != TT_IDENTIFIER) {
-		return 0;
+	if (tok[n].type == TT_IDENTIFIER) {
+		declarator->type = AST_DT_IDENTIFIER;
+		declarator->c.identifier = strdup(tok[n].contents);
+		n++;
 	}
 
 
-	declarator->type = AST_DT_IDENTIFIER;
-	declarator->c.identifier = strdup(tok[n].contents);
-	n++;
 
 	if (tok[n].type == TT_EQL) {
 		n++;
@@ -473,6 +479,17 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 		} else {
 			free(declarator->initializer);
 			declarator->initializer = NULL;
+			freeASTDeclarator(declarator);
+			return 0;
+		}
+	} else if (tok[n].type == TT_COLON) {
+		n++;
+		declarator->bitField = malloc(sizeof(ASTExp));
+		if ((res = parseASTExp(declarator->bitField, tok + n))) {
+			n += res;
+		} else {
+			free(declarator->bitField);
+			declarator->bitField = NULL;
 			freeASTDeclarator(declarator);
 			return 0;
 		}
@@ -497,6 +514,12 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 		n += printf(", \"initializer\": ");
 		n += printASTInitializer(declarator->initializer);
 	}
+
+	if (declarator->bitField) {
+		n += printf(", \"bitfield\": ");
+		n += printASTExp(declarator->bitField);
+	}
+
 	n += printf("}");
 
 	return n;

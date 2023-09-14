@@ -2,6 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "expression.h"
 #include "initializer.h"
 #include "structDecl.h"
 
@@ -82,6 +83,7 @@ typedef struct {
 		char *identifier;
 	} c;
 	ASTInitializer *initializer;
+	ASTExp *bitField;
 } ASTDeclarator;
 
 typedef struct ASTDeclaration {

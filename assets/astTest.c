@@ -13,3 +13,10 @@ typedef signed short int short_t;
 struct TestStruct {
 	int value;
 } testStruct1, testStruct2;
+
+struct TestBitField {
+	int value : 5;
+	/* this makes me very unhappy */
+	int : 0, :3;
+	unsigned value2 : 2;
+};
