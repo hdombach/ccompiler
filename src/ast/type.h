@@ -19,7 +19,6 @@ typedef struct ASTType {
 	union {
 		ASTArithType arith;
 		struct ASTType *tdef;
-		ASTStructDecl structDecl;
 		char *tdefRef;
 	} c;
 	Token const *tok;

@@ -58,10 +58,6 @@ void initASTTypePart(
 			type->type = AST_TT_ARITH;
 			type->c.arith = astArithTypeNormalize(&spec->c.arith);
 			break;
-		case AST_TST_STRUCT:
-			type->type = AST_TT_STRUCT;
-			cpASTStructDecl(&type->c.structDecl, &spec->c.structDecl);
-			break;
 		case AST_TST_TYPEDEF:
 			type->c.tdefRef = strdup(spec->c.typedefName);
 			type->type = AST_TT_TYPEDEFREF;
@@ -80,9 +76,6 @@ void freeASTType(ASTType *type) {
 		case AST_TT_TYPEDEF:
 			freeASTType(type->c.tdef);
 			free(type->c.tdef);
-			break;
-		case AST_TT_STRUCT:
-			freeASTStructDecl(&type->c.structDecl);
 			break;
 		case AST_TT_TYPEDEFREF:
 			free(type->c.tdefRef);
@@ -116,10 +109,6 @@ int printASTType(ASTType *type) {
 			case AST_TT_TYPEDEFREF:
 				n += printf(", \"typedef\": ");
 				n += printJsonStr(type->c.tdefRef);
-				break;
-			case AST_TT_STRUCT:
-				n += printf(", \"struct\": ");
-				n += printASTStructDecl(&type->c.structDecl);
 				break;
 			default:
 				break;
