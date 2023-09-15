@@ -1,6 +1,7 @@
 #include "macroInclude.h"
 #include "astUtil.h"
 #include "../util/dstr.h"
+#include "../util/util.h"
 
 #include <libgen.h>
 #include <stdio.h>

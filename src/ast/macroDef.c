@@ -6,7 +6,6 @@
 #include "../token.h"
 #include "../util/dlist.h"
 #include "tokenParser.h"
-#include "../util/dstr.h"
 #include "../util/util.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"

@@ -4,7 +4,7 @@
 #include "enumDecl.h"
 #include "expression.h"
 #include "astUtil.h"
-#include "../util/dstr.h"
+#include "../util/util.h"
 
 void initASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 	decl->name = NULL;

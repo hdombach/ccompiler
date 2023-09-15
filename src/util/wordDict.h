@@ -2,7 +2,6 @@
 
 #include "dict.h"
 #include "util.h"
-#include "dstr.h"
 
 /*
  * Maps a word to an int
