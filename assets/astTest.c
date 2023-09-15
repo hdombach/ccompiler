@@ -10,9 +10,9 @@ char_t typedefTest2;
 typedef short short_t;
 typedef signed short int short_t;
 
-struct TestStruct {
+typedef struct TestStruct {
 	int value;
-} testStruct1, testStruct2;
+} TestStruct;
 
 struct TestBitField {
 	int value : 5;
@@ -29,3 +29,20 @@ union TestUnion {
 		int index;
 	};
 };
+
+enum TestEnum {
+	TEST_ENUM_1,
+	TEST_ENUM_2 = 100,
+	TEST_ENUM_3,
+} testEnum1;
+
+typedef struct {
+	enum ComboType {
+		TYPE_1,
+		TYPE_2
+	} type;
+	union {
+		int value;
+		TestStruct value2;
+	} c;
+} ComboStruct;

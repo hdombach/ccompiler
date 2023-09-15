@@ -4,6 +4,7 @@
 
 #include "astUtil.h"
 #include "declaration.h"
+#include "enumDecl.h"
 #include "expression.h"
 #include "initializer.h"
 #include "structDecl.h"
@@ -312,6 +313,9 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 		case AST_TST_STRUCT:
 			freeASTStructDecl(&typeSpec->c.structDecl);
 			break;
+		case AST_TST_ENUM:
+			freeASTEnumDecl(&typeSpec->c.enumDecl);
+			break;
 		default:
 			break;
 	}
@@ -378,7 +382,17 @@ int parseASTTypeSpec(
 			}
 			break;
 		} else if (tok[n].type == TT_ENUM) {
-			//TODO
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
+
+			if ((res = parseASTEnumDecl(&typeSpec->c.enumDecl, tok + n))) {
+				n += res;
+				typeSpec->typeSpecType = AST_TST_ENUM;
+			} else {
+				if (!astHasErr()) {
+					astErr("Invalid enum declaration", tok + n);
+				}
+			}
+			break;
 		} else if ((res = parseASTStorageClassSpec(&typeSpec->storage, tok + n))) {
 			n += res;
 		} else if ((res = parseASTTypeQualifier(&typeSpec->qualifiers, tok + n))) {
@@ -591,6 +605,9 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 			break;
 		case AST_TST_STRUCT:
 			n += printASTStructDecl(&declaration->typeSpec.c.structDecl);
+			break;
+		case AST_TST_ENUM:
+			n += printASTEnumDecl(&declaration->typeSpec.c.enumDecl);
 			break;
 		default:
 			n += printf("\"unknown\"");

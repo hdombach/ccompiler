@@ -2,6 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "enumDecl.h"
 #include "expression.h"
 #include "initializer.h"
 #include "structDecl.h"
@@ -66,6 +67,7 @@ typedef struct {
 		ASTArithType arith;
 		char *typedefName;
 		ASTStructDecl structDecl;
+		ASTEnumDecl enumDecl;
 	} c;
 	Token const *tok;
 } ASTTypeSpec;
