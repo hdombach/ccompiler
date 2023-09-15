@@ -43,18 +43,16 @@ int parseASTArrayDecl(
 		return 0;
 	}
 
-	if (tok[n].type == TT_MULT) {
-		n++;
-	} else {
+	ASTExp tempExp;
+	if ((res = parseASTExp(&tempExp, tok + n))) {
 		decl->exp = malloc(sizeof(ASTExp));
-		if ((res = parseASTExp(decl->exp, tok + n))) {
-			n += res;
-		} else {
-			free(decl->exp);
-			decl->exp = NULL;
-			freeASTArrayDecl(decl);
-			return 0;
-		}
+		*decl->exp = tempExp;
+		n += res;
+	} else {
+		free(decl->exp);
+		decl->exp = NULL;
+		freeASTArrayDecl(decl);
+		return 0;
 	}
 
 	if (tok[n].type == TT_C_BRACE) {
