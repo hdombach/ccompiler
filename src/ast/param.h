@@ -11,5 +11,5 @@ typedef struct ASTParam {
 
 void initASTParam(ASTParam *param);
 void freeASTParam(ASTParam *param);
-int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope);
+int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope);
 int printASTParam(ASTParam const *param);

@@ -129,7 +129,10 @@ int parseASTTypeSpec(
 
 void initASTDeclarator(ASTDeclarator *declarator);
 void freeASTDeclarator(ASTDeclarator *declarator);
-int parseASTDeclarator(ASTDeclarator *declarator, Token const *tok);
+int parseASTDeclarator(
+		ASTDeclarator *declarator,
+		Token const *tok,
+		ASTScope const *scope);
 int printASTDeclarator(ASTDeclarator const *declarator);
 
 void initASTDeclaration(ASTDeclaration *declaration);

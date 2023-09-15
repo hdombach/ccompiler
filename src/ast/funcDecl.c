@@ -21,7 +21,8 @@ void freeASTFuncDecl(ASTFuncDecl *decl) {
 int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,
-		struct ASTDeclarator *encl)
+		struct ASTDeclarator *encl,
+		struct ASTScope const *scope)
 {
 	int n = 0, res;
 
@@ -44,7 +45,7 @@ int parseASTFuncDecl(
 
 	while (1) {
 		ASTParam param;
-		if ((res = parseASTParam(&param, tok + n, NULL))) {
+		if ((res = parseASTParam(&param, tok + n, scope))) {
 			dlistApp(&decl->params, &param);
 			n += res;
 		} else if (tok[n].type == TT_DOTS) {

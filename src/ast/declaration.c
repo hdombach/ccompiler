@@ -446,7 +446,11 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 }
 
 //TODO: add other declarators 
-int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
+int parseASTDeclarator(
+		ASTDeclarator *declarator,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int n = 0, res;
 
 	initASTDeclarator(declarator);
@@ -461,7 +465,7 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 		n++;
 	} else if (tok[n].type == TT_O_PARAN) {
 		n++;
-		if ((res = parseASTDeclarator(declarator, tok + n))) {
+		if ((res = parseASTDeclarator(declarator, tok + n, scope))) {
 			n += res;
 		} else {
 			//Don't need to free since the function call will do it
@@ -476,7 +480,7 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 	} else if (tok[n].type == TT_MULT) {
 		ASTDeclarator tempDeclarator;
 		n++;
-		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
+		if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
 			declarator->c.pointer = malloc(sizeof(ASTDeclarator));
 			*declarator->c.pointer = tempDeclarator;
 			n += res;
@@ -497,7 +501,7 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 			initASTDeclarator(declarator);
 		}
 
-		if ((res = parseASTFuncDecl(&declarator->c.func, tok + n, tempPtr))) {
+		if ((res = parseASTFuncDecl(&declarator->c.func, tok + n, tempPtr, scope))) {
 			n += res;
 			declarator->type = AST_DT_FUNC;
 		} else {
@@ -632,7 +636,7 @@ int parseASTDeclaration(
 	}
 
 	while (1) {
-		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
+		if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
 			n += res;
 			dlistApp(&declaration->declarators, &tempDeclarator);
 		} else {

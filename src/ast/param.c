@@ -18,7 +18,7 @@ void freeASTParam(ASTParam *param) {
 	}
 }
 
-int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope) {
+int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
 	ASTDeclarator tempDeclarator;
 
@@ -36,7 +36,7 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
+	if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
 		n += res;
 		param->declarator = malloc(sizeof(ASTDeclarator));
 		*param->declarator = tempDeclarator;

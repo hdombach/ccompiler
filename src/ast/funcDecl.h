@@ -4,6 +4,7 @@
 #include "../util/dlist.h"
 
 struct ASTDeclarator;
+struct ASTScope;
 
 typedef struct ASTFuncDecl {
 	DList params;
@@ -16,5 +17,6 @@ void freeASTFuncDecl(ASTFuncDecl *decl);
 int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,
-		struct ASTDeclarator *encl);
+		struct ASTDeclarator *encl,
+		struct ASTScope const *scope);
 int printASTFuncDecl(ASTFuncDecl const *decl);

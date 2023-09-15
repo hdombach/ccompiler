@@ -2,6 +2,7 @@
 
 #include "../util/wordDict.h"
 #include "../util/util.h"
+#include "../util/dlist.h"
 
 typedef struct ASTScope {
 	/* A quick and dirty dict for keeping track of typedefs while building ast*/

@@ -6,6 +6,7 @@
 typedef enum {
 	AST_IT_UNKNOWN,
 	AST_IT_EXP,
+	AST_IT_LIST,
 } ASTInitializerType;
 
 typedef struct {
