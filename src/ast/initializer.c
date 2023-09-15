@@ -11,6 +11,9 @@ void freeASTInitializer(ASTInitializer *initializer) {
 		case AST_IT_EXP:
 			freeASTExp(&initializer->c.exp);
 			break;
+		case AST_IT_LIST:
+			freeDList(&initializer->c.initializerList, (FreeFunc) freeASTInitializer);
+			break;
 		default:
 			break;
 	}
@@ -24,11 +27,37 @@ int parseASTInitializer(ASTInitializer *initializer, const Token *tok) {
 		return 0;
 	}
 
-	if ((res = parseASTExp(&initializer->c.exp, tok + n))) {
+	if (tok[n].type == TT_O_CURLY) {
+		initDList(&initializer->c.initializerList, sizeof(ASTInitializer));
+		initializer->type = AST_IT_LIST;
+		n++;
+		while (1) {
+			ASTInitializer temp;
+			if ((res = parseASTInitializer(&temp, tok + n))) {
+				n += res;
+				dlistApp(&initializer->c.initializerList, &temp);
+			} else {
+				break;
+			}
+
+			if (tok[n].type == TT_COMMA) {
+				n++;
+			} else {
+				break;
+			}
+		}
+		if (tok[n].type == TT_C_CURLY) {
+			n++;
+		} else {
+			freeASTInitializer(initializer);
+			return 0;
+		}
+	} else if ((res = parseASTExp(&initializer->c.exp, tok + n))) {
 		initializer->type = AST_IT_EXP;
 		n += res;
 	} else {
 		freeASTExp(&initializer->c.exp);
+		return 0;
 	}
 
 	return n;
@@ -40,6 +69,9 @@ int printASTInitializer(const ASTInitializer *initializer) {
 	switch (initializer->type) {
 		case AST_IT_EXP:
 			n += printASTExp(&initializer->c.exp);
+			break;
+		case AST_IT_LIST:
+			n += printDList(&initializer->c.initializerList, (PrintFunc) printASTInitializer);
 			break;
 		default:
 			break;

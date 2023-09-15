@@ -2,6 +2,7 @@
 
 #include "expression.h"
 #include "../token.h"
+#include "../util/dlist.h"
 
 typedef enum {
 	AST_IT_UNKNOWN,
@@ -13,6 +14,7 @@ typedef struct {
 	ASTInitializerType type;
 	union {
 		ASTExp exp;
+		DList initializerList;
 	} c;
 } ASTInitializer;
 

@@ -12,6 +12,8 @@ typedef signed short int short_t;
 
 typedef struct TestStruct {
 	int value;
+	int value2;
+	int value3;
 } TestStruct;
 
 struct TestBitField {
@@ -62,3 +64,5 @@ int funcDef(int param1, unsigned int param2, ...);
 int funcDef2(ComboStruct *combo);
 int (*funcPtr)(void);
 int funcDefWithoutName(int, char const *, char [5]);
+
+TestStruct testStruct1 = {1, 2, 3};

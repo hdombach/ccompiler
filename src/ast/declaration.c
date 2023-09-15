@@ -324,6 +324,9 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 }
 
+/*
+ * TODO: fix const not working when in different order.
+ */
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
 		const Token *tok,
