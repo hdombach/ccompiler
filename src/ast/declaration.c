@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "arrayDecl.h"
 #include "astUtil.h"
 #include "declaration.h"
 #include "enumDecl.h"
@@ -420,6 +421,9 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			freeASTDeclarator(declarator->c.pointer);
 			free(declarator->c.pointer);
 			break;
+		case AST_DT_ARRAY:
+			freeASTArrayDecl(&declarator->c.array);
+			break;
 		default:
 			break;
 	}
@@ -476,7 +480,17 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 		declarator->type = AST_DT_POINTER;
 	}
 
-
+	while (tok[n].type == TT_O_BRACE) {
+		ASTDeclarator temp = *declarator;
+		initASTDeclarator(declarator);
+		if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, &temp))) {
+			n += res;
+			declarator->type = AST_DT_ARRAY;
+		} else {
+			freeASTDeclarator(declarator);
+			return 0;
+		}
+	}
 
 	if (tok[n].type == TT_EQL) {
 		n++;
@@ -516,6 +530,9 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 	} else if (declarator->type == AST_DT_POINTER) {
 		n += printf("\"pointer\": ");
 		n += printASTDeclarator(declarator->c.pointer);
+	} else if (declarator->type == AST_DT_ARRAY) {
+		n += printf("\"array\": ");
+		n += printASTArrayDecl(&declarator->c.array);
 	} else {
 		n += printf("\"error\": \"unknown\"");
 	}

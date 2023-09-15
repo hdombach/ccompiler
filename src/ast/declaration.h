@@ -2,6 +2,7 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "arrayDecl.h"
 #include "enumDecl.h"
 #include "expression.h"
 #include "initializer.h"
@@ -84,6 +85,7 @@ typedef enum {
 	AST_DT_UNKNOWN,
 	AST_DT_IDENTIFIER,
 	AST_DT_POINTER,
+	AST_DT_ARRAY,
 } ASTDeclaratorType;
 
 typedef struct ASTDeclarator {
@@ -91,6 +93,7 @@ typedef struct ASTDeclarator {
 	union {
 		char *identifier;
 		struct ASTDeclarator *pointer;
+		ASTArrayDecl array;
 	} c;
 	ASTInitializer *initializer;
 	ASTExp *bitField;

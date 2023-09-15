@@ -49,3 +49,6 @@ typedef struct {
 
 int (nestedParan), ((nestParan2));
 char_t *pointerTest, **pointerTest2;
+int arrayTest[5], arrayTest2[6][10];
+
+int *mix1[1], (*mix2)[2], *(mix3[3]);
