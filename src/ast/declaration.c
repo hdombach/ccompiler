@@ -416,6 +416,10 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 		case AST_DT_IDENTIFIER:
 			free(declarator->c.identifier);
 			break;
+		case AST_DT_POINTER:
+			freeASTDeclarator(declarator->c.pointer);
+			free(declarator->c.pointer);
+			break;
 		default:
 			break;
 	}
@@ -459,6 +463,17 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 			freeASTDeclarator(declarator);
 			return 0;
 		}
+	} else if (tok[n].type == TT_MULT) {
+		n++;
+		declarator->c.pointer = malloc(sizeof(ASTDeclarator));
+		if ((res = parseASTDeclarator(declarator->c.pointer, tok + n))) {
+			n += res;
+		} else {
+			free(declarator->c.pointer);
+			freeASTDeclarator(declarator);
+			return 0;
+		}
+		declarator->type = AST_DT_POINTER;
 	}
 
 
@@ -495,11 +510,14 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	n += printf("{");
 
-	n += printf("\"name\": ");
 	if (declarator->type == AST_DT_IDENTIFIER) {
+		n += printf("\"name\": ");
 		n += printf("\"%s\"", declarator->c.identifier);
+	} else if (declarator->type == AST_DT_POINTER) {
+		n += printf("\"pointer\": ");
+		n += printASTDeclarator(declarator->c.pointer);
 	} else {
-		n += printf("\"unknown\"");
+		n += printf("\"error\": \"unknown\"");
 	}
 
 	if (declarator->initializer) {

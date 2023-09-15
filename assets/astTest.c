@@ -48,3 +48,4 @@ typedef struct {
 } ComboStruct;
 
 int (nestedParan), ((nestParan2));
+char_t *pointerTest, **pointerTest2;

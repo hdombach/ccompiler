@@ -83,12 +83,14 @@ typedef struct {
 typedef enum {
 	AST_DT_UNKNOWN,
 	AST_DT_IDENTIFIER,
+	AST_DT_POINTER,
 } ASTDeclaratorType;
 
-typedef struct {
+typedef struct ASTDeclarator {
 	ASTDeclaratorType type;
 	union {
 		char *identifier;
+		struct ASTDeclarator *pointer;
 	} c;
 	ASTInitializer *initializer;
 	ASTExp *bitField;
