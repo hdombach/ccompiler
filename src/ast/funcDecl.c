@@ -14,6 +14,7 @@ void freeASTFuncDecl(ASTFuncDecl *decl) {
 	freeDList(&decl->params, (FreeFunc) freeASTParam);
 	if (decl->encl) {
 		freeASTDeclarator(decl->encl);
+		free(decl->encl);
 	}
 }
 
