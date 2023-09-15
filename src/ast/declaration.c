@@ -445,6 +445,20 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 		declarator->type = AST_DT_IDENTIFIER;
 		declarator->c.identifier = strdup(tok[n].contents);
 		n++;
+	} else if (tok[n].type == TT_O_PARAN) {
+		n++;
+		if ((res = parseASTDeclarator(declarator, tok + n))) {
+			n += res;
+		} else {
+			//Don't need to free since the function call will do it
+			return 0;
+		}
+		if (tok[n].type == TT_C_PARAN) {
+			n++;
+		} else {
+			freeASTDeclarator(declarator);
+			return 0;
+		}
 	}
 
 

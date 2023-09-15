@@ -74,6 +74,12 @@ typedef struct {
 
 //TODO: add other declerator types
 //TODO: add initialization thing
+/*
+ * Note:
+ * For declarators, the nesting of the decleration is reverse of the 
+ * nesting of the type.
+ * *test[5] (pointer { array }) Is actually array of pointers
+ */
 typedef enum {
 	AST_DT_UNKNOWN,
 	AST_DT_IDENTIFIER,

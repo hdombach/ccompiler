@@ -46,3 +46,5 @@ typedef struct {
 		TestStruct value2;
 	} c;
 } ComboStruct;
+
+int (nestedParan), ((nestParan2));
