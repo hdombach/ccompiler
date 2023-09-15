@@ -52,3 +52,7 @@ char_t *pointerTest, **pointerTest2;
 int arrayTest[5], arrayTest2[6][10];
 
 int *mix1[1], (*mix2)[2], *(mix3[3]);
+
+int funcDef(int param1, unsigned int param2, ...);
+int (*funcPtr)(void);
+int funcDefWithoutName(int, char const *, char [5]);

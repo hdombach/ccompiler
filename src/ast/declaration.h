@@ -7,6 +7,7 @@
 #include "expression.h"
 #include "initializer.h"
 #include "structDecl.h"
+#include "funcDecl.h"
 
 // https://en.cppreference.com/w/c/language/declarations
 
@@ -86,6 +87,7 @@ typedef enum {
 	AST_DT_IDENTIFIER,
 	AST_DT_POINTER,
 	AST_DT_ARRAY,
+	AST_DT_FUNC,
 } ASTDeclaratorType;
 
 typedef struct ASTDeclarator {
@@ -94,6 +96,7 @@ typedef struct ASTDeclarator {
 		char *identifier;
 		struct ASTDeclarator *pointer;
 		ASTArrayDecl array;
+		ASTFuncDecl func;
 	} c;
 	ASTInitializer *initializer;
 	ASTExp *bitField;

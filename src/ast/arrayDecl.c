@@ -29,8 +29,10 @@ int parseASTArrayDecl(
 	int n = 0, res;
 
 	initASTArrayDecl(decl);
-	decl->encl = malloc(sizeof(ASTDeclarator));
-	*decl->encl = *encl;
+	if (encl) {
+		decl->encl = malloc(sizeof(ASTDeclarator));
+		*decl->encl = *encl;
+	}
 	if (astHasErr()) {
 		freeASTArrayDecl(decl);
 		return 0;
@@ -76,13 +78,15 @@ int printASTArrayDecl(const ASTArrayDecl *decl) {
 		isFirst = 0;
 	}
 
-	if (isFirst) {
-		isFirst = 0;
-	} else {
-		n += printf(", ");
+	if (decl->encl) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"enclosing type\": ");
+		n += printASTDeclarator(decl->encl);
 	}
-	n += printf("\"enclosing type\": ");
-	n += printASTDeclarator(decl->encl);
 
 	n += printf("}");
 

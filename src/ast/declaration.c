@@ -7,6 +7,7 @@
 #include "declaration.h"
 #include "enumDecl.h"
 #include "expression.h"
+#include "funcDecl.h"
 #include "initializer.h"
 #include "structDecl.h"
 #include "scope.h"
@@ -418,11 +419,16 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			free(declarator->c.identifier);
 			break;
 		case AST_DT_POINTER:
-			freeASTDeclarator(declarator->c.pointer);
-			free(declarator->c.pointer);
+			if (declarator->c.pointer) {
+				freeASTDeclarator(declarator->c.pointer);
+				free(declarator->c.pointer);
+			}
 			break;
 		case AST_DT_ARRAY:
 			freeASTArrayDecl(&declarator->c.array);
+			break;
+		case AST_DT_FUNC:
+			freeASTFuncDecl(&declarator->c.func);
 			break;
 		default:
 			break;
@@ -468,27 +474,56 @@ int parseASTDeclarator(ASTDeclarator *declarator, const Token *tok) {
 			return 0;
 		}
 	} else if (tok[n].type == TT_MULT) {
+		ASTDeclarator tempDeclarator;
 		n++;
-		declarator->c.pointer = malloc(sizeof(ASTDeclarator));
-		if ((res = parseASTDeclarator(declarator->c.pointer, tok + n))) {
+		if ((res = parseASTDeclarator(&tempDeclarator, tok + n))) {
+			declarator->c.pointer = malloc(sizeof(ASTDeclarator));
+			*declarator->c.pointer = tempDeclarator;
 			n += res;
 		} else {
-			free(declarator->c.pointer);
-			freeASTDeclarator(declarator);
-			return 0;
+			declarator->c.pointer = NULL;
 		}
 		declarator->type = AST_DT_POINTER;
 	}
 
-	while (tok[n].type == TT_O_BRACE) {
-		ASTDeclarator temp = *declarator;
-		initASTDeclarator(declarator);
-		if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, &temp))) {
+	if (tok[n].type == TT_O_PARAN) {
+		ASTDeclarator temp, *tempPtr;
+
+		if (declarator->type == AST_DT_UNKNOWN) {
+			tempPtr = NULL;
+		} else {
+			temp = *declarator;
+			tempPtr = &temp;
+			initASTDeclarator(declarator);
+		}
+
+		if ((res = parseASTFuncDecl(&declarator->c.func, tok + n, tempPtr))) {
 			n += res;
-			declarator->type = AST_DT_ARRAY;
+			declarator->type = AST_DT_FUNC;
 		} else {
 			freeASTDeclarator(declarator);
 			return 0;
+		}
+	} else {
+		while (tok[n].type == TT_O_BRACE) {
+			ASTDeclarator temp, *tempPtr;
+
+			if (declarator->type == AST_DT_UNKNOWN) {
+				tempPtr = NULL;
+			} else {
+				temp = *declarator;
+				tempPtr = &temp;
+				initASTDeclarator(declarator);
+			}
+
+			initASTDeclarator(declarator);
+			if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, tempPtr))) {
+				n += res;
+				declarator->type = AST_DT_ARRAY;
+			} else {
+				freeASTDeclarator(declarator);
+				return 0;
+			}
 		}
 	}
 
@@ -529,10 +564,17 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 		n += printf("\"%s\"", declarator->c.identifier);
 	} else if (declarator->type == AST_DT_POINTER) {
 		n += printf("\"pointer\": ");
-		n += printASTDeclarator(declarator->c.pointer);
+		if (declarator->c.pointer) {
+			n += printASTDeclarator(declarator->c.pointer);
+		} else {
+			n += printf("\"no name\"");
+		}
 	} else if (declarator->type == AST_DT_ARRAY) {
 		n += printf("\"array\": ");
 		n += printASTArrayDecl(&declarator->c.array);
+	} else if (declarator->type == AST_DT_FUNC) {
+		n += printf("\"func\": ");
+		n += printASTFuncDecl(&declarator->c.func);
 	} else {
 		n += printf("\"error\": \"unknown\"");
 	}
