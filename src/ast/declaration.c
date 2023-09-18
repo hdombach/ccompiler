@@ -46,7 +46,9 @@ int printASTTypeQualifier(const ASTTypeQualifier *qualifiers) {
 	}
 
 	if (*qualifiers & AST_TQ_VOLATILE) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"volatile\"");
@@ -99,7 +101,9 @@ int printASTStorageClassSpec(const ASTStorageClassSpec *specs) {
 	}
 
 	if (*specs & AST_SC_AUTO) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"auto\"");
@@ -107,21 +111,27 @@ int printASTStorageClassSpec(const ASTStorageClassSpec *specs) {
 	}
 
 	if (*specs & AST_SC_REGISTER) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"register\"");
 	}
 
 	if (*specs & AST_SC_STATIC) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"static\"");
 	}
 
 	if (*specs & AST_SC_EXTERN) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"extern\"");
@@ -144,6 +154,8 @@ char _isArith(TokenType tokType) {
 		case TT_UNSIGNED:
 		case TT_SHORT:
 		case TT_LONG:
+		case TT_FLOAT:
+		case TT_DOUBLE:
 			return 1;
 		default:
 			return 0;
@@ -174,6 +186,12 @@ int parseASTArithType(ASTArithType *type, const Token *tok) {
 		case TT_LONG:
 			*type |= AST_AT_LONG;
 			return 1;
+		case TT_FLOAT:
+			*type |= AST_AT_FLOAT;
+			return 1;
+		case TT_DOUBLE:
+			*type |= AST_AT_DOUBLE;
+			return 1;
 		default:
 			return 0;
 	}
@@ -184,21 +202,10 @@ int printASTArithType(const ASTArithType *type) {
 	int n = 0;
 	n += printf("[");
 
-	if (*type & AST_AT_CHAR) {
-		n += printf("\"char\"");
-		isFirst = 0;
-	}
-
-	if (*type & AST_AT_INT) {
-		if (!isFirst) {
-			n += printf(", ");
-		}
-		n += printf("\"int\"");
-		isFirst = 0;
-	}
-
 	if (*type & AST_AT_SIGNED) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"signed\"");
@@ -206,7 +213,9 @@ int printASTArithType(const ASTArithType *type) {
 	}
 
 	if (*type & AST_AT_UNSIGNED) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"unsigned\"");
@@ -214,7 +223,9 @@ int printASTArithType(const ASTArithType *type) {
 	}
 
 	if (*type & AST_AT_SHORT) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"short\"");
@@ -222,10 +233,52 @@ int printASTArithType(const ASTArithType *type) {
 	}
 
 	if (*type & AST_AT_LONG) {
-		if (!isFirst) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
 			n += printf(", ");
 		}
 		n += printf("\"long\"");
+		isFirst = 0;
+	}
+
+	if (*type & AST_AT_CHAR) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"char\"");
+
+	}
+
+	if (*type & AST_AT_INT) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"int\"");
+		isFirst = 0;
+	}
+
+	if (*type & AST_AT_FLOAT) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"float\"");
+		isFirst = 0;
+	}
+
+	if (*type & AST_AT_DOUBLE) {
+		if (isFirst) {
+			isFirst = 0;
+		} else {
+			n += printf(", ");
+		}
+		n += printf("\"double\"");
 		isFirst = 0;
 	}
 
@@ -273,6 +326,15 @@ int astArithTypeNormalize(const ASTArithType *type) {
 		case (AST_AT_UNSIGNED | AST_AT_LONG):
 		case (AST_AT_UNSIGNED | AST_AT_LONG | AST_AT_INT):
 			return AST_AT_UNSIGNED | AST_AT_LONG | AST_AT_INT;
+
+		case(AST_AT_FLOAT):
+			return AST_AT_FLOAT;
+
+		case(AST_AT_DOUBLE):
+			return AST_AT_DOUBLE;
+
+		case (AST_AT_LONG | AST_AT_DOUBLE):
+			return AST_AT_LONG | AST_AT_DOUBLE;
 
 		default:
 			return AST_AT_NONE;

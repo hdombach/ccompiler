@@ -37,6 +37,8 @@ typedef enum {
 	AST_AT_UNSIGNED = 0b1000,
 	AST_AT_SHORT = 0b10000,
 	AST_AT_LONG = 0b100000,
+	AST_AT_FLOAT = 0b1000000,
+	AST_AT_DOUBLE = 0b10000000,
 } ASTArithType;
 
 typedef enum {

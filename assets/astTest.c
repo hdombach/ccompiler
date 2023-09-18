@@ -10,6 +10,8 @@ char_t typedefTest2;
 typedef short short_t;
 typedef signed short int short_t;
 
+float floatTest;
+
 typedef struct TestStruct {
 	int value;
 	int value2;
