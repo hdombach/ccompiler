@@ -39,8 +39,6 @@ typedef enum {
 	AST_AT_LONG = 0b100000,
 } ASTArithType;
 
-//TODO: implimented enums, structs, and unions
-
 typedef enum {
 	AST_TST_UNKNOWN,
 	/* The declaration references void */
@@ -74,8 +72,6 @@ typedef struct {
 	Token const *tok;
 } ASTTypeSpec;
 
-//TODO: add other declerator types
-//TODO: add initialization thing
 /*
  * Note:
  * For declarators, the nesting of the decleration is reverse of the 
@@ -98,6 +94,8 @@ typedef struct ASTDeclarator {
 		ASTArrayDecl array;
 		ASTFuncDecl func;
 	} c;
+	/* Used when representing contents of pointer*/
+	ASTTypeQualifier qualifiers;
 	ASTInitializer *initializer;
 	ASTExp *bitField;
 } ASTDeclarator;

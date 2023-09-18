@@ -66,6 +66,7 @@ int parseASTFuncDecl(
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
+		astErr("Expecting )", tok + n);
 		freeASTFuncDecl(decl);
 		return 0;
 	}

@@ -53,6 +53,7 @@ typedef struct {
 	} c;
 } ComboStruct;
 
+struct IncompleteStruct *incompleteValue;
 
 int (nestedParan), ((nestParan2));
 char_t *pointerTest, **pointerTest2;
@@ -63,6 +64,8 @@ int *mix1[1], (*mix2)[2], *(mix3[3]);
 int funcDef(int param1, unsigned int param2, ...);
 int funcDef2(ComboStruct *combo);
 int (*funcPtr)(void);
-int funcDefWithoutName(int, char const *, char [5]);
+int funcDefWithoutName(int, char const *, char []);
 
 TestStruct testStruct1 = {1, 2, 3};
+
+int const * const constTest;

@@ -324,9 +324,6 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 }
 
-/*
- * TODO: fix const not working when in different order.
- */
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
 		const Token *tok,
@@ -368,14 +365,17 @@ int parseASTTypeSpec(
 			if ((res = _parseTypedefIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
-				break;
 			} else {
 				astErr("Unexpected identifier", tok + n);
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
 		} else if (tok[n].type == TT_STRUCT || tok[n].type == TT_UNION) {
-			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
+				astErr("Multiple types in type specifier", tok + n);
+				freeASTTypeSpec(typeSpec);
+				return 0;
+			}
 
 			if ((res = parseASTStructDecl(&typeSpec->c.structDecl, tok + n, scope))) {
 				n += res;
@@ -385,9 +385,12 @@ int parseASTTypeSpec(
 					astErr("Invalid struct declaration", tok + n);
 				}
 			}
-			break;
 		} else if (tok[n].type == TT_ENUM) {
-			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
+			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
+				astErr("Unexpected identifier", tok + n);
+				freeASTTypeSpec(typeSpec);
+				return 0;
+			}
 
 			if ((res = parseASTEnumDecl(&typeSpec->c.enumDecl, tok + n))) {
 				n += res;
@@ -397,7 +400,6 @@ int parseASTTypeSpec(
 					astErr("Invalid enum declaration", tok + n);
 				}
 			}
-			break;
 		} else if ((res = parseASTStorageClassSpec(&typeSpec->storage, tok + n))) {
 			n += res;
 		} else if ((res = parseASTTypeQualifier(&typeSpec->qualifiers, tok + n))) {
@@ -414,6 +416,7 @@ void initASTDeclarator(ASTDeclarator *declarator) {
 	declarator->type = AST_DT_UNKNOWN;
 	declarator->initializer = NULL;
 	declarator->bitField = NULL;
+	declarator->qualifiers = AST_TQ_NONE;
 }
 
 void freeASTDeclarator(ASTDeclarator *declarator) {
@@ -448,7 +451,6 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 	}
 }
 
-//TODO: add other declarators 
 int parseASTDeclarator(
 		ASTDeclarator *declarator,
 		const Token *tok,
@@ -483,6 +485,11 @@ int parseASTDeclarator(
 	} else if (tok[n].type == TT_MULT) {
 		ASTDeclarator tempDeclarator;
 		n++;
+
+		while ((res = parseASTTypeQualifier(&declarator->qualifiers, tok + n))) {
+			n += res;
+		}
+
 		if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
 			declarator->c.pointer = malloc(sizeof(ASTDeclarator));
 			*declarator->c.pointer = tempDeclarator;
@@ -540,6 +547,7 @@ int parseASTDeclarator(
 		if ((res = parseASTInitializer(declarator->initializer, tok + n))) {
 			n += res;
 		} else {
+			astErr("Expecting expression following =", tok + n);
 			free(declarator->initializer);
 			declarator->initializer = NULL;
 			freeASTDeclarator(declarator);
@@ -551,6 +559,7 @@ int parseASTDeclarator(
 		if ((res = parseASTExp(declarator->bitField, tok + n))) {
 			n += res;
 		} else {
+			astErr("Expecting bitfield expression following =", tok + n);
 			free(declarator->bitField);
 			declarator->bitField = NULL;
 			freeASTDeclarator(declarator);
@@ -584,6 +593,11 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 		n += printASTFuncDecl(&declarator->c.func);
 	} else {
 		n += printf("\"error\": \"unknown\"");
+	}
+
+	if (declarator->qualifiers) {
+		n += printf(", \"qualifiers\": ");
+		n += printASTTypeQualifier(&declarator->qualifiers);
 	}
 
 	if (declarator->initializer) {

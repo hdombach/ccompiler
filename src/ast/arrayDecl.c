@@ -50,16 +50,12 @@ int parseASTArrayDecl(
 		decl->exp = malloc(sizeof(ASTExp));
 		*decl->exp = tempExp;
 		n += res;
-	} else {
-		free(decl->exp);
-		decl->exp = NULL;
-		freeASTArrayDecl(decl);
-		return 0;
 	}
 
 	if (tok[n].type == TT_C_BRACE) {
 		n++;
 	} else {
+		astErr("Expecting ] at end of array declaration", tok + n);
 		freeASTArrayDecl(decl);
 		return 0;
 	}

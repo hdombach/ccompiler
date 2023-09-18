@@ -49,6 +49,7 @@ int parseASTInitializer(ASTInitializer *initializer, const Token *tok) {
 		if (tok[n].type == TT_C_CURLY) {
 			n++;
 		} else {
+			astErr("Expecing }", tok + n);
 			freeASTInitializer(initializer);
 			return 0;
 		}

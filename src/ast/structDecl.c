@@ -100,8 +100,7 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *sc
 	if (tok[n].type == TT_O_CURLY) {
 		n++;
 	} else {
-		freeASTStructDecl(decl);
-		return 0;
+		return n;
 	}
 
 	while (1) {
@@ -117,6 +116,7 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *sc
 	if (tok[n].type == TT_C_CURLY) {
 		n++;
 	} else {
+		astErr("Expecting }", tok + n);
 		freeASTStructDecl(decl);
 		return 0;
 	}
