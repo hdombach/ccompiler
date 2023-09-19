@@ -43,23 +43,25 @@ int parseASTFuncDecl(
 		return 0;
 	}
 
-	while (1) {
-		ASTParam param;
-		if ((res = parseASTParam(&param, tok + n, scope))) {
-			dlistApp(&decl->params, &param);
-			n += res;
-		} else if (tok[n].type == TT_DOTS) {
-			decl->hasEllipses = 1;
-			n++;
-		} else {
-			freeASTFuncDecl(decl);
-			return 0;
-		}
+	if (tok[n].type != TT_C_PARAN) {
+		while (1) {
+			ASTParam param;
+			if ((res = parseASTParam(&param, tok + n, scope))) {
+				dlistApp(&decl->params, &param);
+				n += res;
+			} else if (tok[n].type == TT_DOTS) {
+				decl->hasEllipses = 1;
+				n++;
+			} else {
+				freeASTFuncDecl(decl);
+				return 0;
+			}
 
-		if (tok[n].type == TT_COMMA) {
-			n++;
-		} else {
-			break;
+			if (tok[n].type == TT_COMMA) {
+				n++;
+			} else {
+				break;
+			}
 		}
 	}
 

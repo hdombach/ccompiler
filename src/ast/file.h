@@ -1,17 +1,20 @@
 #pragma once
 
 #include "declaration.h"
+#include "funcDef.h"
 #include "scope.h"
 
 typedef enum {
 	AST_FIT_UNKNOWN,
 	AST_FIT_DECL,
+	AST_FIT_FUNC_DEF,
 } ASTFileItemType;
 
 typedef struct {
 	ASTFileItemType type;
 	union {
 		ASTDeclaration declaration;
+		ASTFuncDef funcDef;
 	} c;
 } ASTFileItem;
 

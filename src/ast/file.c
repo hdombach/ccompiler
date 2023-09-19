@@ -1,5 +1,6 @@
 #include "file.h"
 #include "declaration.h"
+#include "funcDef.h"
 #include "scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
@@ -12,6 +13,9 @@ void freeASTFileItem(ASTFileItem *item) {
 	switch (item->type) {
 		case AST_FIT_DECL:
 			freeASTDeclaration(&item->c.declaration);
+			break;
+		case AST_FIT_FUNC_DEF:
+			freeASTFuncDef(&item->c.funcDef);
 			break;
 		default:
 			break;
@@ -30,7 +34,10 @@ int parseASTFileItem(
 		return 0;
 	}
 
-	if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
+	if ((res = parseASTFuncDef(&item->c.funcDef, tok + n, scope))) {
+		n += res;
+		item->type = AST_FIT_FUNC_DEF;
+	} else if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
 		n += res;
 		item->type = AST_FIT_DECL;
 	} else {
@@ -47,6 +54,9 @@ int printASTFileItem(const ASTFileItem *item) {
 	switch (item->type) {
 		case AST_FIT_DECL:
 			n += printASTDeclaration(&item->c.declaration);
+			break;
+		case AST_FIT_FUNC_DEF:
+			n += printASTFuncDef(&item->c.funcDef);
 			break;
 		default:
 			break;

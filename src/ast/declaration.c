@@ -474,6 +474,32 @@ int parseASTTypeSpec(
 	return n;
 }
 
+int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
+	int n = 0;
+
+	switch (typeSpec->typeSpecType) {
+		case AST_TST_VOID:
+			n += printf("\"void\"");
+			break;
+		case AST_TST_ARITH:
+			n += printASTArithType(&typeSpec->c.arith);
+			break;
+		case AST_TST_TYPEDEF:
+			n += printf("\"%s\"", typeSpec->c.typedefName);
+			break;
+		case AST_TST_STRUCT:
+			n += printASTStructDecl(&typeSpec->c.structDecl);
+			break;
+		case AST_TST_ENUM:
+			n += printASTEnumDecl(&typeSpec->c.enumDecl);
+			break;
+		default:
+			n += printf("\"unknown\"");
+	}
+
+	return n;
+}
+
 void initASTDeclarator(ASTDeclarator *declarator) {
 	declarator->type = AST_DT_UNKNOWN;
 	declarator->initializer = NULL;
@@ -767,25 +793,7 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 		n += printf(", ");
 	}
 	n += printf("\"type\": ");
-	switch (declaration->typeSpec.typeSpecType) {
-		case AST_TST_VOID:
-			n += printf("\"void\"");
-			break;
-		case AST_TST_ARITH:
-			n += printASTArithType(&declaration->typeSpec.c.arith);
-			break;
-		case AST_TST_TYPEDEF:
-			n += printf("\"%s\"", declaration->typeSpec.c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			n += printASTStructDecl(&declaration->typeSpec.c.structDecl);
-			break;
-		case AST_TST_ENUM:
-			n += printASTEnumDecl(&declaration->typeSpec.c.enumDecl);
-			break;
-		default:
-			n += printf("\"unknown\"");
-	}
+	n += printASTTypeSpec(&declaration->typeSpec);
 
 	n += printf(", \"Declarators\": ");
 	n += printDList(&declaration->declarators, (PrintFunc) printASTDeclarator);
