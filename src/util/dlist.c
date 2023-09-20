@@ -84,7 +84,7 @@ void dlistIncCap(DList *list) {
 		list->capacity *= 2;
 		list->data = realloc(list->data, list->capacity * list->elSize);
 	} else {
-		list->capacity = 4;
+		list->capacity = DLIST_INITIAL_CAP;
 		list->data = malloc(list->capacity * list->elSize);
 	}
 }

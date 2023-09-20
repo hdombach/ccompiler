@@ -19,4 +19,4 @@ void freeASTStm(ASTStm *node);
 
 int parseASTStm(ASTStm *node, Token const *tok);
 
-int printASTStm(ASTStm *node);
+int printASTStm(ASTStm const *node);

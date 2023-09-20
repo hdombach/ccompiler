@@ -72,7 +72,6 @@ TestStruct testStruct1 = {1, 2, 3};
 
 int const * const constTest;
 
-int testFunc() {
-	5;
-	2;
+void testFunc() {
+	int test123 = 2;
 }
