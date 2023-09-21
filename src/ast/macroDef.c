@@ -190,7 +190,9 @@ int printASTMacroDefNode(ASTMacroDefNode const *node) {
 	if (node->paramIndex >= 0) {
 		n += printf("{");
 
-		n += printf("\"paramIndex\": %d", node->paramIndex);
+		n += printf("\"node type\": \"MacroDefNode\"");
+
+		n += printf(", \"paramIndex\": %d", node->paramIndex);
 
 		n += printf(", \"token\": ");
 		n += printToken(node->token);
@@ -207,7 +209,7 @@ int printASTMacroDef(ASTMacroDef const *def) {
 	int n = 0;
 	n += printf("{");
 
-	n += printf("\"type\": \"Macro Definition\"");
+	n += printf("\"node type\": \"MacroDef\"");
 
 	n += printf(", \"name\": ");
 	n += printJsonStr(def->name);

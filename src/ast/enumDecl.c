@@ -63,7 +63,9 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 
 	n += printf("{");
 
-	n += printf("\"Enumerator name\": ");
+	n += printf("\"node type\": \"Enumerator declaration\"");
+
+	n += printf(", \"Enumerator name\": ");
 	n += printJsonStr(decl->name);
 
 	if (decl->exp) {
@@ -143,22 +145,18 @@ int parseASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 }
 
 int printASTEnumDecl(const ASTEnumDecl *decl) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"node type\": \"enumeration\"");
+
 	if (decl->name) {
-		n += printf("\"enum name\": ");
+		n += printf(", \"enum name\": ");
 		n += printJsonStr(decl->name);
-		isFirst = 0;
 	}
 
-	if (isFirst) {
-		isFirst = 0;
-	} else {
-		n += printf(", ");
-	}
-	n += printf("\"Enumerators\": ");
+	n += printf(", \"Enumerators\": ");
 	n += printDList(&decl->enumerators, (PrintFunc) printASTEnumeratorDecl);
 
 	n += printf("}");

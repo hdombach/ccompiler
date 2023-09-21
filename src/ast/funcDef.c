@@ -93,7 +93,9 @@ int printASTFuncDef(ASTFuncDef const *def) {
 
 	n += printf("{");
 
-	n += printf("\"Type Spec\": ");
+	n += printf("\"node type\": \"func def\"");
+
+	n += printf(", \"Type Spec\": ");
 	n += printASTTypeSpec(&def->typeSpec);
 
 	n += printf(", \"Declarator\": ");

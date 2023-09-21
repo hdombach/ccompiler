@@ -123,7 +123,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 
 void printASTMacroIf(const ASTMacroIf *node) {
 	printf("{");
-	printf("\"type\": \"Macro if\"");
+	printf("\"node type\": \"Macro if\"");
 
 	printf(", \"ranges\": [");
 	ASTMacroIf const *cur = node;

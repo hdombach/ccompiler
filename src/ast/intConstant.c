@@ -80,7 +80,13 @@ int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
 int printASTIntContant(const ASTIntConstant *node) {
 	int n = 0;
 
-	n += printf("{\"type\": \"Int Constant\", \"value\": %lu}", node->value);
+	n += printf("{");
+
+	n += printf("\"node type\": \"IntConstant\"");
+
+	n += printf(", \"value\": %lu", node->value);
+
+	n += printf("}");
 
 	return n;
 }

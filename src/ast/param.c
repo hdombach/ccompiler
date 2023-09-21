@@ -46,32 +46,23 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 }
 
 int printASTParam(const ASTParam *param) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"node type\": \"param\"");
+
 	if (param->typeSpec.qualifiers) {
-		isFirst = 0;
-		n += printf("\"Type Qualifiers\": ");
+		n += printf(", \"Type Qualifiers\": ");
 		n += printASTTypeQualifier(&param->typeSpec.qualifiers);
 	}
 
 	if (param->typeSpec.storage) {
-		if (isFirst) {
-			isFirst = 0;
-		} else {
-			n += printf(", ");
-		}
-		n += printf("\"Storage Class Specifiers\": ");
+		n += printf(", \"Storage Class Specifiers\": ");
 		n += printASTStorageClassSpec(&param->typeSpec.storage);
 	}
 
-	if (isFirst) {
-		isFirst = 0;
-	} else {
-		n += printf(", ");
-	}
-	n += printf("\"type\": ");
+	n += printf(", \"type\": ");
 	switch (param->typeSpec.typeSpecType) {
 		case AST_TST_VOID:
 			n += printf("\"void\"");

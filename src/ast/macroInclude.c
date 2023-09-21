@@ -84,7 +84,7 @@ void printASTMacroInclType(ASTMacroInclType type) {
 void printASTMacroIncl(const ASTMacroIncl *node) {
 	printf("{");
 
-	printf("\"type\": \"Macro Include\"");
+	printf("\"node type\": \"Macro Include\"");
 
 	printf(", \"filename\": ");
 	printJsonStr(node->filename);

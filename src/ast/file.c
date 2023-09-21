@@ -121,7 +121,9 @@ int printASTFile(const ASTFile *file) {
 
 	n += printf("{");
 
-	n += printf("\"declerations\": ");
+	n += printf("\"node type\": \"file\"");
+
+	n += printf(", \"declerations\": ");
 	n += printDList(&file->items, (PrintFunc) printASTFileItem);
 
 	n += printf("}");

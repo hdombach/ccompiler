@@ -77,32 +77,23 @@ int parseASTFuncDecl(
 }
 
 int printASTFuncDecl(const ASTFuncDecl *decl) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"node type\": \"func decl\"");
+
 	if (decl->params.size) {
-		n += printf("\"params\": ");
+		n += printf(", \"params\": ");
 		printDList(&decl->params, (PrintFunc) printASTParam);
-		isFirst = 0;
 	}
 
 	if (decl->hasEllipses) {
-		if (isFirst) {
-			isFirst = 0;
-		} else {
-			n += printf(", ");
-		}
-		n += printf("\"Has ellipses\": true");
+		n += printf(", \"Has ellipses\": true");
 	}
 
 	if (decl->encl) {
-		if (isFirst) {
-			isFirst = 0;
-		} else {
-			n += printf(", ");
-		}
-		n += printf("\"enclosing type\": ");
+		n += printf(", \"enclosing type\": ");
 		n += printASTDeclarator(decl->encl);
 	}
 

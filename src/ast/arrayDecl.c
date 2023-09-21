@@ -64,23 +64,19 @@ int parseASTArrayDecl(
 }
 
 int printASTArrayDecl(const ASTArrayDecl *decl) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"Node Type\": \"ArrayDecl\"");
+
 	if (decl->exp) {
-		n += printf("\"size\": ");
+		n += printf(", \"size\": ");
 		n += printASTExp(decl->exp);
-		isFirst = 0;
 	}
 
 	if (decl->encl) {
-		if (isFirst) {
-			isFirst = 0;
-		} else {
-			n += printf(", ");
-		}
-		n += printf("\"enclosing type\": ");
+		n += printf(", \"enclosing type\": ");
 		n += printASTDeclarator(decl->encl);
 	}
 

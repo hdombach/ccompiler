@@ -125,28 +125,26 @@ int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *sc
 }
 
 int printASTStructDecl(const ASTStructDecl *decl) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"node type\": \"struct decl\"");
+
 	if (decl->name) {
 		if (decl->isUnion) {
-			n += printf("\"union name\": ");
+			n += printf(", \"union name\": ");
 		} else {
-			n += printf("\"struct name\": ");
+			n += printf(", \"struct name\": ");
 		}
 		n += printJsonStr(decl->name);
-		isFirst = 0;
 	}
 
-	if (!isFirst) {
-		n += printf(", ");
+	if (decl->isUnion) {
+		n += printf(", \"union declarations\": ");
+	} else {
+		n += printf(", \"struct declarations\": ");
 	}
-		if (decl->isUnion) {
-			n += printf("\"union declarations\": ");
-		} else {
-			n += printf("\"struct declarations\": ");
-		}
 	n += printDList(&decl->items, (PrintFunc) printASTStructDeclItem);
 
 	n += printf("}");

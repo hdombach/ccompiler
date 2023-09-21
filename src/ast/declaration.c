@@ -663,24 +663,26 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	n += printf("{");
 
+	n += printf("\"Node type\": \"Declarator\"");
+
 	if (declarator->type == AST_DT_IDENTIFIER) {
-		n += printf("\"name\": ");
+		n += printf(", \"name\": ");
 		n += printf("\"%s\"", declarator->c.identifier);
 	} else if (declarator->type == AST_DT_POINTER) {
-		n += printf("\"pointer\": ");
+		n += printf(", \"pointer\": ");
 		if (declarator->c.pointer) {
 			n += printASTDeclarator(declarator->c.pointer);
 		} else {
 			n += printf("\"no name\"");
 		}
 	} else if (declarator->type == AST_DT_ARRAY) {
-		n += printf("\"array\": ");
+		n += printf(", \"array\": ");
 		n += printASTArrayDecl(&declarator->c.array);
 	} else if (declarator->type == AST_DT_FUNC) {
-		n += printf("\"func\": ");
+		n += printf(", \"func\": ");
 		n += printASTFuncDecl(&declarator->c.func);
 	} else {
-		n += printf("\"error\": \"unknown\"");
+		n += printf(", \"error\": \"unknown\"");
 	}
 
 	if (declarator->qualifiers) {
@@ -767,32 +769,23 @@ int parseASTDeclaration(
 }
 
 int printASTDeclaration(const ASTDeclaration *declaration) {
-	int n = 0, isFirst = 1;
+	int n = 0;
 
 	n += printf("{");
 
+	n += printf("\"node type\": \"Declaration\"");
+
 	if (declaration->typeSpec.qualifiers) {
-		isFirst = 0;
-		n += printf("\"Type Qualifiers\": ");
+		n += printf(", \"Type Qualifiers\": ");
 		n += printASTTypeQualifier(&declaration->typeSpec.qualifiers);
 	}
 
 	if (declaration->typeSpec.storage) {
-		if (isFirst) {
-			isFirst = 0;
-		} else {
-			n += printf(", ");
-		}
-		n += printf("\"Storage Class Specifiers\": ");
+		n += printf(", \"Storage Class Specifiers\": ");
 		n += printASTStorageClassSpec(&declaration->typeSpec.storage);
 	}
 
-	if (isFirst) {
-		isFirst = 0;
-	} else {
-		n += printf(", ");
-	}
-	n += printf("\"type\": ");
+	n += printf(", \"type\": ");
 	n += printASTTypeSpec(&declaration->typeSpec);
 
 	n += printf(", \"Declarators\": ");
