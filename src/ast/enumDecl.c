@@ -112,9 +112,7 @@ int parseASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 	if (tok[n].type == TT_O_CURLY) {
 		n++;
 	} else {
-		astErr("Expecting {", tok + n);
-		freeASTEnumDecl(decl);
-		return 0;
+		return n;
 	}
 
 	while (1) {

@@ -4,6 +4,7 @@
 #include "scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
+#include <stdio.h>
 
 void initASTFileItem(ASTFileItem *item) {
 	item->type = AST_FIT_UNKNOWN;
@@ -102,6 +103,8 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 
 			DList newTypes = astFileItemTypes(&tempItem);
 			astScopeAddTypedefNames(&file->scope, newTypes);
+		} else if (tok[n].type == TT_NEWLINE) {
+			n++;
 		} else {
 			break;
 		}

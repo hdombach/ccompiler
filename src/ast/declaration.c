@@ -810,7 +810,9 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 		for (int i = 0; i < declaration->declarators.size; i++) {
 			ASTDeclarator const *declarator = dlistGet(&declaration->declarators, i);
 			char *newName = astDeclaratorTypedefName(declarator);
-			dlistApp(&result, &newName);
+			if (newName) {
+				dlistApp(&result, &newName);
+			}
 		}
 	} else {
 		initDListEmpty(&result, sizeof(char *));
@@ -819,11 +821,22 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 }
 
 char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
-	switch (declarator->type) {
-		case AST_DT_IDENTIFIER:
-			return strdup(declarator->c.identifier);
-		default:
-			fprintf(stderr, "Unimplimented stuff in declaration.c\n");
-			return NULL;
+	while (declarator) {
+		switch (declarator->type) {
+			case AST_DT_IDENTIFIER:
+				return strdup(declarator->c.identifier);
+			case AST_DT_POINTER:
+				declarator = declarator->c.pointer;
+				break;
+			case AST_DT_ARRAY:
+				declarator = declarator->c.array.encl;
+				break;
+			case AST_DT_FUNC:
+				declarator = declarator->c.func.encl;
+				break;
+			default:
+				break;
+		}
 	}
+	return NULL;
 }

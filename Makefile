@@ -5,7 +5,7 @@ DEPFLAGS = -MMD -MP
 SRC = src
 OBJECTS := $(patsubst $(SRC)/%.c, build/%.o, $(wildcard $(SRC)/*.c))
 DEPENDS := $(OBJECTS:.o=.d)
-COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@ -lm
+COMPILE.c = $(CC) $(DEPFLAGS) $(CFLAGS) -c -o $@
 COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^) -lm
 
 

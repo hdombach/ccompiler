@@ -34,7 +34,7 @@ int parseASTStm(ASTStm *node, const Token *tok) {
 	return n;
 }
 
-int printASTStm(ASTStm *node) {
+int printASTStm(ASTStm const *node) {
 	int n = 0;
 
 	switch (node->type) {

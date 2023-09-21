@@ -196,6 +196,7 @@ int printrToken(Token *token) {
 			res += printrStr(token->contents);
 			break;
 		case TT_EOF:
+			res += printf("//EOF");
 			break;
 		case TT_NEWLINE:
 			break;
