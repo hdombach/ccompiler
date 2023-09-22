@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "expression.h"
 #include "intConstant.h"
 #include "astUtil.h"
@@ -11,6 +13,9 @@ void freeASTExp(ASTExp *node) {
 	switch (node->type) {
 		case ASTE_OPERATION:
 			freeASTOperation(&node->c.operation);
+			break;
+		case ASTE_IDENTIFIER:
+			free(node->c.identifier);
 			break;
 		default:
 			break;
@@ -33,9 +38,14 @@ int parseASTExpSing(ASTExp *node, Token const *tok) {
 
 	if ((res = parseASTIntConstant(&node->c.intConstant, tok))) {
 		node->type = ASTE_INT_CONSTANT;
+		n += res;
 		return res;
+	} else if (tok[n].type == TT_IDENTIFIER) {
+		node->type = ASTE_IDENTIFIER;
+		node->c.identifier = strdup(tok[n].contents);
+		n++;
 	}
-	return 0;
+	return n;
 }
 
 int parseASTExp15(ASTExp *node, const Token *tok) {
@@ -50,7 +60,7 @@ int parseASTExp15(ASTExp *node, const Token *tok) {
 	if ((res = parseASTOperation15(&node->c.operation, tok + n))) {
 		n += res;
 		node->type = ASTE_OPERATION;
-	} else if ((res = parseASTExpSing(node, tok + n))) {
+	} else if ((res = parseASTExp14(node, tok + n))) {
 		n += res;
 	} else {
 		freeASTExp(node);
@@ -61,8 +71,7 @@ int parseASTExp15(ASTExp *node, const Token *tok) {
 }
 
 int parseASTExp14(ASTExp *node, Token const *tok) {
-	return parseASTExpSing(node, tok);
-	/*int n = 0, res;
+	int n = 0, res;
 
 	initASTExp(node);
 	if (astHasErr()) {
@@ -80,7 +89,7 @@ int parseASTExp14(ASTExp *node, Token const *tok) {
 		return 0;
 	}
 
-	return n;*/
+	return n;
 }
 
 int parseASTExp13(ASTExp *node, const Token *tok) {
@@ -96,6 +105,9 @@ int printASTExp(const ASTExp *node) {
 			break;
 		case ASTE_OPERATION:
 			n += printASTOperation(&node->c.operation);
+			break;
+		case ASTE_IDENTIFIER:
+			n +=printf("{\"node type\": \"identifier\", \"value\": \"%s\"}", node->c.identifier); 
 			break;
 		default:
 			n += printf("{\"node type\": \"expression\", \"value\": \"unknown\"}");

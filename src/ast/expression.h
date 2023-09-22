@@ -7,6 +7,7 @@ typedef enum {
 	ASTE_UNKNOWN,
 	ASTE_INT_CONSTANT,
 	ASTE_OPERATION,
+	ASTE_IDENTIFIER,
 } ASTExpType;
 
 typedef struct ASTExp {
@@ -14,6 +15,7 @@ typedef struct ASTExp {
 	union {
 		ASTIntConstant intConstant;
 		ASTOperation operation;	
+		char *identifier;
 	} c;
 } ASTExp;
 

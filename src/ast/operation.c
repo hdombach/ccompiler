@@ -214,6 +214,15 @@ int parseASTOperation15(ASTOperation *node, const Token *tok) {
 			(_ParseOperationFunc) parseASTExp15);
 }
 
+int parseASTOperation14(ASTOperation *node, const Token *tok) {
+	return _parseASTOperationBin(
+			node,
+			tok,
+			operation14Types,
+			(_ParseOperationFunc) parseASTExp13,
+			(_ParseOperationFunc) parseASTExp14);
+}
+
 int printASTOperation(ASTOperation const *node) {
 	int n = 0;
 
