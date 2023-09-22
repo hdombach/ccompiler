@@ -39,6 +39,7 @@ void freeDList(DList *list, FreeFunc freeFunc) {
 		}
 	}
 	free(list->data);
+	list->data = NULL;
 }
 
 void moveDList(DList *dest, DList *src) {

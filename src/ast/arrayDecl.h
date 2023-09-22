@@ -1,12 +1,12 @@
 #pragma once
 
-#include "expression.h"
 #include "../token.h"
 
 struct ASTDeclarator;
 struct ASTScope;
+struct ASTExp;
 typedef struct ASTArrayDecl {
-	ASTExp *exp;
+	struct ASTExp *exp;
 	struct ASTDeclarator *encl;
 } ASTArrayDecl;
 

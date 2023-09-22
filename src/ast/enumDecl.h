@@ -1,11 +1,13 @@
 #pragma once
 
-#include "expression.h"
 #include "../util/dlist.h"
+#include "../token.h"
+
+struct ASTExp;
 
 typedef struct ASTEnumeratorDecl {
 	char *name;
-	ASTExp *exp;
+	struct ASTExp *exp;
 } ASTEnumeratorDecl;
 
 typedef struct ASTEnumDecl {
