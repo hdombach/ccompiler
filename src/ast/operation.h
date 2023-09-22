@@ -43,4 +43,5 @@ int printASTFuncOperation(ASTFuncOperation const *node);
 void initASTOperation(ASTOperation *node);
 void freeASTOperation(ASTOperation *node);
 int parseASTOperation15(ASTOperation *node, Token const *tok);
+int parseASTOperation14(ASTOperation *node, Token const *tok);
 int printASTOperation(ASTOperation const *node);

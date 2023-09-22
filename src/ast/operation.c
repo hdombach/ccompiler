@@ -120,9 +120,48 @@ void freeASTOperation(ASTOperation *node) {
 	}
 }
 
-int parseASTOperation15(ASTOperation *node, const Token *tok) {
+TokenType operation15Types[] = {
+	TT_COMMA,
+	TT_UNKNOWN,
+};
+
+TokenType operation14Types[] = {
+	TT_EQL,
+	TT_PLUS_EQL,
+	TT_MINUS_EQL,
+	TT_MULT_EQL,
+	TT_DIV_EQL,
+	TT_PERC_EQL,
+	TT_DBLE_LESS_EQL,
+	TT_DBLE_GREATER_EQL,
+	TT_AMP_EQL,
+	TT_CARET_EQL,
+	TT_BAR_EQL,
+	TT_UNKNOWN,
+};
+
+int _isTokenType(TokenType type, TokenType types[]) {
+	TokenType *curType = types;
+	while (*curType != TT_UNKNOWN) {
+		if (*curType == type) {
+			return 1;
+		}
+		curType++;
+	}
+	return 0;
+}
+
+typedef int (*_ParseOperationFunc)(ASTExp *, const Token *);
+int _parseASTOperationBin(
+		ASTOperation *node,
+		const Token *tok,
+		TokenType types[],
+		_ParseOperationFunc lhsFunc,
+		_ParseOperationFunc rhsFunc)
+{
 	int res, n = 0;
 	ASTExp lhs, rhs;
+	TokenType tempType;
 
 	initASTOperation(node);
 	if (astHasErr()) {
@@ -130,7 +169,7 @@ int parseASTOperation15(ASTOperation *node, const Token *tok) {
 		return 0;
 	}
 
-	if ((res = parseASTExp14(&lhs, tok + n))) {
+	if ((res = lhsFunc(&lhs, tok + n))) {
 		n += res;
 	} else {
 		freeASTExp(&lhs);
@@ -138,7 +177,8 @@ int parseASTOperation15(ASTOperation *node, const Token *tok) {
 		return 0;
 	}
 
-	if (tok[n].type == TT_COMMA) {
+	if (_isTokenType(tok[n].type, types)) {
+		tempType = tok[n].type;
 		n++;
 	} else {
 		freeASTExp(&lhs);
@@ -146,7 +186,7 @@ int parseASTOperation15(ASTOperation *node, const Token *tok) {
 		return 0;
 	}
 
-	if ((res = parseASTExp15(&rhs, tok + n))) {
+	if ((res = rhsFunc(&rhs, tok + n))) {
 		n += res;
 	} else {
 		freeASTExp(&lhs);
@@ -160,9 +200,18 @@ int parseASTOperation15(ASTOperation *node, const Token *tok) {
 	node->c.bin.rhs = malloc(sizeof(ASTExp));
 	*node->c.bin.lhs = lhs;
 	*node->c.bin.rhs = rhs;
-	node->tokType = TT_COMMA;
+	node->tokType = tempType;
 
 	return n;
+}
+
+int parseASTOperation15(ASTOperation *node, const Token *tok) {
+	return _parseASTOperationBin(
+			node,
+			tok,
+			operation15Types,
+			(_ParseOperationFunc) parseASTExp14,
+			(_ParseOperationFunc) parseASTExp15);
 }
 
 int printASTOperation(ASTOperation const *node) {
