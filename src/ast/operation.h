@@ -59,4 +59,5 @@ void freeASTOperation(ASTOperation *node);
 int parseASTOperation15(ASTOperation *node, Token const *tok);
 int parseASTOperation14(ASTOperation *node, Token const *tok);
 int parseASTOperation13(ASTOperation *node, Token const *tok);
+int parseASTOperation12(ASTOperation *node, Token const *tok);
 int printASTOperation(ASTOperation const *node);

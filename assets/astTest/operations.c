@@ -13,5 +13,6 @@ void operationMain() {
 	value <<= 5, value >>= 6;
 	value &= 10, value ^= 9, value |= 8;
 
-	value = 5 ? 1 : 2;
+	5 ? 1 : 2;
+	0 || 1;
 }
