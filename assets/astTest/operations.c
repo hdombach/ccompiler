@@ -33,4 +33,7 @@ void operationMain() {
 
 	5 >> 2;
 	5 << 2;
+
+	value = 3 - 2 + 5 - 2;
+	value = 5 / 2 * 4 % 10;
 }

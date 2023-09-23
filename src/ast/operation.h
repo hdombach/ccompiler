@@ -67,4 +67,6 @@ int parseASTOperation8(ASTOperation *node, Token const *tok);
 int parseASTOperation7(ASTOperation *node, Token const *tok);
 int parseASTOperation6(ASTOperation *node, Token const *tok);
 int parseASTOperation5(ASTOperation *node, Token const *tok);
+int parseASTOperation4(ASTOperation *node, Token const *tok);
+int parseASTOperation3(ASTOperation *node, Token const *tok);
 int printASTOperation(ASTOperation const *node);
