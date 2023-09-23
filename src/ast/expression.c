@@ -82,7 +82,7 @@ int parseASTExp14(ASTExp *node, Token const *tok) {
 	if ((res = parseASTOperation14(&node->c.operation, tok + n))) {
 		n += res;
 		node->type = ASTE_OPERATION;
-	} else if ((res = parseASTExpSing(node, tok + n))) {
+	} else if ((res = parseASTExp13(node, tok + n))) {
 		n += res;
 	} else {
 		freeASTExp(node);
@@ -93,6 +93,28 @@ int parseASTExp14(ASTExp *node, Token const *tok) {
 }
 
 int parseASTExp13(ASTExp *node, const Token *tok) {
+	int n = 0, res;
+
+	initASTExp(node);
+	if (astHasErr()) {
+		freeASTExp(node);
+		return 0;
+	}
+
+	if ((res = parseASTOperation13(&node->c.operation, tok + n))) {
+		n += res;
+		node->type = ASTE_OPERATION;
+	} else if ((res = parseASTExp12(node, tok + n))) {
+		n += res;
+	} else {
+		freeASTExp(node);
+		return 0;
+	} 
+
+	return n;
+}
+
+int parseASTExp12(ASTExp *node, const Token *tok) {
 	return parseASTExpSing(node, tok);
 }
 

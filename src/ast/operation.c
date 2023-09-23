@@ -89,6 +89,113 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 	return n;
 }
 
+void initASTCondOperation(ASTCondOperation *node) {
+	node->condition = NULL;
+	node->trueExp = NULL;
+	node->falseExp = NULL;
+}
+
+void freeASTCondOperation(ASTCondOperation *node) {
+	if (node->condition) {
+		freeASTExp(node->condition);
+		free(node->condition);
+		node->condition = NULL;
+	}
+
+	if (node->trueExp) {
+		freeASTExp(node->trueExp);
+		free(node->trueExp);
+		node->trueExp = NULL;
+	}
+
+	if (node->falseExp) {
+		freeASTExp(node->falseExp);
+		free(node->falseExp);
+		node->falseExp = NULL;
+	}
+}
+
+int parseASTCondOperation(ASTCondOperation *node, Token const *tok) {
+	int n = 0, res;
+	ASTExp condition, trueExp, falseExp;
+
+	initASTCondOperation(node);
+	if (astHasErr()) {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp12(&condition, tok + n))) {
+		node->condition = malloc(sizeof(ASTExp));
+		*node->condition = condition;
+		n += res;
+	} else {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_QUESTION) {
+		n++;
+	} else {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp12(&trueExp, tok + n))) {
+		node->trueExp = malloc(sizeof(ASTExp));
+		*node->trueExp = trueExp;
+		n += res;
+	} else {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_COLON) {
+		n++;
+	} else {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp12(&falseExp, tok + n))) {
+		node->falseExp = malloc(sizeof(ASTExp));
+		*node->falseExp = falseExp;
+		n += res;
+	} else {
+		freeASTCondOperation(node);
+		return 0;
+	}
+
+	return n;
+}
+
+int printASTCondOperation(ASTCondOperation const *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": \"conditional operation\"");
+
+	if (node->condition) {
+		n += printf(", \"condition\": ");
+		n += printASTExp(node->condition);
+	}
+
+	if (node->trueExp) {
+		n += printf(", \"true expression\": ");
+		n += printASTExp(node->trueExp);
+	}
+
+	if (node->falseExp) {
+		n += printf(", \"false expression\": ");
+		n += printASTExp(node->falseExp);
+	}
+
+	n += printf("}");
+
+	return n;
+}
+
 void initASTOperation(ASTOperation *node) {
 	node->type = AST_OT_UNKNOWN;
 }
@@ -114,6 +221,9 @@ void freeASTOperation(ASTOperation *node) {
 			break;
 		case AST_OT_TYPECAST:
 			freeASTDeclaration(node->c.typeCast);
+			break;
+		case AST_OT_COND:
+			//freeASTCondOperation(&node->c.cond);
 			break;
 		default:
 			break;
@@ -223,15 +333,34 @@ int parseASTOperation14(ASTOperation *node, const Token *tok) {
 			(_ParseOperationFunc) parseASTExp14);
 }
 
+int parseASTOperation13(ASTOperation *node, const Token *tok) {
+	int n = 0, res;
+	ASTCondOperation condOperation;
+
+	initASTOperation(node);
+	if (astHasErr()) {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTCondOperation(&node->c.cond, tok + n))) {
+		node->type = AST_OT_COND;
+		n += res;
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	return n;
+}
+
 int printASTOperation(ASTOperation const *node) {
 	int n = 0;
 
-	n += printf("{");
-
-	n += printf("\"node type\": \"operation\"");
-
 	switch (node->type) {
 		case AST_OT_BINARY:
+			n += printf("{");
+			n += printf("\"node type\": \"operation\"");
 
 			n += printf(", \"operand\": ");
 			n += printJsonStr(tokTypeStr(node->tokType));
@@ -241,10 +370,14 @@ int printASTOperation(ASTOperation const *node) {
 
 			n += printf(", \"rhs\": ");
 			n += printASTExp(node->c.bin.rhs);
+
+			n += printf("}");
 
 			break;
 
 		case AST_OT_PREFIX:
+			n += printf("{");
+			n += printf("\"node type\": \"operation\"");
 
 			n += printf(", \"operand\": ");
 			n += printJsonStr(tokTypeStr(node->tokType));
@@ -252,15 +385,21 @@ int printASTOperation(ASTOperation const *node) {
 			n += printf(", \"lhs\": ");
 			n += printASTExp(node->c.bin.lhs);
 
+			n += printf("}");
+
 			break;
 
 		case AST_OT_POSTFIX:
+			n += printf("{");
+			n += printf("\"node type\": \"operation\"");
 
 			n += printf(", \"operand\": ");
 			n += printJsonStr(tokTypeStr(node->tokType));
 
 			n += printf(", \"rhs\": ");
 			n += printASTExp(node->c.bin.rhs);
+
+			n += printf("}");
 
 			break;
 
@@ -269,18 +408,25 @@ int printASTOperation(ASTOperation const *node) {
 			break;
 
 		case AST_OT_TYPECAST:
+			n += printf("{");
+			n += printf("\"node type\": \"operation\"");
+
 			n += printf(", \"operand\": \"type cast\"");
 
 			n += printf(", type: ");
 			n += printASTDeclaration(node->c.typeCast);
 
+			n += printf("}");
+
+			break;
+
+		case AST_OT_COND:
+			n += printASTCondOperation(&node->c.cond);
 			break;
 
 		default:
 			break;
 	}
-
-	n += printf("}");
 
 	return n;
 }

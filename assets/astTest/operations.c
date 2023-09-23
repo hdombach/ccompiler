@@ -12,4 +12,6 @@ void operationMain() {
 	value *= 100, value /= 101, value %= 102;
 	value <<= 5, value >>= 6;
 	value &= 10, value ^= 9, value |= 8;
+
+	value = 5 ? 1 : 2;
 }

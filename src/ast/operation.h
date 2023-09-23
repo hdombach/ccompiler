@@ -13,12 +13,20 @@ typedef enum ASTOperationType {
 	AST_OT_POSTFIX,
 	AST_OT_FUNC,
 	AST_OT_TYPECAST,
+	AST_OT_COND,
 } ASTOperationType;
 
 typedef struct ASTFuncOperation {
 	struct ASTExp *func;
 	DList params;
 } ASTFuncOperation;
+
+/* or ternerary */
+typedef struct ASTCondOperation {
+	struct ASTExp *condition;
+	struct ASTExp *trueExp;
+	struct ASTExp *falseExp;
+} ASTCondOperation;
 
 typedef struct ASTOperation {
 	ASTOperationType type;
@@ -31,6 +39,7 @@ typedef struct ASTOperation {
 		struct ASTExp *unary;
 		ASTFuncOperation func;
 		struct ASTDeclaration *typeCast;
+		struct ASTCondOperation cond;
 	} c;
 } ASTOperation;
 
@@ -40,8 +49,14 @@ void freeASTFuncOperation(ASTFuncOperation *node);
 int parseASTFuncOperation(ASTFuncOperation *node,  Token const *tok, struct ASTExp *func);
 int printASTFuncOperation(ASTFuncOperation const *node);
 
+void initASTCondOperation(ASTCondOperation *node);
+void freeASTCondOperation(ASTCondOperation *node);
+int parseASTCondOperation(ASTCondOperation *node, Token const *tok);
+int printASTCondOperation(ASTCondOperation const *node);
+
 void initASTOperation(ASTOperation *node);
 void freeASTOperation(ASTOperation *node);
 int parseASTOperation15(ASTOperation *node, Token const *tok);
 int parseASTOperation14(ASTOperation *node, Token const *tok);
+int parseASTOperation13(ASTOperation *node, Token const *tok);
 int printASTOperation(ASTOperation const *node);
