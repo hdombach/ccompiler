@@ -29,5 +29,6 @@ int parseASTExp14(ASTExp *node, Token const *tok);
 int parseASTExp13(ASTExp *node, Token const *tok);
 int parseASTExp12(ASTExp *node, Token const *tok);
 int parseASTExp11(ASTExp *node, Token const *tok);
+int parseASTExp10(ASTExp *node, Token const *tok);
 
 int printASTExp(ASTExp const *node);

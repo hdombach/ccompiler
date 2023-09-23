@@ -255,6 +255,11 @@ TokenType operation12Types[] = {
 	TT_UNKNOWN,
 };
 
+TokenType operation11Types[] = {
+	TT_DBLE_AMP,
+	TT_UNKNOWN,
+};
+
 int _isTokenType(TokenType type, TokenType types[]) {
 	TokenType *curType = types;
 	while (*curType != TT_UNKNOWN) {
@@ -366,6 +371,15 @@ int parseASTOperation12(ASTOperation *node, const Token *tok) {
 			operation12Types, 
 			(_ParseOperationFunc) parseASTExp11,
 			(_ParseOperationFunc) parseASTExp12);
+}
+
+int parseASTOperation11(ASTOperation *node, const Token *tok) {
+	return _parseASTOperationBin(
+			node,
+			tok,
+			operation11Types,
+			(_ParseOperationFunc) parseASTExp10,
+			(_ParseOperationFunc) parseASTExp11);
 }
 
 int printASTOperation(ASTOperation const *node) {
