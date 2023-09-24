@@ -358,7 +358,31 @@ int parseASTExp2(ASTExp *node, Token const *tok, ASTScope *scope) {
 }
 
 int parseASTExp1(ASTExp *node, Token const *tok, ASTScope *scope) {
-	return parseASTExpSing(node, tok, scope);
+	int n = 0, res;
+	ASTOperation tempOperation;
+
+	initASTExp(node);
+	if (astHasErr()) {
+		freeASTExp(node);
+		return 0;
+	}
+
+	if ((res = parseASTExpSing(node, tok + n, scope))) {
+		n += res;
+	} else {
+		freeASTExp(node);
+		return 0;
+	}
+
+	while (1) {
+		if ((res = parseASTOperation1(&tempOperation, tok + n, scope, *node))) {
+			node->type = ASTE_OPERATION;
+			node->c.operation = tempOperation;
+			n += res;
+		} else {
+			return n;
+		}
+	}
 }
 
 int printASTExp(const ASTExp *node) {

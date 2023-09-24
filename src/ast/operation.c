@@ -26,7 +26,7 @@ void freeASTFuncOperation(ASTFuncOperation *node) {
 int parseASTFuncOperation(
 		ASTFuncOperation *node,
 		const Token *tok,
-		ASTExp *func,
+		ASTExp func,
 		ASTScope *scope)
 {
 	int res, n = 0;
@@ -47,7 +47,8 @@ int parseASTFuncOperation(
 	if (tok[n].type != TT_C_PARAN) {
 		while (1) {
 			ASTExp tempExp;
-			if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+			if ((res = parseASTExp14(&tempExp, tok + n, scope))) {
+				dlistApp(&node->params, &tempExp);
 				n += res;
 			} else {
 				freeASTFuncOperation(node);
@@ -69,7 +70,8 @@ int parseASTFuncOperation(
 		return 0;
 	}
 
-	node->func = func;
+	node->func = malloc(sizeof(ASTExp));
+	*node->func = func;
 	return n;
 }
 
@@ -87,6 +89,90 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 
 	n += printf(", \"params\": ");
 	n += printDList(&node->params, (PrintFunc) printASTExp);
+
+	n += printf("}");
+
+	return n;
+}
+
+void initASTSubscriptOperation(ASTSubscriptOperation *node) {
+	node->lhs = NULL;
+	node->index = NULL;
+}
+
+void freeASTSubscriptOperation(ASTSubscriptOperation *node) {
+	if (node->lhs) {
+		freeASTExp(node->lhs);
+		free(node->lhs);
+		node->lhs = NULL;
+	}
+	if (node->index) {
+		freeASTExp(node->index);
+		free(node->index);
+		node->index = NULL;
+	}
+}
+
+int parseASTSubscriptOperation(
+		ASTSubscriptOperation *node,
+		const Token *tok,
+		struct ASTExp lhs,
+		struct ASTScope *scope)
+{
+	int res, n = 0;
+	ASTExp tempExp;
+
+	initASTSubscriptOperation(node);
+	if (astHasErr()) {
+		freeASTSubscriptOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_O_BRACE) {
+		n++;
+	} else {
+		freeASTSubscriptOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+		node->index = malloc(sizeof(ASTExp));
+		*node->index = tempExp;
+		n += res;
+	} else {
+		freeASTSubscriptOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_C_BRACE) {
+		n++;
+	} else {
+		freeASTSubscriptOperation(node);
+		return 0;
+	}
+
+	node->lhs = malloc(sizeof(ASTExp));
+	*node->lhs = lhs;
+
+	return n;
+}
+
+int printASTSubscriptOperation(const ASTSubscriptOperation *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": \"subscript operation\"");
+
+	if (node->lhs) {
+		n += printf(", \"lhs\": ");
+		n += printASTExp(node->lhs);
+	}
+
+	if (node->index) {
+		n += printf(", \"index\": ");
+		n += printASTExp(node->index);
+	}
 
 	n += printf("}");
 
@@ -380,6 +466,7 @@ int printASTSizeofOperation(const ASTSizeofOperation *node) {
 
 void initASTOperation(ASTOperation *node) {
 	node->type = AST_OT_UNKNOWN;
+	node->tokType = TT_UNKNOWN;
 }
 
 void freeASTOperation(ASTOperation *node) {
@@ -409,6 +496,9 @@ void freeASTOperation(ASTOperation *node) {
 			break;
 		case AST_OT_SIZEOF:
 			freeASTSizeofOperation(&node->c.sizeofOp);
+			break;
+		case AST_OT_SUBSCRIPT:
+			freeASTSubscriptOperation(&node->c.subscript);
 			break;
 		default:
 			break;
@@ -502,6 +592,18 @@ TokenType operation2Types[] = {
 	TT_TILDE,
 	TT_MULT,
 	TT_AMP,
+	TT_UNKNOWN,
+};
+
+TokenType operation1UnaryTypes[] = {
+	TT_INC,
+	TT_DEC,
+	TT_UNKNOWN,
+};
+
+TokenType operation1BinTypes[] = {
+	TT_PERIOD,
+	TT_ARROW,
 	TT_UNKNOWN,
 };
 
@@ -780,6 +882,60 @@ int parseASTOperation2(ASTOperation *node, const Token *tok, ASTScope *scope) {
 	return n;
 }
 
+int parseASTOperation1(ASTOperation *node, const Token *tok, ASTScope *scope, ASTExp lhs) {
+	int n = 0, res;
+
+	initASTOperation(node);
+	if (astHasErr()) {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	if (_isTokenType(tok[n].type, operation1UnaryTypes)) {
+		node->type = AST_OT_POSTFIX;
+		node->c.unary = malloc(sizeof(ASTExp));
+		*node->c.unary = lhs;
+		node->tokType = tok[n].type;
+		n++;
+	} else if (_isTokenType(tok[n].type, operation1BinTypes)) {
+		ASTExp tempExp;
+		node->tokType = tok[n].type;
+		n++;
+		if ((res = parseASTExpSing(&tempExp, tok + n, scope))) {
+			node->type = AST_OT_BINARY;
+			node->c.bin.lhs = malloc(sizeof(ASTExp));
+			*node->c.bin.lhs = lhs;
+			node->c.bin.rhs = malloc(sizeof(ASTExp));
+			*node->c.bin.rhs = tempExp;
+			n += res;
+		} else {
+			freeASTOperation(node);
+			return 0;
+		}
+	} else if ((res = parseASTFuncOperation(
+					&node->c.func,
+					tok + n,
+					lhs,
+					scope)))
+	{
+		node->type = AST_OT_FUNC;
+		n += res;
+	} else if ((res = parseASTSubscriptOperation(
+					&node->c.subscript,
+					tok + n,
+					lhs,
+					scope)))
+	{
+		node->type = AST_OT_SUBSCRIPT;
+		n += res;
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	return n;
+}
+
 int printASTOperation(ASTOperation const *node) {
 	int n = 0;
 
@@ -808,8 +964,8 @@ int printASTOperation(ASTOperation const *node) {
 			n += printf(", \"operand\": ");
 			n += printJsonStr(tokTypeStr(node->tokType));
 
-			n += printf(", \"lhs\": ");
-			n += printASTExp(node->c.bin.lhs);
+			n += printf(", \"rhs\": ");
+			n += printASTExp(node->c.unary);
 
 			n += printf("}");
 
@@ -822,8 +978,8 @@ int printASTOperation(ASTOperation const *node) {
 			n += printf(", \"operand\": ");
 			n += printJsonStr(tokTypeStr(node->tokType));
 
-			n += printf(", \"rhs\": ");
-			n += printASTExp(node->c.bin.rhs);
+			n += printf(", \"lhs\": ");
+			n += printASTExp(node->c.unary);
 
 			n += printf("}");
 
@@ -843,6 +999,10 @@ int printASTOperation(ASTOperation const *node) {
 
 		case AST_OT_SIZEOF:
 			n += printASTSizeofOperation(&node->c.sizeofOp);
+			break;
+
+		case AST_OT_SUBSCRIPT:
+			n += printASTSubscriptOperation(&node->c.subscript);
 			break;
 
 		default:
