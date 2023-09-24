@@ -547,6 +547,10 @@ int _parseASTOperationBin(
 		tempType = tok[n].type;
 		n++;
 	} else {
+		if (lhs.type == ASTE_OPERATION) {
+			*node = lhs.c.operation;
+			return n;
+		}
 		freeASTExp(&lhs);
 		freeASTOperation(node);
 		return 0;
