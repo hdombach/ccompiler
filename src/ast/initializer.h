@@ -10,6 +10,8 @@ typedef enum {
 	AST_IT_LIST,
 } ASTInitializerType;
 
+struct ASTScope;
+
 typedef struct {
 	ASTInitializerType type;
 	union {
@@ -20,5 +22,5 @@ typedef struct {
 
 void initASTInitializer(ASTInitializer *initializer);
 void freeASTInitializer(ASTInitializer *initializer);
-int parseASTInitializer(ASTInitializer *initializer, Token const *tok);
+int parseASTInitializer(ASTInitializer *initializer, Token const *tok, struct ASTScope *scope);
 int printASTInitializer(ASTInitializer const *initializer);

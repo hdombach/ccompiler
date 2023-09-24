@@ -7,6 +7,8 @@ typedef enum {
 	ASTS_EXP,
 } ASTStmType;
 
+struct ASTScope;
+
 typedef struct {
 	ASTStmType type;	
 	union {
@@ -17,6 +19,6 @@ typedef struct {
 void initASTStm(ASTStm *node);
 void freeASTStm(ASTStm *node);
 
-int parseASTStm(ASTStm *node, Token const *tok);
+int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope *scope);
 
 int printASTStm(ASTStm const *node);

@@ -1,6 +1,7 @@
 #include "statement.h"
 #include "expression.h"
 #include "astUtil.h"
+#include "scope.h"
 void initASTStm(ASTStm *node) {
 	node->type = ASTS_UNKNOWN;
 }
@@ -15,14 +16,14 @@ void freeASTStm(ASTStm *node) {
 	}
 }
 
-int parseASTStm(ASTStm *node, const Token *tok) {
+int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	int res, n = 0;
 
 	if (astHasErr()) {
 		return 0;
 	}
 
-	if ((res = parseASTExp(&node->c.exp, tok + n))) {
+	if ((res = parseASTExp(&node->c.exp, tok + n, scope))) {
 		node->type = ASTS_EXP;
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {

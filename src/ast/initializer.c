@@ -1,6 +1,7 @@
 #include "initializer.h"
 #include "astUtil.h"
 #include "expression.h"
+#include "scope.h"
 
 void initASTInitializer(ASTInitializer *initializer) {
 	initializer->type = AST_IT_UNKNOWN;
@@ -20,7 +21,7 @@ void freeASTInitializer(ASTInitializer *initializer) {
 	initializer->type = AST_IT_UNKNOWN;
 }
 
-int parseASTInitializer(ASTInitializer *initializer, const Token *tok) {
+int parseASTInitializer(ASTInitializer *initializer, const Token *tok, ASTScope *scope) {
 	int n = 0, res;
 	initASTInitializer(initializer);
 	if (astHasErr()) {
@@ -33,7 +34,7 @@ int parseASTInitializer(ASTInitializer *initializer, const Token *tok) {
 		n++;
 		while (1) {
 			ASTInitializer temp;
-			if ((res = parseASTInitializer(&temp, tok + n))) {
+			if ((res = parseASTInitializer(&temp, tok + n, scope))) {
 				n += res;
 				dlistApp(&initializer->c.initializerList, &temp);
 			} else {
@@ -53,7 +54,7 @@ int parseASTInitializer(ASTInitializer *initializer, const Token *tok) {
 			freeASTInitializer(initializer);
 			return 0;
 		}
-	} else if ((res = parseASTExp(&initializer->c.exp, tok + n))) {
+	} else if ((res = parseASTExp(&initializer->c.exp, tok + n, scope))) {
 		initializer->type = AST_IT_EXP;
 		n += res;
 	} else {

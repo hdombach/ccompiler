@@ -1,5 +1,6 @@
 void operationMain() {
 	int value;
+	int *ptr;
 
 	4;
 	5, 6;
@@ -36,4 +37,16 @@ void operationMain() {
 
 	value = 3 - 2 + 5 - 2;
 	value = 5 / 2 * 4 % 10;
+
+	++value;
+	--value;
+	+value;
+	-value;
+	(float) value;
+	!value;
+	~value;
+	*ptr;
+	&value;
+	sizeof(int);
+	sizeof value;
 }

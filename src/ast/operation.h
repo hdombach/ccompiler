@@ -5,6 +5,8 @@
 
 struct ASTExp;
 struct ASTDeclaration;
+struct ASTParam;
+struct ASTScope;
 
 typedef enum ASTOperationType {
 	AST_OT_UNKNOWN,
@@ -14,6 +16,7 @@ typedef enum ASTOperationType {
 	AST_OT_FUNC,
 	AST_OT_TYPECAST,
 	AST_OT_COND,
+	AST_OT_SIZEOF,
 } ASTOperationType;
 
 typedef struct ASTFuncOperation {
@@ -28,6 +31,19 @@ typedef struct ASTCondOperation {
 	struct ASTExp *falseExp;
 } ASTCondOperation;
 
+typedef struct ASTCastOperation {
+	struct ASTParam *type;
+	struct ASTExp *exp;
+} ASTCastOperation;
+
+typedef struct ASTSizeofOperation {
+	int isExp;
+	union {
+		struct ASTExp *exp;
+		struct ASTParam *param;
+	} c;
+} ASTSizeofOperation;
+
 typedef struct ASTOperation {
 	ASTOperationType type;
 	TokenType tokType;
@@ -38,35 +54,58 @@ typedef struct ASTOperation {
 		} bin;
 		struct ASTExp *unary;
 		ASTFuncOperation func;
-		struct ASTDeclaration *typeCast;
+		ASTCastOperation typeCast;
 		struct ASTCondOperation cond;
+		ASTSizeofOperation sizeofOp;
 	} c;
 } ASTOperation;
+
 
 void initASTFuncOperation(ASTFuncOperation *node);
 void freeASTFuncOperation(ASTFuncOperation *node);
 /* If the parse fails, func is not freed */
-int parseASTFuncOperation(ASTFuncOperation *node,  Token const *tok, struct ASTExp *func);
+int parseASTFuncOperation(
+		ASTFuncOperation *node,
+		Token const *tok,
+		struct ASTExp *func,
+		struct ASTScope *scope);
 int printASTFuncOperation(ASTFuncOperation const *node);
 
 void initASTCondOperation(ASTCondOperation *node);
 void freeASTCondOperation(ASTCondOperation *node);
-int parseASTCondOperation(ASTCondOperation *node, Token const *tok);
+int parseASTCondOperation(ASTCondOperation *node, Token const *tok, struct ASTScope *scope);
 int printASTCondOperation(ASTCondOperation const *node);
+
+void initASTCastOperation(ASTCastOperation *node);
+void freeASTCastOperation(ASTCastOperation *node);
+int parseASTCastOperation(
+		ASTCastOperation *node,
+		Token const *tok,
+		struct ASTScope *scope);
+int printASTCastOperation(ASTCastOperation const *node);
+
+void initASTSizeofOperation(ASTSizeofOperation *node);
+void freeASTSizeofOperation(ASTSizeofOperation *node);
+int parseASTSizeofOperation(ASTSizeofOperation *node, Token const *tok, struct ASTScope *scope);
+int printASTSizeofOperation(ASTSizeofOperation const *node);
 
 void initASTOperation(ASTOperation *node);
 void freeASTOperation(ASTOperation *node);
-int parseASTOperation15(ASTOperation *node, Token const *tok);
-int parseASTOperation14(ASTOperation *node, Token const *tok);
-int parseASTOperation13(ASTOperation *node, Token const *tok);
-int parseASTOperation12(ASTOperation *node, Token const *tok);
-int parseASTOperation11(ASTOperation *node, Token const *tok);
-int parseASTOperation10(ASTOperation *node, Token const *tok);
-int parseASTOperation9(ASTOperation *node, Token const *tok);
-int parseASTOperation8(ASTOperation *node, Token const *tok);
-int parseASTOperation7(ASTOperation *node, Token const *tok);
-int parseASTOperation6(ASTOperation *node, Token const *tok);
-int parseASTOperation5(ASTOperation *node, Token const *tok);
-int parseASTOperation4(ASTOperation *node, Token const *tok);
-int parseASTOperation3(ASTOperation *node, Token const *tok);
+int parseASTOperation15(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation14(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation13(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation12(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation11(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation10(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation9(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation8(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation7(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation6(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation5(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation4(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation3(ASTOperation *node, Token const *tok, struct ASTScope *scope);
+int parseASTOperation2(
+		ASTOperation *node,
+		Token const *tok,
+		struct ASTScope *scope);
 int printASTOperation(ASTOperation const *node);
