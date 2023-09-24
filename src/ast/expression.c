@@ -45,7 +45,26 @@ int parseASTExpSing(ASTExp *node, Token const *tok, ASTScope *scope) {
 		node->type = ASTE_IDENTIFIER;
 		node->c.identifier = strdup(tok[n].contents);
 		n++;
+	} else if (tok[n].type == TT_O_PARAN) {
+		n++;
+		if ((res = parseASTExp(node, tok + n, scope))) {
+			n += res;
+		} else {
+			freeASTExp(node);
+			return 0;
+		}
+
+		if (tok[n].type == TT_C_PARAN) {
+			n++;
+		} else {
+			freeASTExp(node);
+			return 0;
+		}
+	} else {
+		freeASTExp(node);
+		return 0;
 	}
+
 	return n;
 }
 

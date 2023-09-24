@@ -65,4 +65,6 @@ void operationMain() {
 	ptr[5 * 2] = value;
 	
 	structValue->structValue.internalValue = value;
+
+	value = ++(*ptr++) + 3 * (2 + 6);
 }
