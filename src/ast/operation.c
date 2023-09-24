@@ -10,6 +10,10 @@
 #include "param.h"
 #include "structDecl.h"
 
+/*************************************************************
+ * Func Operation
+ *************************************************************/
+
 void initASTFuncOperation(ASTFuncOperation *node) {
 	node->func = NULL;
 	initDListEmpty(&node->params, sizeof(ASTExp));
@@ -95,6 +99,10 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 	return n;
 }
 
+/*************************************************************
+ * Subscript Operation
+ *************************************************************/
+
 void initASTSubscriptOperation(ASTSubscriptOperation *node) {
 	node->lhs = NULL;
 	node->index = NULL;
@@ -178,6 +186,10 @@ int printASTSubscriptOperation(const ASTSubscriptOperation *node) {
 
 	return n;
 }
+
+/*************************************************************
+ * Condition Operation (ternary)
+ *************************************************************/
 
 void initASTCondOperation(ASTCondOperation *node) {
 	node->condition = NULL;
@@ -286,6 +298,10 @@ int printASTCondOperation(ASTCondOperation const *node) {
 	return n;
 }
 
+/*************************************************************
+ * Type cast Operation
+ *************************************************************/
+
 void initASTCastOperation(ASTCastOperation *node) {
 	node->type = NULL;
 	node->exp = NULL;
@@ -365,6 +381,10 @@ int printASTCastOperation(const ASTCastOperation *node) {
 
 	return n;
 }
+
+/*************************************************************
+ * Sizeof Operation
+ *************************************************************/
 
 void initASTSizeofOperation(ASTSizeofOperation *node) {
 	node->c.exp = NULL; // will also mean the param is NULL
@@ -463,6 +483,10 @@ int printASTSizeofOperation(const ASTSizeofOperation *node) {
 
 	return n;
 }
+
+/*************************************************************
+ * Operation
+ *************************************************************/
 
 void initASTOperation(ASTOperation *node) {
 	node->type = AST_OT_UNKNOWN;
