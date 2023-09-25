@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "doWhile.h"
 #include "statement.h"
 #include "compStatement.h"
 #include "expression.h"
@@ -32,6 +33,9 @@ void freeASTStm(ASTStm *node) {
 			break;
 		case ASTS_WHILE:
 			freeASTWhile(&node->c.whileStm);
+			break;
+		case ASTS_DO_WHILE:
+			freeASTDoWhile(&node->c.doWhileStm);
 			break;
 		default:
 			break;
@@ -67,14 +71,6 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		node->type = ASTS_COMPOUND;
 		node->c.compStm = malloc(sizeof(ASTCompStm));
 		*node->c.compStm = tempCompStm;
-	} else if ((res = parseASTExp(&node->c.exp, tok + n, scope))) {
-		node->type = ASTS_EXP;
-		n += res;
-		if (tok[n].type != TT_SEMI_COLON) {
-			freeASTExp(&node->c.exp);
-			return 0;
-		}
-		n++;
 	} else if ((res = parseASTIf(&node->c.ifStm, tok + n, scope))) {
 		node->type = ASTS_IF;
 		n += res;
@@ -83,6 +79,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		n += res;
 	} else if ((res = parseASTWhile(&node->c.whileStm, tok + n, scope))) {
 		node->type = ASTS_WHILE;
+		n += res;
+	} else if ((res = parseASTDoWhile(&node->c.doWhileStm, tok + n, scope))) {
+		node->type = ASTS_DO_WHILE;
 		n += res;
 	} else if (tok[n].type == TT_BREAK) {
 		n++;
@@ -103,6 +102,14 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		}
 	} else if (tok[n].type == TT_SEMI_COLON) {
 		node->type = ASTS_EMPTY;
+		n++;
+	} else if ((res = parseASTExp(&node->c.exp, tok + n, scope))) {
+		node->type = ASTS_EXP;
+		n += res;
+		if (tok[n].type != TT_SEMI_COLON) {
+			freeASTExp(&node->c.exp);
+			return 0;
+		}
 		n++;
 	}
 
@@ -137,6 +144,9 @@ int printASTStm(ASTStm const *node) {
 			break;
 		case ASTS_WHILE:
 			n += printASTWhile(&node->c.whileStm);
+			break;
+		case ASTS_DO_WHILE:
+			n += printASTDoWhile(&node->c.doWhileStm);
 			break;
 		case ASTS_EMPTY:
 			n += printf("\"empty\"");

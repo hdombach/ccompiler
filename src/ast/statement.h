@@ -1,5 +1,6 @@
 #pragma once
 
+#include "doWhile.h"
 #include "expression.h"
 #include "if.h"
 #include "label.h"
@@ -16,6 +17,7 @@ typedef enum {
 	ASTS_CONTINUE,
 	ASTS_SWITCH,
 	ASTS_WHILE,
+	ASTS_DO_WHILE,
 } ASTStmType;
 
 struct ASTScope;
@@ -29,6 +31,7 @@ typedef struct ASTStm {
 		ASTIf ifStm;
 		ASTSwitch switchStm;
 		ASTWhile whileStm;
+		ASTDoWhile doWhileStm;
 	} c;
 	ASTLabel *label;
 } ASTStm;

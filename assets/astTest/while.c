@@ -5,4 +5,9 @@ void mainWhile() {
 	}
 
 	while (value) value--;
+
+	do {
+		value++;
+		value = value * 1 + 2;
+	} while (value < 10);
 }
