@@ -1,6 +1,6 @@
-int testFunc(int, float) { }
+int testFunc2(int, float) { }
 
-struct TestStruct {
+struct TestStruct2 {
 	struct {
 		int internalValue;
 	} structValue;
@@ -9,7 +9,7 @@ struct TestStruct {
 void operationMain() {
 	int value;
 	int *ptr;
-	struct TestStruct *structValue;
+	struct TestStruct2 *structValue;
 
 	4;
 	5, 6;
@@ -61,7 +61,7 @@ void operationMain() {
 
 	value++;
 	value--;
-	testFunc(3 + 2 * 2 - 3, value++ + 3);
+	testFunc2(3 + 2 * 2 - 3, value++ + 3);
 	ptr[5 * 2] = value;
 	
 	structValue->structValue.internalValue = value;

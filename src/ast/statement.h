@@ -3,6 +3,7 @@
 #include "expression.h"
 #include "if.h"
 #include "label.h"
+#include "switch.h"
 
 typedef enum {
 	ASTS_UNKNOWN,
@@ -12,6 +13,7 @@ typedef enum {
 	ASTS_EMPTY,
 	ASTS_BREAK,
 	ASTS_CONTINUE,
+	ASTS_SWITCH,
 } ASTStmType;
 
 struct ASTScope;
@@ -23,6 +25,7 @@ typedef struct ASTStm {
 		struct ASTCompStm *compStm;
 		ASTExp exp;
 		ASTIf ifStm;
+		ASTSwitch switchStm;
 	} c;
 	ASTLabel *label;
 } ASTStm;

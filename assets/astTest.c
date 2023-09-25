@@ -3,3 +3,6 @@
 #include "astTest/enums.c"
 #include "astTest/funcs.c"
 #include "astTest/if.c"
+#include "astTest/goto.c"
+#include "astTest/operations.c"
+#include "astTest/switch.c"

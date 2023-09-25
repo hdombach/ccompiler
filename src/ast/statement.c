@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "statement.h"
 #include "compStatement.h"
 #include "expression.h"
@@ -5,7 +7,7 @@
 #include "label.h"
 #include "scope.h"
 #include "if.h"
-#include <stdlib.h>
+#include "switch.h"
 
 void initASTStm(ASTStm *node) {
 	node->type = ASTS_UNKNOWN;
@@ -23,6 +25,9 @@ void freeASTStm(ASTStm *node) {
 			break;
 		case ASTS_IF:
 			freeASTIf(&node->c.ifStm);
+			break;
+		case ASTS_SWITCH:
+			freeASTSwitch(&node->c.switchStm);
 			break;
 		default:
 			break;
@@ -68,6 +73,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		n++;
 	} else if ((res = parseASTIf(&node->c.ifStm, tok + n, scope))) {
 		node->type = ASTS_IF;
+		n += res;
+	} else if ((res = parseASTSwitch(&node->c.switchStm, tok + n, scope))) {
+		node->type = ASTS_SWITCH;
 		n += res;
 	} else if (tok[n].type == TT_BREAK) {
 		n++;
@@ -117,9 +125,17 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_IF:
 			n += printASTIf(&node->c.ifStm);
 			break;
+		case ASTS_SWITCH:
+			n += printASTSwitch(&node->c.switchStm);
+			break;
 		case ASTS_EMPTY:
 			n += printf("\"empty\"");
 			break;
+		case ASTS_BREAK:
+			n += printf("\"break\"");
+			break;
+		case ASTS_CONTINUE:
+			n += printf("\"continue\"");
 		default:
 			n += printf("{\"type\": \"Statement\", \"value\": \"unknown\"}");
 			break;
