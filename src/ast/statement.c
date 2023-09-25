@@ -2,12 +2,14 @@
 #include "compStatement.h"
 #include "expression.h"
 #include "astUtil.h"
+#include "label.h"
 #include "scope.h"
 #include "if.h"
 #include <stdlib.h>
 
 void initASTStm(ASTStm *node) {
 	node->type = ASTS_UNKNOWN;
+	node->label = NULL;
 }
 
 void freeASTStm(ASTStm *node) {
@@ -25,14 +27,27 @@ void freeASTStm(ASTStm *node) {
 		default:
 			break;
 	}
+
+	if (node->label) {
+		freeASTLabel(node->label);
+		free(node->label);
+		node->label = NULL;
+	}
 }
 
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	int res, n = 0;
 	ASTCompStm tempCompStm;
+	ASTLabel tempLabel;
 
 	if (astHasErr()) {
 		return 0;
+	}
+
+	if ((res = parseASTLabel(&tempLabel, tok + n, scope))) {
+		node->label = malloc(sizeof(ASTLabel));
+		*node->label = tempLabel;
+		n += res;
 	}
 
 	if ((res = parseASTCompStm(&tempCompStm, tok + n, scope))) {
@@ -58,6 +73,16 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 int printASTStm(ASTStm const *node) {
 	int n = 0;
 
+	if (node->label) {
+		n += printf("{");
+		n += printf("\"node type\": \"statement\"");
+
+		n += printf(", \"label\": ");
+		n += printASTLabel(node->label);
+
+		n += printf(", \"content\": ");
+	}
+
 	switch (node->type) {
 		case ASTS_COMPOUND:
 			n += printASTCompStm(node->c.compStm);
@@ -68,10 +93,14 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_IF:
 			n += printASTIf(&node->c.ifStm);
 			break;
+			break;
 		default:
 			n += printf("{\"type\": \"Statement\", \"value\": \"unknown\"}");
 			break;
-	
+	}
+
+	if (node->label) {
+		n += printf("}");
 	}
 
 	return n;

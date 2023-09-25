@@ -2,6 +2,7 @@
 
 #include "expression.h"
 #include "if.h"
+#include "label.h"
 
 typedef enum {
 	ASTS_UNKNOWN,
@@ -20,6 +21,7 @@ typedef struct ASTStm {
 		ASTExp exp;
 		ASTIf ifStm;
 	} c;
+	ASTLabel *label;
 } ASTStm;
 
 void initASTStm(ASTStm *node);
