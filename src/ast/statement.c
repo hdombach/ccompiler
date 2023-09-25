@@ -33,6 +33,7 @@ void freeASTStm(ASTStm *node) {
 		free(node->label);
 		node->label = NULL;
 	}
+	node->type = ASTS_UNKNOWN;
 }
 
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
@@ -40,7 +41,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	ASTCompStm tempCompStm;
 	ASTLabel tempLabel;
 
+	initASTStm(node);
 	if (astHasErr()) {
+		freeASTStm(node);
 		return 0;
 	}
 
@@ -66,7 +69,28 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	} else if ((res = parseASTIf(&node->c.ifStm, tok + n, scope))) {
 		node->type = ASTS_IF;
 		n += res;
+	} else if (tok[n].type == TT_BREAK) {
+		n++;
+		if (tok[n].type == TT_SEMI_COLON) {
+			n++;
+		} else {
+			freeASTStm(node);
+			return 0;
+		}
+		node->type = ASTS_BREAK;
+	} else if (tok[n].type == TT_CONTINUE) {
+		n++;
+		if (tok[n].type == TT_SEMI_COLON) {
+			n++;
+		} else {
+			freeASTStm(node);
+			return 0;
+		}
+	} else if (tok[n].type == TT_SEMI_COLON) {
+		node->type = ASTS_EMPTY;
+		n++;
 	}
+
 	return n;
 }
 
@@ -93,6 +117,8 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_IF:
 			n += printASTIf(&node->c.ifStm);
 			break;
+		case ASTS_EMPTY:
+			n += printf("\"empty\"");
 			break;
 		default:
 			n += printf("{\"type\": \"Statement\", \"value\": \"unknown\"}");

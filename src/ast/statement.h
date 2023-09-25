@@ -9,6 +9,9 @@ typedef enum {
 	ASTS_COMPOUND,
 	ASTS_EXP,
 	ASTS_IF,
+	ASTS_EMPTY,
+	ASTS_BREAK,
+	ASTS_CONTINUE,
 } ASTStmType;
 
 struct ASTScope;
