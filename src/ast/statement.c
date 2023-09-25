@@ -8,6 +8,7 @@
 #include "scope.h"
 #include "if.h"
 #include "switch.h"
+#include "while.h"
 
 void initASTStm(ASTStm *node) {
 	node->type = ASTS_UNKNOWN;
@@ -28,6 +29,9 @@ void freeASTStm(ASTStm *node) {
 			break;
 		case ASTS_SWITCH:
 			freeASTSwitch(&node->c.switchStm);
+			break;
+		case ASTS_WHILE:
+			freeASTWhile(&node->c.whileStm);
 			break;
 		default:
 			break;
@@ -76,6 +80,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		n += res;
 	} else if ((res = parseASTSwitch(&node->c.switchStm, tok + n, scope))) {
 		node->type = ASTS_SWITCH;
+		n += res;
+	} else if ((res = parseASTWhile(&node->c.whileStm, tok + n, scope))) {
+		node->type = ASTS_WHILE;
 		n += res;
 	} else if (tok[n].type == TT_BREAK) {
 		n++;
@@ -127,6 +134,9 @@ int printASTStm(ASTStm const *node) {
 			break;
 		case ASTS_SWITCH:
 			n += printASTSwitch(&node->c.switchStm);
+			break;
+		case ASTS_WHILE:
+			n += printASTWhile(&node->c.whileStm);
 			break;
 		case ASTS_EMPTY:
 			n += printf("\"empty\"");

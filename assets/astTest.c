@@ -6,3 +6,4 @@
 #include "astTest/goto.c"
 #include "astTest/operations.c"
 #include "astTest/switch.c"
+#include "astTest/while.c"

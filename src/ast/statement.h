@@ -4,6 +4,7 @@
 #include "if.h"
 #include "label.h"
 #include "switch.h"
+#include "while.h"
 
 typedef enum {
 	ASTS_UNKNOWN,
@@ -14,6 +15,7 @@ typedef enum {
 	ASTS_BREAK,
 	ASTS_CONTINUE,
 	ASTS_SWITCH,
+	ASTS_WHILE,
 } ASTStmType;
 
 struct ASTScope;
@@ -26,6 +28,7 @@ typedef struct ASTStm {
 		ASTExp exp;
 		ASTIf ifStm;
 		ASTSwitch switchStm;
+		ASTWhile whileStm;
 	} c;
 	ASTLabel *label;
 } ASTStm;
