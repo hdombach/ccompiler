@@ -142,7 +142,7 @@ typedef enum {
 	TT_NEWLINE, /* Is helpful for macros */
 } TokenType;
 
-typedef struct {
+typedef struct Token {
 	TokenType type;
 	char *contents;
 

@@ -23,7 +23,7 @@ typedef struct {
 	} c;
 } ASTCompItem;
 
-typedef struct {
+typedef struct ASTCompStm {
 	DList items;
 	struct ASTScope *scope;
 } ASTCompStm;
