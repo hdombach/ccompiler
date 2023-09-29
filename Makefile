@@ -22,7 +22,7 @@ DEPS_ALL_TESTS = $(DEPS_GEN)\
 DEPS_MACRO_DICT_TEST = $(DEPS_GEN) build/tests/macroDictTest.o build/tests/test.o
 
 
-all: build/ccompiler assets testAssets build/allTests
+all: build/ccompiler
 
 build/ccompiler: build $(DEPS_CCOMPILER)
 	$(COMPILE_EXE) -o build/ccompiler

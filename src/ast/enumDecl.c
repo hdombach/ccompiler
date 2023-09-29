@@ -21,7 +21,11 @@ void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 	}
 }
 
-int parseASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok) {
+int parseASTEnumeratorDecl(
+		ASTEnumeratorDecl *decl,
+		Token const *tok,
+		struct ASTScope const *scope)
+{
 	int res, n = 0;
 
 	if (astHasErr()) {
@@ -45,7 +49,7 @@ int parseASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok) {
 	}
 
 	decl->exp = malloc(sizeof(ASTExp));
-	if ((res = parseASTExp(decl->exp, tok + n))) {
+	if ((res = parseASTExp(decl->exp, tok + n, scope))) {
 		n += res;
 	} else {
 		astErr("Expected expression after enumerator", tok + n);
@@ -90,7 +94,11 @@ void freeASTEnumDecl(ASTEnumDecl *decl) {
 	freeDList(&decl->enumerators, (FreeFunc) freeASTEnumeratorDecl);
 }
 
-int parseASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
+int parseASTEnumDecl(
+		ASTEnumDecl *decl,
+		Token const *tok,
+		struct ASTScope const *scope)
+{
 	int res, n = 0;
 
 	if (astHasErr()) {
@@ -119,7 +127,7 @@ int parseASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 
 	while (1) {
 		ASTEnumeratorDecl enumerator;
-		if ((res = parseASTEnumeratorDecl(&enumerator, tok + n))) {
+		if ((res = parseASTEnumeratorDecl(&enumerator, tok + n, scope))) {
 			n += res;
 			dlistApp(&decl->enumerators, &enumerator);
 		} else {

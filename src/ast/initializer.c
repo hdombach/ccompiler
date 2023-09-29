@@ -21,7 +21,11 @@ void freeASTInitializer(ASTInitializer *initializer) {
 	initializer->type = AST_IT_UNKNOWN;
 }
 
-int parseASTInitializer(ASTInitializer *initializer, const Token *tok, ASTScope *scope) {
+int parseASTInitializer(
+		ASTInitializer *initializer,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int n = 0, res;
 	initASTInitializer(initializer);
 	if (astHasErr()) {
@@ -73,7 +77,9 @@ int printASTInitializer(const ASTInitializer *initializer) {
 			n += printASTExp(&initializer->c.exp);
 			break;
 		case AST_IT_LIST:
-			n += printDList(&initializer->c.initializerList, (PrintFunc) printASTInitializer);
+			n += printDList(
+					&initializer->c.initializerList,
+					(PrintFunc) printASTInitializer);
 			break;
 		default:
 			break;

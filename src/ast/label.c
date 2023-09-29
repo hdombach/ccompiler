@@ -28,7 +28,7 @@ void freeASTLabel(ASTLabel *label) {
 int parseASTLabel(
 		ASTLabel *label,
 		struct Token const *tok,
-		struct ASTScope *scope)
+		struct ASTScope const *scope)
 {
 	int n = 0, res;
 	char *tempIdentifier;

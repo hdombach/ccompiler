@@ -23,7 +23,7 @@ void freeASTSwitch(ASTSwitch *node) {
 	}
 }
 
-int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope *scope) {
+int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
 	ASTExp tempExp;
 	ASTStm tempStatement;

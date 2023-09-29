@@ -12,5 +12,8 @@ typedef struct ASTDoWhile {
 
 void initASTDoWhile(ASTDoWhile *node);
 void freeASTDoWhile(ASTDoWhile *node);
-int parseASTDoWhile(ASTDoWhile *node, struct Token const *tok, struct ASTScope *scope);
+int parseASTDoWhile(
+		ASTDoWhile *node,
+		struct Token const *tok,
+		struct ASTScope const *scope);
 int printASTDoWhile(ASTDoWhile const *node);

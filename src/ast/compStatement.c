@@ -36,7 +36,7 @@ int parseASTCompItem(
 		return 0;
 	}
 
-	if ((res = parseASTStm(&item->c.statement, tok + n))) {
+	if ((res = parseASTStm(&item->c.statement, tok + n, scope))) {
 		n += res;
 		item->type = AST_CIT_STM;
 	} else if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {

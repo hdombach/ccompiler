@@ -49,7 +49,7 @@ void freeASTStm(ASTStm *node) {
 	node->type = ASTS_UNKNOWN;
 }
 
-int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
+int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	int res, n = 0;
 	ASTCompStm tempCompStm;
 	ASTLabel tempLabel;

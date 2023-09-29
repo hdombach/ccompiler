@@ -25,7 +25,8 @@ void freeASTArrayDecl(ASTArrayDecl *decl) {
 int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		const Token *tok,
-		ASTDeclarator *encl) {
+		ASTDeclarator *encl,
+		ASTScope const *scope) {
 	int n = 0, res;
 
 	initASTArrayDecl(decl);
@@ -46,7 +47,7 @@ int parseASTArrayDecl(
 	}
 
 	ASTExp tempExp;
-	if ((res = parseASTExp(&tempExp, tok + n))) {
+	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
 		decl->exp = malloc(sizeof(ASTExp));
 		*decl->exp = tempExp;
 		n += res;

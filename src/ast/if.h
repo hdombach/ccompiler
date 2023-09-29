@@ -13,5 +13,5 @@ typedef struct ASTIf {
 
 void initASTIf(ASTIf *node);
 void freeASTIf(ASTIf *node);
-int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope);
+int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope);
 int printASTIf(ASTIf const *node);

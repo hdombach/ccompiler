@@ -12,5 +12,8 @@ typedef struct ASTSwitch {
 
 void initASTSwitch(ASTSwitch *node);
 void freeASTSwitch(ASTSwitch *node);
-int parseASTSwitch(ASTSwitch *node, struct Token const *tok, struct ASTScope *scope);
+int parseASTSwitch(
+		ASTSwitch *node,
+		struct Token const *tok,
+		struct ASTScope const *scope);
 int printASTSwitch(ASTSwitch const *node);

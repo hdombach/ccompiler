@@ -39,6 +39,6 @@ typedef struct ASTStm {
 void initASTStm(ASTStm *node);
 void freeASTStm(ASTStm *node);
 
-int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope *scope);
+int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope const *scope);
 
 int printASTStm(ASTStm const *node);

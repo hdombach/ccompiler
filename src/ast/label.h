@@ -24,5 +24,5 @@ void freeASTLabel(ASTLabel *label);
 int parseASTLabel(
 		ASTLabel *label,
 		struct Token const *tok,
-		struct ASTScope *scope);
+		struct ASTScope const *scope);
 int printASTLabel(ASTLabel const *label);

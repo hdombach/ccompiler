@@ -30,7 +30,7 @@ void freeASTIf(ASTIf *node) {
 	}
 }
 
-int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
+int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope) {
 	int res, n = 0;
 	ASTExp tempExp;
 	ASTStm tempStatement;

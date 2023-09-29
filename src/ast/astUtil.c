@@ -20,7 +20,12 @@ int astHasErr() {
 
 int fprintASTErr(FILE *fp) {
 	if (_astErrTok) {
-		return fprintf(fp, "%d:%d, %s\n", _astErrTok->posLine, _astErrTok->posColumn, _astErrMsg);
+		return fprintf(
+				fp,
+				"%d:%d, %s\n",
+				_astErrTok->posLine,
+				_astErrTok->posColumn,
+				_astErrMsg);
 	} else {
 		return fprintf(fp, "%s\n", _astErrMsg);
 	}

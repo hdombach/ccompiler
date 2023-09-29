@@ -4,6 +4,7 @@
 #include "../token.h"
 
 struct ASTExp;
+struct ASTScope;
 
 typedef struct ASTEnumeratorDecl {
 	char *name;
@@ -17,10 +18,16 @@ typedef struct ASTEnumDecl {
 
 void initASTEnumeratorDecl(ASTEnumeratorDecl *decl);
 void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl);
-int parseASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok);
+int parseASTEnumeratorDecl(
+		ASTEnumeratorDecl *decl,
+		Token const *tok,
+		struct ASTScope const *scope);
 int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
 
 void initASTEnumDecl(ASTEnumDecl *decl);
 void freeASTEnumDecl(ASTEnumDecl *decl);
-int parseASTEnumDecl(ASTEnumDecl *decl, Token const *tok);
+int parseASTEnumDecl(
+		ASTEnumDecl *decl,
+		Token const *tok,
+		struct ASTScope const *scope);
 int printASTEnumDecl(ASTEnumDecl const *decl);

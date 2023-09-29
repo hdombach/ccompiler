@@ -26,7 +26,7 @@ void freeASTDoWhile(ASTDoWhile *node) {
 int parseASTDoWhile(
 		ASTDoWhile *node,
 		const struct Token *tok,
-		struct ASTScope *scope)
+		struct ASTScope const *scope)
 {
 	int n = 0, res;
 	ASTExp tempExp;

@@ -454,7 +454,7 @@ int parseASTTypeSpec(
 				return 0;
 			}
 
-			if ((res = parseASTEnumDecl(&typeSpec->c.enumDecl, tok + n))) {
+			if ((res = parseASTEnumDecl(&typeSpec->c.enumDecl, tok + n, scope))) {
 				n += res;
 				typeSpec->typeSpecType = AST_TST_ENUM;
 			} else {
@@ -619,7 +619,7 @@ int parseASTDeclarator(
 			}
 
 			initASTDeclarator(declarator);
-			if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, tempPtr))) {
+			if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, tempPtr, scope))) {
 				n += res;
 				declarator->type = AST_DT_ARRAY;
 			} else {
@@ -632,7 +632,7 @@ int parseASTDeclarator(
 	if (tok[n].type == TT_EQL) {
 		n++;
 		declarator->initializer = malloc(sizeof(ASTInitializer));
-		if ((res = parseASTInitializer(declarator->initializer, tok + n))) {
+		if ((res = parseASTInitializer(declarator->initializer, tok + n, scope))) {
 			n += res;
 		} else {
 			astErr("Expecting expression following =", tok + n);
@@ -644,7 +644,7 @@ int parseASTDeclarator(
 	} else if (tok[n].type == TT_COLON) {
 		n++;
 		declarator->bitField = malloc(sizeof(ASTExp));
-		if ((res = parseASTExp(declarator->bitField, tok + n))) {
+		if ((res = parseASTExp(declarator->bitField, tok + n, scope))) {
 			n += res;
 		} else {
 			astErr("Expecting bitfield expression following =", tok + n);

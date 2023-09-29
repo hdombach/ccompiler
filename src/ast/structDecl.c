@@ -72,7 +72,11 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 	free(decl->scope);
 }
 
-int parseASTStructDecl(ASTStructDecl *decl, const Token *tok, ASTScope const *scope) {
+int parseASTStructDecl(
+		ASTStructDecl *decl,
+		const Token *tok,
+		ASTScope const *scope)
+{
 	int res, n = 0;
 
 	if (astHasErr()) {

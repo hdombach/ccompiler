@@ -22,5 +22,8 @@ typedef struct {
 
 void initASTInitializer(ASTInitializer *initializer);
 void freeASTInitializer(ASTInitializer *initializer);
-int parseASTInitializer(ASTInitializer *initializer, Token const *tok, struct ASTScope *scope);
+int parseASTInitializer(
+		ASTInitializer *initializer,
+		Token const *tok,
+		struct ASTScope const *scope);
 int printASTInitializer(ASTInitializer const *initializer);
