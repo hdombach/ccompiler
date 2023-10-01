@@ -2,6 +2,8 @@
 
 #include "intConstant.h"
 #include "operation.h"
+#include "identifier.h"
+#include "node.h"
 
 typedef enum {
 	ASTE_UNKNOWN,
@@ -13,12 +15,14 @@ typedef enum {
 struct ASTScope;
 
 typedef struct ASTExp {
+	ASTNode node;
 	ASTExpType type;
 	union {
 		ASTIntConstant intConstant;
 		ASTOperation operation;	
-		char *identifier;
+		ASTIdentifier identifier;
 	} c;
+	char buf[AST_NODE_S]; /* temp */
 } ASTExp;
 
 void initASTExp(ASTExp *node);

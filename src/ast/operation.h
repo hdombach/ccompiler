@@ -2,69 +2,37 @@
 
 #include "../util/dlist.h"
 #include "../token.h"
+#include "node.h"
 
 struct ASTExp;
 struct ASTDeclaration;
 struct ASTParam;
 struct ASTScope;
 
-typedef enum ASTOperationType {
-	AST_OT_UNKNOWN,
-	AST_OT_BINARY,
-	AST_OT_PREFIX,
-	AST_OT_POSTFIX,
-	AST_OT_FUNC,
-	AST_OT_TYPECAST,
-	AST_OT_COND,
-	AST_OT_SIZEOF,
-	AST_OT_SUBSCRIPT,
-} ASTOperationType;
-
 typedef struct ASTFuncOperation {
-	struct ASTExp *func;
+	ASTNode node;
+	/* expression */
+	ASTNode *func;
 	DList params;
 } ASTFuncOperation;
 
-typedef struct ASTSubscriptOperation {
-	struct ASTExp *lhs;
-	struct ASTExp *index;
-} ASTSubscriptOperation;
-
 /* or ternerary */
 typedef struct ASTCondOperation {
-	struct ASTExp *condition;
-	struct ASTExp *trueExp;
-	struct ASTExp *falseExp;
+	ASTNode node;
+	ASTNode *condition;
+	ASTNode *trueExp;
+	ASTNode *falseExp;
 } ASTCondOperation;
 
-typedef struct ASTCastOperation {
-	struct ASTParam *type;
-	struct ASTExp *exp;
-} ASTCastOperation;
-
-typedef struct ASTSizeofOperation {
-	int isExp;
-	union {
-		struct ASTExp *exp;
-		struct ASTParam *param;
-	} c;
-} ASTSizeofOperation;
-
+/*
+ * Is used for Subscript, cast, sizeof, binary, prefix, postfix
+ */
 typedef struct ASTOperation {
-	ASTOperationType type;
+	ASTNode node;
 	TokenType tokType;
-	union {
-		struct {
-			struct ASTExp *lhs;
-			struct ASTExp *rhs;
-		} bin;
-		struct ASTExp *unary;
-		ASTFuncOperation func;
-		ASTCastOperation typeCast;
-		struct ASTCondOperation cond;
-		ASTSizeofOperation sizeofOp;
-		struct ASTSubscriptOperation subscript;
-	} c;
+	ASTNode *lhs;
+	ASTNode *rhs;
+	char buf[50];
 } ASTOperation;
 
 
@@ -74,18 +42,9 @@ void freeASTFuncOperation(ASTFuncOperation *node);
 int parseASTFuncOperation(
 		ASTFuncOperation *node,
 		Token const *tok,
-		struct ASTExp func,
+		ASTNode *func,
 		struct ASTScope const *scope);
 int printASTFuncOperation(ASTFuncOperation const *node);
-
-void initASTSubscriptOperation(ASTSubscriptOperation *node);
-void freeASTSubscriptOperation(ASTSubscriptOperation *node);
-int parseASTSubscriptOperation(
-		ASTSubscriptOperation *node,
-		Token const *tok,
-		struct ASTExp lhs,
-		struct ASTScope const *scope);
-int printASTSubscriptOperation(ASTSubscriptOperation const *node);
 
 void initASTCondOperation(ASTCondOperation *node);
 void freeASTCondOperation(ASTCondOperation *node);
@@ -94,19 +53,6 @@ int parseASTCondOperation(
 		Token const *tok,
 		struct ASTScope const *scope);
 int printASTCondOperation(ASTCondOperation const *node);
-
-void initASTCastOperation(ASTCastOperation *node);
-void freeASTCastOperation(ASTCastOperation *node);
-int parseASTCastOperation(
-		ASTCastOperation *node,
-		Token const *tok,
-		struct ASTScope const *scope);
-int printASTCastOperation(ASTCastOperation const *node);
-
-void initASTSizeofOperation(ASTSizeofOperation *node);
-void freeASTSizeofOperation(ASTSizeofOperation *node);
-int parseASTSizeofOperation(ASTSizeofOperation *node, Token const *tok, struct ASTScope const *scope);
-int printASTSizeofOperation(ASTSizeofOperation const *node);
 
 void initASTOperation(ASTOperation *node);
 void freeASTOperation(ASTOperation *node);
@@ -170,5 +116,5 @@ int parseASTOperation1(
 		ASTOperation *node,
 		const Token *tok,
 		struct ASTScope const *scope,
-		struct ASTExp lhs);
+		struct ASTNode *lhs);
 int printASTOperation(ASTOperation const *node);

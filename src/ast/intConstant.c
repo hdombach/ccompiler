@@ -1,6 +1,8 @@
+#include <stdio.h>
+
 #include "intConstant.h"
 #include "astUtil.h"
-#include <stdio.h>
+#include "node.h"
 
 int _parseDecimal(ASTIntConstant *node, char const *content) {
 	while (*content) {
@@ -52,6 +54,9 @@ int _parseBin(ASTIntConstant *node, char const *content) {
 }
 
 int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
+	int n = 0;
+
+	AST_VALID(ASTIntConstant);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -67,14 +72,20 @@ int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
 		return 0;
 	}
 	if (content[0] != 0) {
-		return _parseDecimal(node, content);
+		n = _parseDecimal(node, content);
 	} else if (content[1] == 'x' || content[1] == 'X') {
-		return _parseHex(node, content);
+		n = _parseHex(node, content);
 	} else if (content[1] == 'b' || content[1] == 'B') {
-		return _parseBin(node, content);
+		n = _parseBin(node, content);
 	} else {
-		return _parseHex(node, content);
+		n = _parseHex(node, content);
 	}
+
+	if (n) {
+		node->node.type = AST_INT_CONSTANT;
+	}
+
+	return n;
 }
 
 int printASTIntContant(const ASTIntConstant *node) {

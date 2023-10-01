@@ -1,13 +1,15 @@
+#include <stdlib.h>
+
 #include "param.h"
 #include "astUtil.h"
 #include "declaration.h"
 #include "../token.h"
 #include "structDecl.h"
-#include <stdlib.h>
 
 void initASTParam(ASTParam *param) {
 	initASTTypeSpec(&param->typeSpec);
 	param->declarator = NULL;
+	param->node.type = AST_PARAM;
 }
 
 void freeASTParam(ASTParam *param) {
@@ -19,6 +21,7 @@ void freeASTParam(ASTParam *param) {
 }
 
 int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
+	AST_VALID(ASTParam);
 	int n = 0, res;
 	ASTDeclarator tempDeclarator;
 

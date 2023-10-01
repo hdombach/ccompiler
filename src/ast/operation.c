@@ -1,7 +1,9 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "declaration.h"
+#include "node.h"
 #include "operation.h"
 #include "expression.h"
 #include "astUtil.h"
@@ -15,25 +17,28 @@
  *************************************************************/
 
 void initASTFuncOperation(ASTFuncOperation *node) {
+	initASTNode((ASTNode *) node);
 	node->func = NULL;
-	initDListEmpty(&node->params, sizeof(ASTExp));
+	initDListEmpty(&node->params, sizeof(ASTNodeBuf));
 }
 
 void freeASTFuncOperation(ASTFuncOperation *node) {
 	if (node->func) {
-		freeASTExp(node->func);
+		freeASTNode(node->func);
 		free(node->func);
 	}
-	freeDList(&node->params, (FreeFunc) freeASTExp);
+	freeDList(&node->params, (FreeFunc) freeASTNode);
 }
 
 int parseASTFuncOperation(
 		ASTFuncOperation *node,
 		const Token *tok,
-		ASTExp func,
+		ASTNode *func,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTFuncOperation);
 	int res, n = 0;
+	ASTNodeBuf *funcPtr;
 
 	initASTFuncOperation(node);
 	if (astHasErr()) {
@@ -74,8 +79,8 @@ int parseASTFuncOperation(
 		return 0;
 	}
 
-	node->func = malloc(sizeof(ASTExp));
-	*node->func = func;
+	node->func = malloc(sizeof(ASTNodeBuf)); 
+	mvASTNode(node->func, func);
 	return n;
 }
 
@@ -88,7 +93,7 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 
 	if (node->func) {
 		n += printf(", \"func\": ");
-		n += printASTExp(node->func);
+		n += printASTNode(node->func);
 	}
 
 	n += printf(", \"params\": ");
@@ -103,86 +108,48 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
  * Subscript Operation
  *************************************************************/
 
-void initASTSubscriptOperation(ASTSubscriptOperation *node) {
-	node->lhs = NULL;
-	node->index = NULL;
-}
-
-void freeASTSubscriptOperation(ASTSubscriptOperation *node) {
-	if (node->lhs) {
-		freeASTExp(node->lhs);
-		free(node->lhs);
-		node->lhs = NULL;
-	}
-	if (node->index) {
-		freeASTExp(node->index);
-		free(node->index);
-		node->index = NULL;
-	}
-}
-
-int parseASTSubscriptOperation(
-		ASTSubscriptOperation *node,
+int _parseASTSubscriptOperation(
+		ASTOperation *node,
 		const Token *tok,
-		struct ASTExp lhs,
+		ASTNode *lhs,
 		struct ASTScope const *scope)
 {
 	int res, n = 0;
-	ASTExp tempExp;
+	ASTNodeBuf tempNode;
+	ASTNode *nodePtr = (ASTNode *) &tempNode;
 
-	initASTSubscriptOperation(node);
+	initASTOperation(node);
 	if (astHasErr()) {
-		freeASTSubscriptOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_O_BRACE) {
 		n++;
 	} else {
-		freeASTSubscriptOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
-		node->index = malloc(sizeof(ASTExp));
-		*node->index = tempExp;
+	if ((res = parseASTExp((ASTExp *) nodePtr, tok + n, scope))) {
+		node->rhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->rhs, nodePtr);
 		n += res;
 	} else {
-		freeASTSubscriptOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_C_BRACE) {
 		n++;
 	} else {
-		freeASTSubscriptOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
-	node->lhs = malloc(sizeof(ASTExp));
-	*node->lhs = lhs;
-
-	return n;
-}
-
-int printASTSubscriptOperation(const ASTSubscriptOperation *node) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"node type\": \"subscript operation\"");
-
-	if (node->lhs) {
-		n += printf(", \"lhs\": ");
-		n += printASTExp(node->lhs);
-	}
-
-	if (node->index) {
-		n += printf(", \"index\": ");
-		n += printASTExp(node->index);
-	}
-
-	n += printf("}");
+	node->lhs = malloc(sizeof(ASTNodeBuf));
+	mvASTNode(node->lhs, lhs);
+	node->node.type = AST_SUBS_OPERATION;
 
 	return n;
 }
@@ -192,6 +159,7 @@ int printASTSubscriptOperation(const ASTSubscriptOperation *node) {
  *************************************************************/
 
 void initASTCondOperation(ASTCondOperation *node) {
+	initASTNode((ASTNode *) node);
 	node->condition = NULL;
 	node->trueExp = NULL;
 	node->falseExp = NULL;
@@ -199,19 +167,19 @@ void initASTCondOperation(ASTCondOperation *node) {
 
 void freeASTCondOperation(ASTCondOperation *node) {
 	if (node->condition) {
-		freeASTExp(node->condition);
+		freeASTNode(node->condition);
 		free(node->condition);
 		node->condition = NULL;
 	}
 
 	if (node->trueExp) {
-		freeASTExp(node->trueExp);
+		freeASTNode(node->trueExp);
 		free(node->trueExp);
 		node->trueExp = NULL;
 	}
 
 	if (node->falseExp) {
-		freeASTExp(node->falseExp);
+		freeASTNode(node->falseExp);
 		free(node->falseExp);
 		node->falseExp = NULL;
 	}
@@ -222,8 +190,10 @@ int parseASTCondOperation(
 		Token const *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTCondOperation);
 	int n = 0, res;
-	ASTExp condition, trueExp, falseExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
 	initASTCondOperation(node);
 	if (astHasErr()) {
@@ -231,9 +201,9 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12(&condition, tok + n, scope))) {
-		node->condition = malloc(sizeof(ASTExp));
-		*node->condition = condition;
+	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+		node->condition = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->condition, tempNode);
 		n += res;
 	} else {
 		freeASTCondOperation(node);
@@ -247,9 +217,9 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12(&trueExp, tok + n, scope))) {
-		node->trueExp = malloc(sizeof(ASTExp));
-		*node->trueExp = trueExp;
+	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+		node->trueExp = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->trueExp, tempNode);
 		n += res;
 	} else {
 		freeASTCondOperation(node);
@@ -263,9 +233,9 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12(&falseExp, tok + n, scope))) {
-		node->falseExp = malloc(sizeof(ASTExp));
-		*node->falseExp = falseExp;
+	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+		node->falseExp = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->falseExp, tempNode);
 		n += res;
 	} else {
 		freeASTCondOperation(node);
@@ -284,17 +254,17 @@ int printASTCondOperation(ASTCondOperation const *node) {
 
 	if (node->condition) {
 		n += printf(", \"condition\": ");
-		n += printASTExp(node->condition);
+		n += printASTNode(node->condition);
 	}
 
 	if (node->trueExp) {
 		n += printf(", \"true expression\": ");
-		n += printASTExp(node->trueExp);
+		n += printASTNode(node->trueExp);
 	}
 
 	if (node->falseExp) {
 		n += printf(", \"false expression\": ");
-		n += printASTExp(node->falseExp);
+		n += printASTNode(node->falseExp);
 	}
 
 	n += printf("}");
@@ -306,86 +276,47 @@ int printASTCondOperation(ASTCondOperation const *node) {
  * Type cast Operation
  *************************************************************/
 
-void initASTCastOperation(ASTCastOperation *node) {
-	node->type = NULL;
-	node->exp = NULL;
-}
-
-void freeASTCastOperation(ASTCastOperation *node) {
-	if (node->type) {
-		freeASTParam(node->type);
-		free(node->type);
-	}
-
-	if (node->exp) {
-		freeASTExp(node->exp);
-		free(node->exp);
-	}
-}
-
-int parseASTCastOperation(
-		ASTCastOperation *node,
+int _parseASTCastOperation(
+		ASTOperation *node,
 		const Token *tok,
 		struct ASTScope const *scope)
 {
 	int res, n = 0;
-	ASTParam tempParam;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
-	initASTCastOperation(node);
+	initASTOperation(node);
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
-		freeASTCastOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
-	if ((res = parseASTParam(&tempParam, tok + n, scope))) {
+	if ((res = parseASTParam((ASTParam *) tempNode, tok + n, scope))) {
 		n += res;
-		node->type = malloc(sizeof(ASTDeclaration));
-		*node->type = tempParam;
+		node->lhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->lhs, tempNode);
 	} else {
-		freeASTCastOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		freeASTCastOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
-	if ((res = parseASTExp1(&tempExp, tok + n, scope))) {
+	if ((res = parseASTExp1((ASTExp *) tempNode, tok + n, scope))) {
 		n += res;
-		node->exp = malloc(sizeof(ASTExp));
-		*node->exp = tempExp;
+		node->rhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->rhs, tempNode);
 	} else {
-		freeASTCastOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
-
-	return n;
-}
-
-int printASTCastOperation(const ASTCastOperation *node) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"node type\": \"cast operation\"");
-
-	if (node->type) {
-		n += printf(", \"type\": ");
-		n += printASTParam(node->type);
-	}
-
-	if (node->exp) {
-		n += printf(", \"expression\": ");
-		n += printASTExp(node->exp);
-	}
-
-	n += printf("}");
 
 	return n;
 }
@@ -394,100 +325,59 @@ int printASTCastOperation(const ASTCastOperation *node) {
  * Sizeof Operation
  *************************************************************/
 
-void initASTSizeofOperation(ASTSizeofOperation *node) {
-	node->c.exp = NULL; // will also mean the param is NULL
-}
-
-void freeASTSizeofOperation(ASTSizeofOperation *node) {
-	if (node->isExp) {
-		if (node->c.exp) {
-			freeASTExp(node->c.exp);
-			free(node->c.exp);
-		}
-	} else {
-		if (node->c.param) {
-			freeASTParam(node->c.param);
-			free(node->c.param);
-		}
-	}
-}
-
-int parseASTSizeofOperation(
-		ASTSizeofOperation *node,
+int _parseASTSizeofOperation(
+		ASTOperation *node,
 		Token const *tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTOperation);
 	int n = 0, res;
-	ASTParam tempParam;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
-	initASTSizeofOperation(node);
+	initASTOperation(node);
 	if (astHasErr()) {
-		freeASTSizeofOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_SIZEOF) {
 		n++;
 	} else {
-		freeASTSizeofOperation(node);
+		freeASTOperation(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 
-		if ((res = parseASTParam(&tempParam, tok + n, scope))) {
+		if ((res = parseASTParam((ASTParam *) tempNode, tok + n, scope))) {
 			n += res;
-			node->c.param = malloc(sizeof(ASTParam));
-			*node->c.param = tempParam;
-			node->isExp = 0;
+			node->rhs = malloc(sizeof(ASTNodeBuf));
+			mvASTNode(node->rhs, tempNode);
 		} else {
-			freeASTSizeofOperation(node);
+			freeASTOperation(node);
 			return 0;
 		}
 
 		if (tok[n].type == TT_C_PARAN) {
 			n++;
 		} else {
-			freeASTSizeofOperation(node);
+			freeASTOperation(node);
 			return 0;
 		}
+		node->node.type = AST_SIZEOF_TYPE_OPERATION;
 	} else {
-		if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+		if ((res = parseASTExp((ASTExp *) tempNode, tok + n, scope))) {
 			n += res;
-			node->c.exp = malloc(sizeof(ASTExp));
-			*node->c.exp = tempExp;
-			node->isExp = 1;
+			node->rhs = malloc(sizeof(ASTNodeBuf));
+			mvASTNode(node->rhs, tempNode);
 		} else {
-			freeASTSizeofOperation(node);
+			freeASTOperation(node);
 			return 0;
 		}
+		node->node.type = AST_SIZEOF_EXP_OPERATION;
 	}
-
-	return n;
-}
-
-int printASTSizeofOperation(const ASTSizeofOperation *node) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"node type\": \"sizeof operation\"");
-
-	if (node->isExp) {
-		if (node->c.exp) {
-			n += printf(", \"expression\": ");
-			n += printASTExp(node->c.exp);
-		}
-	} else {
-		if (node->c.param) {
-			n += printf(", \"type\": ");
-			n += printASTParam(node->c.param);
-		}
-	}
-
-	n += printf("}");
 
 	return n;
 }
@@ -497,44 +387,22 @@ int printASTSizeofOperation(const ASTSizeofOperation *node) {
  *************************************************************/
 
 void initASTOperation(ASTOperation *node) {
-	node->type = AST_OT_UNKNOWN;
+	initASTNode(&node->node);
 	node->tokType = TT_UNKNOWN;
+	node->lhs = NULL;
+	node->rhs = NULL;
 }
 
 void freeASTOperation(ASTOperation *node) {
-	switch (node->type) {
-		case AST_OT_BINARY:
-			freeASTExp(node->c.bin.lhs);
-			free(node->c.bin.lhs);
-			freeASTExp(node->c.bin.rhs);
-			free(node->c.bin.rhs);
-			break;
-		case AST_OT_PREFIX:
-			freeASTExp(node->c.unary);
-			free(node->c.unary);
-			break;
-		case AST_OT_POSTFIX:
-			freeASTExp(node->c.unary);
-			free(node->c.unary);
-			break;
-		case AST_OT_FUNC:
-			freeASTFuncOperation(&node->c.func);
-			break;
-		case AST_OT_TYPECAST:
-			freeASTCastOperation(&node->c.typeCast);
-			break;
-		case AST_OT_COND:
-			freeASTCondOperation(&node->c.cond);
-			break;
-		case AST_OT_SIZEOF:
-			freeASTSizeofOperation(&node->c.sizeofOp);
-			break;
-		case AST_OT_SUBSCRIPT:
-			freeASTSubscriptOperation(&node->c.subscript);
-			break;
-		default:
-			break;
+	if (node->lhs) {
+		freeASTNode(node->lhs);
+		free(node->lhs);
 	}
+	if (node->rhs) {
+		freeASTNode(node->rhs);
+		free(node->rhs);
+	}
+	node->node.type = AST_UNKNOWN;
 }
 
 TokenType operation15Types[] = {
@@ -651,7 +519,7 @@ int _isTokenType(TokenType type, TokenType types[]) {
 }
 
 typedef int (*_ParseOperationFunc)
-	(ASTExp *, const Token *, ASTScope const *scope);
+	(ASTNode *, const Token *, ASTScope const *scope);
 int _parseASTOperationBin(
 		ASTOperation *node,
 		const Token *tok,
@@ -661,7 +529,8 @@ int _parseASTOperationBin(
 		_ParseOperationFunc rhsFunc)
 {
 	int res, n = 0;
-	ASTExp lhs, rhs;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	TokenType tempType;
 
 	initASTOperation(node);
@@ -670,10 +539,11 @@ int _parseASTOperationBin(
 		return 0;
 	}
 
-	if ((res = lhsFunc(&lhs, tok + n, scope))) {
+	if ((res = lhsFunc(tempNode, tok + n, scope))) {
 		n += res;
+		node->lhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->lhs, tempNode);
 	} else {
-		freeASTExp(&lhs);
 		freeASTOperation(node);
 		return 0;
 	}
@@ -682,29 +552,22 @@ int _parseASTOperationBin(
 		tempType = tok[n].type;
 		n++;
 	} else {
-		if (lhs.type == ASTE_OPERATION) {
-			*node = lhs.c.operation;
-			return n;
-		}
-		freeASTExp(&lhs);
-		freeASTOperation(node);
-		return 0;
+		ASTNode *tempLhs = node->lhs;
+		mvASTNode((ASTNode *) node, tempLhs);
+		free(tempLhs);
+		return n;
 	}
 
-	if ((res = rhsFunc(&rhs, tok + n, scope))) {
+	if ((res = rhsFunc(tempNode, tok + n, scope))) {
 		n += res;
+		node->rhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->rhs, tempNode);
 	} else {
-		freeASTExp(&lhs);
-		freeASTExp(&rhs);
 		freeASTOperation(node);
 		return 0;
 	}
 
-	node->type = AST_OT_BINARY;
-	node->c.bin.lhs = malloc(sizeof(ASTExp));
-	node->c.bin.rhs = malloc(sizeof(ASTExp));
-	*node->c.bin.lhs = lhs;
-	*node->c.bin.rhs = rhs;
+	node->node.type = AST_BINARY_OPERATION;
 	node->tokType = tempType;
 
 	return n;
@@ -717,8 +580,10 @@ int _parseASTOperationPref(
 		TokenType types[],
 		_ParseOperationFunc rhsFunc)
 {
+	AST_VALID(ASTOperation);
 	int res, n = 0;
-	ASTExp rhs;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	TokenType tempType;
 
 	initASTOperation(node);
@@ -735,16 +600,16 @@ int _parseASTOperationPref(
 		return 0;
 	}
 
-	if ((res = rhsFunc(&rhs, tok + n, scope))) {
+	if ((res = rhsFunc(tempNode, tok + n, scope))) {
 		n += res;
 	} else {
 		freeASTOperation(node);
 		return 0;
 	}
 
-	node->type = AST_OT_PREFIX;
-	node->c.unary = malloc(sizeof(ASTExp));
-	*node->c.unary = rhs;
+	node->node.type = AST_PREFIX_OPERATION;
+	node->rhs = malloc(sizeof(ASTNodeBuf));
+	mvASTNode(node->rhs, tempNode);
 	node->tokType = tempType;
 
 	return n;
@@ -792,8 +657,7 @@ int parseASTOperation13(
 		return 0;
 	}
 
-	if ((res = parseASTCondOperation(&node->c.cond, tok + n, scope))) {
-		node->type = AST_OT_COND;
+	if ((res = parseASTCondOperation((ASTCondOperation *) node, tok + n, scope))) {
 		n += res;
 	} else {
 		freeASTOperation(node);
@@ -958,12 +822,10 @@ int parseASTOperation2(
 		(_ParseOperationFunc) parseASTExp2)))
 	{
 		n += res;
-	} else if ((res = parseASTCastOperation(&node->c.typeCast, tok + n, scope))) {
+	} else if ((res = _parseASTCastOperation(node, tok + n, scope))) {
 		n += res;
-		node->type = AST_OT_TYPECAST;
-	} else if ((res = parseASTSizeofOperation(&node->c.sizeofOp, tok + n, scope))) {
+	} else if ((res = _parseASTSizeofOperation(node, tok + n, scope))) {
 		n += res;
-		node->type = AST_OT_SIZEOF;
 	} else {
 		return 0;
 	}
@@ -975,7 +837,7 @@ int parseASTOperation1(
 		ASTOperation *node,
 		const Token *tok,
 		ASTScope const *scope,
-		ASTExp lhs)
+		ASTNode *lhs)
 {
 	int n = 0, res;
 
@@ -986,41 +848,40 @@ int parseASTOperation1(
 	}
 
 	if (_isTokenType(tok[n].type, operation1UnaryTypes)) {
-		node->type = AST_OT_POSTFIX;
-		node->c.unary = malloc(sizeof(ASTExp));
-		*node->c.unary = lhs;
+		node->node.type = AST_POSTFIX_OPERATION;
+		node->lhs = malloc(sizeof(ASTNodeBuf));
+		mvASTNode(node->lhs, lhs);
 		node->tokType = tok[n].type;
 		n++;
 	} else if (_isTokenType(tok[n].type, operation1BinTypes)) {
-		ASTExp tempExp;
+		ASTNodeBuf tempBuf;
+		ASTNode *tempNode = (ASTNode *) &tempBuf;
 		node->tokType = tok[n].type;
 		n++;
-		if ((res = parseASTExpSing(&tempExp, tok + n, scope))) {
-			node->type = AST_OT_BINARY;
-			node->c.bin.lhs = malloc(sizeof(ASTExp));
-			*node->c.bin.lhs = lhs;
-			node->c.bin.rhs = malloc(sizeof(ASTExp));
-			*node->c.bin.rhs = tempExp;
+		if ((res = parseASTExpSing((ASTExp *) tempNode, tok + n, scope))) {
+			node->node.type = AST_BINARY_OPERATION;
+			node->lhs = malloc(sizeof(ASTNodeBuf));
+			mvASTNode(node->lhs, lhs);
+			node->rhs = malloc(sizeof(ASTNodeBuf));
+			mvASTNode(node->rhs, tempNode);
 			n += res;
 		} else {
 			freeASTOperation(node);
 			return 0;
 		}
 	} else if ((res = parseASTFuncOperation(
-					&node->c.func,
+					(ASTFuncOperation *) node,
 					tok + n,
 					lhs,
 					scope)))
 	{
-		node->type = AST_OT_FUNC;
 		n += res;
-	} else if ((res = parseASTSubscriptOperation(
-					&node->c.subscript,
+	} else if ((res = _parseASTSubscriptOperation(
+					node,
 					tok + n,
 					lhs,
 					scope)))
 	{
-		node->type = AST_OT_SUBSCRIPT;
 		n += res;
 	} else {
 		freeASTOperation(node);
@@ -1033,75 +894,20 @@ int parseASTOperation1(
 int printASTOperation(ASTOperation const *node) {
 	int n = 0;
 
-	switch (node->type) {
-		case AST_OT_BINARY:
-			n += printf("{");
-			n += printf("\"node type\": \"operation\"");
+	n += printf("{");
+	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
 
-			n += printf(", \"operand\": ");
-			n += printJsonStr(tokTypeStr(node->tokType));
-
-			n += printf(", \"lhs\": ");
-			n += printASTExp(node->c.bin.lhs);
-
-			n += printf(", \"rhs\": ");
-			n += printASTExp(node->c.bin.rhs);
-
-			n += printf("}");
-
-			break;
-
-		case AST_OT_PREFIX:
-			n += printf("{");
-			n += printf("\"node type\": \"operation\"");
-
-			n += printf(", \"operand\": ");
-			n += printJsonStr(tokTypeStr(node->tokType));
-
-			n += printf(", \"rhs\": ");
-			n += printASTExp(node->c.unary);
-
-			n += printf("}");
-
-			break;
-
-		case AST_OT_POSTFIX:
-			n += printf("{");
-			n += printf("\"node type\": \"operation\"");
-
-			n += printf(", \"operand\": ");
-			n += printJsonStr(tokTypeStr(node->tokType));
-
-			n += printf(", \"lhs\": ");
-			n += printASTExp(node->c.unary);
-
-			n += printf("}");
-
-			break;
-
-		case AST_OT_FUNC:
-			n += printASTFuncOperation(&node->c.func);
-			break;
-
-		case AST_OT_TYPECAST:
-			n += printASTCastOperation(&node->c.typeCast);
-			break;
-
-		case AST_OT_COND:
-			n += printASTCondOperation(&node->c.cond);
-			break;
-
-		case AST_OT_SIZEOF:
-			n += printASTSizeofOperation(&node->c.sizeofOp);
-			break;
-
-		case AST_OT_SUBSCRIPT:
-			n += printASTSubscriptOperation(&node->c.subscript);
-			break;
-
-		default:
-			break;
+	if (node->lhs) {
+		n += printf(", \"lhs\": ");
+		n += printASTNode(node->lhs);
 	}
+
+	if (node->rhs) {
+		n += printf(", \"rhs\": ");
+		n += printASTNode(node->rhs);
+	}
+
+	n += printf("}");
 
 	return n;
 }

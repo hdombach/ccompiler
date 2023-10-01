@@ -22,7 +22,8 @@ int fprintASTErr(FILE *fp) {
 	if (_astErrTok) {
 		return fprintf(
 				fp,
-				"%d:%d, %s\n",
+				"%s:%d:%d, %s\n",
+				_astErrTok->filename,
 				_astErrTok->posLine,
 				_astErrTok->posColumn,
 				_astErrMsg);

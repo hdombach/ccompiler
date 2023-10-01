@@ -1,22 +1,25 @@
 #include <string.h>
 
 #include "expression.h"
+#include "identifier.h"
 #include "intConstant.h"
 #include "astUtil.h"
+#include "node.h"
 #include "operation.h"
 #include "scope.h"
 
 void initASTExp(ASTExp *node) {
 	node->type = ASTE_UNKNOWN;
+	node->node.type = AST_EXP;
 }
 
 void freeASTExp(ASTExp *node) {
 	switch (node->type) {
 		case ASTE_OPERATION:
-			freeASTOperation(&node->c.operation);
+			freeASTNode(&node->c.operation);
 			break;
 		case ASTE_IDENTIFIER:
-			free(node->c.identifier);
+			free(node->c.identifier.name);
 			break;
 		default:
 			break;
@@ -29,6 +32,7 @@ int parseASTExp(ASTExp *node, Token const *tok, ASTScope const *scope) {
 }
 
 int parseASTExpSing(ASTExp *node, Token const *tok, ASTScope const *scope) {
+	//AST_VALID(ASTExp);
 	int res, n = 0;
 
 	initASTExp(node);
@@ -41,10 +45,10 @@ int parseASTExpSing(ASTExp *node, Token const *tok, ASTScope const *scope) {
 		node->type = ASTE_INT_CONSTANT;
 		n += res;
 		return res;
-	} else if (tok[n].type == TT_IDENTIFIER) {
+	} else if ((res = parseASTIdentifier(&node->c.identifier, tok, scope))) {
 		node->type = ASTE_IDENTIFIER;
-		node->c.identifier = strdup(tok[n].contents);
-		n++;
+		n += res;
+		return res;
 	} else if (tok[n].type == TT_O_PARAN) {
 		n++;
 		if ((res = parseASTExp(node, tok + n, scope))) {
@@ -394,7 +398,7 @@ int parseASTExp1(ASTExp *node, Token const *tok, ASTScope const *scope) {
 	}
 
 	while (1) {
-		if ((res = parseASTOperation1(&tempOperation, tok + n, scope, *node))) {
+		if ((res = parseASTOperation1(&tempOperation, tok + n, scope, (ASTNode *) node))) {
 			node->type = ASTE_OPERATION;
 			node->c.operation = tempOperation;
 			n += res;
@@ -415,9 +419,7 @@ int printASTExp(const ASTExp *node) {
 			n += printASTOperation(&node->c.operation);
 			break;
 		case ASTE_IDENTIFIER:
-			n += printf(
-					"{\"node type\": \"identifier\", \"value\": \"%s\"}",
-					node->c.identifier); 
+			n += printASTIdentifier(&node->c.identifier);
 			break;
 		default:
 			n += printf("{\"node type\": \"expression\", \"value\": \"unknown\"}");

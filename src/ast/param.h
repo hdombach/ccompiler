@@ -3,8 +3,10 @@
 #include "declaration.h"
 #include "../token.h"
 #include "structDecl.h"
+#include "node.h"
 
 typedef struct ASTParam {
+	ASTNode node;
 	ASTTypeSpec typeSpec;
 	ASTDeclarator *declarator;
 } ASTParam;
