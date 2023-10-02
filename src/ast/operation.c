@@ -38,7 +38,6 @@ int parseASTFuncOperation(
 {
 	AST_VALID(ASTFuncOperation);
 	int res, n = 0;
-	ASTNodeBuf *funcPtr;
 
 	initASTFuncOperation(node);
 	if (astHasErr()) {
@@ -55,9 +54,10 @@ int parseASTFuncOperation(
 
 	if (tok[n].type != TT_C_PARAN) {
 		while (1) {
-			ASTExp tempExp;
-			if ((res = parseASTExp14(&tempExp, tok + n, scope))) {
-				dlistApp(&node->params, &tempExp);
+			ASTNodeBuf tempBuf;
+			ASTNode *tempNode = (ASTNode *) &tempBuf;
+			if ((res = parseASTExp14(tempNode, tok + n, scope))) {
+				dlistApp(&node->params, tempNode);
 				n += res;
 			} else {
 				freeASTFuncOperation(node);
@@ -896,6 +896,9 @@ int printASTOperation(ASTOperation const *node) {
 
 	n += printf("{");
 	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
+
+	n += printf(", \"operand\": ");
+	n += printJsonStr(tokTypeStr(node->tokType));
 
 	if (node->lhs) {
 		n += printf(", \"lhs\": ");

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "expression.h"
 #include "identifier.h"
@@ -14,7 +15,7 @@ void initASTNode(ASTNode *node) {
 
 void freeASTNode(ASTNode *node) {
 	switch (node->type) {
-		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name);
+		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
 
 		case AST_FUNC_OPERATION: freeASTFuncOperation((ASTFuncOperation *) node); break;
 		case AST_COND_OPERATION: freeASTCondOperation((ASTCondOperation *) node); break;
@@ -25,7 +26,6 @@ void freeASTNode(ASTNode *node) {
 		case AST_BINARY_OPERATION:
 		case AST_PREFIX_OPERATION:
 		case AST_POSTFIX_OPERATION: freeASTOperation((ASTOperation *)node); break;
-		case AST_EXP: freeASTExp((ASTExp *) node); break;
 		case AST_PARAM: freeASTParam((ASTParam *) node); break;
 		default: break;
 	}
@@ -33,7 +33,7 @@ void freeASTNode(ASTNode *node) {
 }
 
 void mvASTNode(ASTNode *dest, ASTNode *src) {
-	*dest = *src;
+	memcpy(dest, src, AST_NODE_S);
 	src->type = AST_UNKNOWN;
 }
 
@@ -52,7 +52,6 @@ char *_astNodeTypes[] = {
 	"prefix operation",
 	"postfix operation",
 
-	"expression",
 	"param",
 };
 
@@ -76,8 +75,7 @@ int printASTNode(ASTNode *node) {
 		case AST_BINARY_OPERATION:
 		case AST_PREFIX_OPERATION:
 		case AST_POSTFIX_OPERATION: return printASTOperation((ASTOperation *) node);
-		case AST_EXP: return printASTExp((ASTExp *) node);
 		case AST_PARAM: return printASTParam((ASTParam *) node);
-		default: return printf("\"(null\"");
+		default: return printf("\"(null)\"");
 	}
 }

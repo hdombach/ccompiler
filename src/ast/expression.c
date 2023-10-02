@@ -9,22 +9,11 @@
 #include "scope.h"
 
 void initASTExp(ASTExp *node) {
-	node->type = ASTE_UNKNOWN;
-	node->node.type = AST_EXP;
+	node->node.type = AST_UNKNOWN;
 }
 
 void freeASTExp(ASTExp *node) {
-	switch (node->type) {
-		case ASTE_OPERATION:
-			freeASTNode(&node->c.operation);
-			break;
-		case ASTE_IDENTIFIER:
-			free(node->c.identifier.name);
-			break;
-		default:
-			break;
-	}
-	node->type = ASTE_UNKNOWN;
+	freeASTNode(node);
 }
 
 int parseASTExp(ASTExp *node, Token const *tok, ASTScope const *scope) {
@@ -41,12 +30,10 @@ int parseASTExpSing(ASTExp *node, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTIntConstant(&node->c.intConstant, tok))) {
-		node->type = ASTE_INT_CONSTANT;
+	if ((res = parseASTIntConstant((ASTIntConstant *) node, tok))) {
 		n += res;
 		return res;
-	} else if ((res = parseASTIdentifier(&node->c.identifier, tok, scope))) {
-		node->type = ASTE_IDENTIFIER;
+	} else if ((res = parseASTIdentifier((ASTIdentifier *) node, tok, scope))) {
 		n += res;
 		return res;
 	} else if (tok[n].type == TT_O_PARAN) {
@@ -54,18 +41,18 @@ int parseASTExpSing(ASTExp *node, Token const *tok, ASTScope const *scope) {
 		if ((res = parseASTExp(node, tok + n, scope))) {
 			n += res;
 		} else {
-			freeASTExp(node);
+			freeASTNode(node);
 			return 0;
 		}
 
 		if (tok[n].type == TT_C_PARAN) {
 			n++;
 		} else {
-			freeASTExp(node);
+			freeASTNode(node);
 			return 0;
 		}
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -77,17 +64,16 @@ int parseASTExp15(ASTExp *node, const Token *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 	
-	if ((res = parseASTOperation15(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation15((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp14(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -99,17 +85,16 @@ int parseASTExp14(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation14(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation14((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp13(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -121,17 +106,16 @@ int parseASTExp13(ASTExp *node, const Token *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation13(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation13((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp12(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	} 
 
@@ -143,17 +127,16 @@ int parseASTExp12(ASTExp *node, const Token *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation12(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation12((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp11(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 	
@@ -165,17 +148,16 @@ int parseASTExp11(ASTExp *node, const Token *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation11(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation11((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp10(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -187,17 +169,16 @@ int parseASTExp10(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation10(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation10((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp9(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -209,17 +190,16 @@ int parseASTExp9(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res =  parseASTOperation9(&node->c.operation, tok + n, scope))) {
+	if ((res =  parseASTOperation9((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp8(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -231,17 +211,16 @@ int parseASTExp8(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation8(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation8((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp7(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -253,17 +232,16 @@ int parseASTExp7(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation7(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation7((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp6(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -275,17 +253,16 @@ int parseASTExp6(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation6(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation6((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp5(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -297,17 +274,16 @@ int parseASTExp5(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation5(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation5((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp4(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -319,17 +295,16 @@ int parseASTExp4(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation4(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation4((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp3(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -341,17 +316,16 @@ int parseASTExp3(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation3(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation3((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp2(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -363,17 +337,16 @@ int parseASTExp2(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
-	if ((res = parseASTOperation2(&node->c.operation, tok + n, scope))) {
+	if ((res = parseASTOperation2((ASTOperation *) node, tok + n, scope))) {
 		n += res;
-		node->type = ASTE_OPERATION;
 	} else if ((res = parseASTExp1(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
@@ -382,25 +355,25 @@ int parseASTExp2(ASTExp *node, Token const *tok, ASTScope const *scope) {
 
 int parseASTExp1(ASTExp *node, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
-	ASTOperation tempOperation;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = &tempBuf;
 
 	initASTExp(node);
 	if (astHasErr()) {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
 	if ((res = parseASTExpSing(node, tok + n, scope))) {
 		n += res;
 	} else {
-		freeASTExp(node);
+		freeASTNode(node);
 		return 0;
 	}
 
 	while (1) {
-		if ((res = parseASTOperation1(&tempOperation, tok + n, scope, (ASTNode *) node))) {
-			node->type = ASTE_OPERATION;
-			node->c.operation = tempOperation;
+		if ((res = parseASTOperation1((ASTOperation *) tempNode, tok + n, scope, (ASTNode *) node))) {
+			mvASTNode(node, tempNode);
 			n += res;
 		} else {
 			return n;
@@ -409,22 +382,5 @@ int parseASTExp1(ASTExp *node, Token const *tok, ASTScope const *scope) {
 }
 
 int printASTExp(const ASTExp *node) {
-	int n = 0;
-
-	switch (node->type) {
-		case ASTE_INT_CONSTANT:
-			n += printASTIntContant(&node->c.intConstant);
-			break;
-		case ASTE_OPERATION:
-			n += printASTOperation(&node->c.operation);
-			break;
-		case ASTE_IDENTIFIER:
-			n += printASTIdentifier(&node->c.identifier);
-			break;
-		default:
-			n += printf("{\"node type\": \"expression\", \"value\": \"unknown\"}");
-			break;
-	}
-
-	return n;
+	return printASTNode(node);
 }

@@ -5,24 +5,10 @@
 #include "identifier.h"
 #include "node.h"
 
-typedef enum {
-	ASTE_UNKNOWN,
-	ASTE_INT_CONSTANT,
-	ASTE_OPERATION,
-	ASTE_IDENTIFIER,
-} ASTExpType;
-
 struct ASTScope;
 
 typedef struct ASTExp {
 	ASTNode node;
-	ASTExpType type;
-	union {
-		ASTIntConstant intConstant;
-		ASTOperation operation;	
-		ASTIdentifier identifier;
-	} c;
-	char buf[AST_NODE_S]; /* temp */
 } ASTExp;
 
 void initASTExp(ASTExp *node);

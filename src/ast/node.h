@@ -19,7 +19,6 @@ typedef enum ASTNodeType {
 	AST_PREFIX_OPERATION,
 	AST_POSTFIX_OPERATION,
 
-	AST_EXP, /* temp */
 	AST_PARAM, /* temp */
 } ASTNodeType;
 
