@@ -11,6 +11,7 @@
 #include "initializer.h"
 #include "structDecl.h"
 #include "scope.h"
+#include "node.h"
 
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 	*qualifiers = AST_TQ_NONE;
@@ -643,7 +644,7 @@ int parseASTDeclarator(
 		}
 	} else if (tok[n].type == TT_COLON) {
 		n++;
-		declarator->bitField = malloc(sizeof(ASTExp));
+		declarator->bitField = malloc(AST_NODE_S);
 		if ((res = parseASTExp(declarator->bitField, tok + n, scope))) {
 			n += res;
 		} else {

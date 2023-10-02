@@ -5,6 +5,7 @@
 #include "expression.h"
 #include "astUtil.h"
 #include "../util/util.h"
+#include "node.h"
 
 void initASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 	decl->name = NULL;
@@ -48,7 +49,7 @@ int parseASTEnumeratorDecl(
 		return n;
 	}
 
-	decl->exp = malloc(sizeof(ASTExp));
+	decl->exp = malloc(AST_NODE_S);
 	if ((res = parseASTExp(decl->exp, tok + n, scope))) {
 		n += res;
 	} else {

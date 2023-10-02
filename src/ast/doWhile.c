@@ -2,6 +2,7 @@
 
 #include "doWhile.h"
 #include "expression.h"
+#include "node.h"
 #include "statement.h"
 #include "astUtil.h"
 #include "while.h"
@@ -29,7 +30,8 @@ int parseASTDoWhile(
 		struct ASTScope const *scope)
 {
 	int n = 0, res;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	ASTStm tempStm;
 
 	initASTDoWhile(node);
@@ -69,10 +71,10 @@ int parseASTDoWhile(
 		return 0;
 	}
 
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+	if ((res = parseASTExp(tempNode, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(sizeof(ASTExp));
-		*node->expression = tempExp;
+		node->expression = malloc(AST_NODE_S);
+		mvASTNode(node->expression, tempNode);
 	} else {
 		astErr("Expected expression after do while statement", tok + n);
 		freeASTDoWhile(node);

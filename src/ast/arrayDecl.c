@@ -4,6 +4,7 @@
 #include "declaration.h"
 #include "expression.h"
 #include "astUtil.h"
+#include "node.h"
 #include "structDecl.h"
 
 void initASTArrayDecl(ASTArrayDecl *decl) {
@@ -46,10 +47,12 @@ int parseASTArrayDecl(
 		return 0;
 	}
 
-	ASTExp tempExp;
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
-		decl->exp = malloc(sizeof(ASTExp));
-		*decl->exp = tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
+
+	if ((res = parseASTExp(tempNode, tok + n, scope))) {
+		decl->exp = malloc(AST_NODE_S);
+		mvASTNode(decl->exp, tempNode);
 		n += res;
 	}
 

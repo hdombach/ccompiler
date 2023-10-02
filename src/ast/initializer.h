@@ -3,6 +3,7 @@
 #include "expression.h"
 #include "../token.h"
 #include "../util/dlist.h"
+#include "node.h"
 
 typedef enum {
 	AST_IT_UNKNOWN,

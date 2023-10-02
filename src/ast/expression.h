@@ -9,6 +9,7 @@ struct ASTScope;
 
 typedef struct ASTExp {
 	ASTNode node;
+	char buf[AST_NODE_S];
 } ASTExp;
 
 void initASTExp(ASTExp *node);

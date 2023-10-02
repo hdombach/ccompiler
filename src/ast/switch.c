@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "node.h"
 #include "switch.h"
 #include "expression.h"
 #include "statement.h"
@@ -25,7 +26,8 @@ void freeASTSwitch(ASTSwitch *node) {
 
 int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	ASTStm tempStatement;
 
 	initASTSwitch(node);
@@ -49,10 +51,10 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+	if ((res = parseASTExp(tempNode, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(sizeof(ASTExp));
-		*node->expression = tempExp;
+		node->expression = malloc(AST_NODE_S);
+		mvASTNode(node->expression, tempNode);
 	} else {
 		astErr("Expecting expression following switch", tok + n);
 		freeASTSwitch(node);

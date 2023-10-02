@@ -6,6 +6,7 @@
 #include "astUtil.h"
 #include "expression.h"
 #include "../util/util.h"
+#include "node.h"
 
 void initASTLabel(ASTLabel *label) {
 	label->type = AST_LT_UNKNOWN;
@@ -32,7 +33,8 @@ int parseASTLabel(
 {
 	int n = 0, res;
 	char *tempIdentifier;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
 	initASTLabel(label);
 	if (astHasErr()) {
@@ -55,7 +57,7 @@ int parseASTLabel(
 	} else if (tok[n].type == TT_CASE) {
 		n++;
 
-		if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+		if ((res = parseASTExp(tempNode, tok + n, scope))) {
 			n += res;
 		} else {
 			freeASTLabel(label);
@@ -72,8 +74,8 @@ int parseASTLabel(
 		}
 
 		label->type = AST_LT_CASE;
-		label->c.expression = malloc(sizeof(ASTExp));
-		*label->c.expression = tempExp;
+		label->c.expression = malloc(AST_NODE_S);
+		mvASTNode(label->c.expression, tempNode);
 	} else if (tok[n].type == TT_DEFAULT) {
 		n++;
 

@@ -4,6 +4,7 @@
 #include "astUtil.h"
 #include "expression.h"
 #include "if.h"
+#include "node.h"
 #include "statement.h"
 #include "../token.h"
 
@@ -32,7 +33,8 @@ void freeASTIf(ASTIf *node) {
 
 int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope) {
 	int res, n = 0;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	ASTStm tempStatement;
 
 	initASTIf(node);
@@ -57,10 +59,10 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 		return 0;
 	}
 
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+	if ((res = parseASTExp(tempNode, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(sizeof(ASTExp));
-		*node->expression = tempExp;
+		node->expression = malloc(AST_NODE_S);
+		mvASTNode(node->expression, tempNode);
 	} else {
 		astErr("expected expression", tok + n);
 		freeASTIf(node);

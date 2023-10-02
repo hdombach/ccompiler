@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "node.h"
 #include "while.h"
 #include "expression.h"
 #include "statement.h"
@@ -28,7 +29,8 @@ int parseASTWhile(
 		struct ASTScope const *scope)
 {
 	int n = 0, res;
-	ASTExp tempExp;
+	ASTNodeBuf tempBuf;
+	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	ASTStm tempStm;
 
 	initASTWhile(node);
@@ -52,10 +54,10 @@ int parseASTWhile(
 		return 0;
 	}
 
-	if ((res = parseASTExp(&tempExp, tok + n, scope))) {
+	if ((res = parseASTExp(tempNode, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(sizeof(ASTExp));
-		*node->expression = tempExp;
+		node->expression = malloc(AST_NODE_S);
+		mvASTNode(node->expression, tempNode);
 	} else {
 		astErr("Expecting expression after while", tok + n);
 		freeASTWhile(node);
