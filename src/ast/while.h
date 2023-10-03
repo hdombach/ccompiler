@@ -1,12 +1,12 @@
 #pragma once
 
-struct ASTExp;
+struct ASTNode;
 struct ASTStm;
 struct Token;
 struct ASTScope;
 
 typedef struct ASTWhile {
-	struct ASTExp *expression;
+	struct ASTNode *expression;
 	struct ASTStm *statement;
 } ASTWhile;
 

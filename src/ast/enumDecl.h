@@ -3,12 +3,11 @@
 #include "../util/dlist.h"
 #include "../token.h"
 
-struct ASTExp;
 struct ASTScope;
 
 typedef struct ASTEnumeratorDecl {
 	char *name;
-	struct ASTExp *exp;
+	struct ASTNode *exp;
 } ASTEnumeratorDecl;
 
 typedef struct ASTEnumDecl {

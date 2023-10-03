@@ -97,7 +97,7 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 	}
 
 	n += printf(", \"params\": ");
-	n += printDList(&node->params, (PrintFunc) printASTExp);
+	n += printDList(&node->params, (PrintFunc) printASTNode);
 
 	n += printf("}");
 
@@ -131,7 +131,7 @@ int _parseASTSubscriptOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTExp *) nodePtr, tok + n, scope))) {
+	if ((res = parseASTExp(nodePtr, tok + n, scope))) {
 		node->rhs = malloc(sizeof(ASTNodeBuf));
 		mvASTNode(node->rhs, nodePtr);
 		n += res;
@@ -201,7 +201,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+	if ((res = parseASTExp12(tempNode, tok + n, scope))) {
 		node->condition = malloc(sizeof(ASTNodeBuf));
 		mvASTNode(node->condition, tempNode);
 		n += res;
@@ -217,7 +217,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+	if ((res = parseASTExp12(tempNode, tok + n, scope))) {
 		node->trueExp = malloc(sizeof(ASTNodeBuf));
 		mvASTNode(node->trueExp, tempNode);
 		n += res;
@@ -233,7 +233,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTExp *) tempNode, tok + n, scope))) {
+	if ((res = parseASTExp12(tempNode, tok + n, scope))) {
 		node->falseExp = malloc(sizeof(ASTNodeBuf));
 		mvASTNode(node->falseExp, tempNode);
 		n += res;
@@ -309,7 +309,7 @@ int _parseASTCastOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp1((ASTExp *) tempNode, tok + n, scope))) {
+	if ((res = parseASTExp1(tempNode, tok + n, scope))) {
 		n += res;
 		node->rhs = malloc(sizeof(ASTNodeBuf));
 		mvASTNode(node->rhs, tempNode);
@@ -368,7 +368,7 @@ int _parseASTSizeofOperation(
 		}
 		node->node.type = AST_SIZEOF_TYPE_OPERATION;
 	} else {
-		if ((res = parseASTExp((ASTExp *) tempNode, tok + n, scope))) {
+		if ((res = parseASTExp(tempNode, tok + n, scope))) {
 			n += res;
 			node->rhs = malloc(sizeof(ASTNodeBuf));
 			mvASTNode(node->rhs, tempNode);
@@ -858,7 +858,7 @@ int parseASTOperation1(
 		ASTNode *tempNode = (ASTNode *) &tempBuf;
 		node->tokType = tok[n].type;
 		n++;
-		if ((res = parseASTExpSing((ASTExp *) tempNode, tok + n, scope))) {
+		if ((res = parseASTExpSing(tempNode, tok + n, scope))) {
 			node->node.type = AST_BINARY_OPERATION;
 			node->lhs = malloc(sizeof(ASTNodeBuf));
 			mvASTNode(node->lhs, lhs);

@@ -7,7 +7,7 @@
 
 typedef enum {
 	AST_IT_UNKNOWN,
-	AST_IT_EXP,
+	AST_IT_NODE,
 	AST_IT_LIST,
 } ASTInitializerType;
 
@@ -16,7 +16,7 @@ struct ASTScope;
 typedef struct {
 	ASTInitializerType type;
 	union {
-		ASTExp exp;
+		ASTNodeBuf nodeBuf;
 		DList initializerList;
 	} c;
 } ASTInitializer;

@@ -30,7 +30,7 @@ void initASTNode(ASTNode *node);
 void freeASTNode(ASTNode *node);
 void mvASTNode(ASTNode *dest, ASTNode *src);
 char *astNodeTypeStr(ASTNodeType type);
-int printASTNode(ASTNode *node);
+int printASTNode(ASTNode const *node);
 
 
 #define AST_NODE_S 128

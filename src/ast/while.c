@@ -13,7 +13,7 @@ void initASTWhile(ASTWhile *node) {
 
 void freeASTWhile(ASTWhile *node) {
 	if (node->expression) {
-		freeASTExp(node->expression);
+		freeASTNode(node->expression);
 		free(node->expression);
 	}
 
@@ -94,7 +94,7 @@ int printASTWhile(const ASTWhile *node) {
 
 	if (node->expression) {
 		n += printf(", \"expression\": ");
-		n += printASTExp(node->expression);
+		n += printASTNode(node->expression);
 	}
 
 	if (node->statement) {

@@ -7,30 +7,20 @@
 
 struct ASTScope;
 
-typedef struct ASTExp {
-	ASTNode node;
-	char buf[AST_NODE_S];
-} ASTExp;
-
-void initASTExp(ASTExp *node);
-void freeASTExp(ASTExp *node);
-
-int parseASTExp(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExpSing(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp15(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp14(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp13(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp12(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp11(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp10(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp9(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp8(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp7(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp6(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp5(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp4(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp3(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp2(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-int parseASTExp1(ASTExp *node, Token const *tok, struct ASTScope const *scope);
-
-int printASTExp(ASTExp const *node);
+int parseASTExp(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExpSing(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp15(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp14(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp13(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp12(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp11(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp10(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp9(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp8(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp7(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp6(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp5(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp4(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp3(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp2(ASTNode *node, Token const *tok, struct ASTScope const *scope);
+int parseASTExp1(ASTNode *node, Token const *tok, struct ASTScope const *scope);

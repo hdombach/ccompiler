@@ -14,7 +14,7 @@ void initASTArrayDecl(ASTArrayDecl *decl) {
 
 void freeASTArrayDecl(ASTArrayDecl *decl) {
 	if (decl->exp) {
-		freeASTExp(decl->exp);
+		freeASTNode(decl->exp);
 		free(decl->exp);
 	}
 	if (decl->encl) {
@@ -76,7 +76,7 @@ int printASTArrayDecl(const ASTArrayDecl *decl) {
 
 	if (decl->exp) {
 		n += printf(", \"size\": ");
-		n += printASTExp(decl->exp);
+		n += printASTNode(decl->exp);
 	}
 
 	if (decl->encl) {

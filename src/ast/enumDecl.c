@@ -17,7 +17,7 @@ void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 		free(decl->name);
 	}
 	if (decl->exp) {
-		freeASTExp(decl->exp);
+		freeASTNode(decl->exp);
 		free(decl->exp);
 	}
 }
@@ -75,7 +75,7 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 
 	if (decl->exp) {
 		n += printf(", \"Enumerator value\": ");
-		n += printASTExp(decl->exp);
+		n += printASTNode(decl->exp);
 	}
 
 	n += printf("}");

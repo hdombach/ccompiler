@@ -22,8 +22,8 @@ void freeASTStm(ASTStm *node) {
 			freeASTCompStm(node->c.compStm);
 			free(node->c.compStm);
 			break;
-		case ASTS_EXP:
-			freeASTExp(&node->c.exp);
+		case ASTS_NODE:
+			freeASTNode((ASTNode *) &node->c.nodeBuf);
 			break;
 		case ASTS_IF:
 			freeASTIf(&node->c.ifStm);
@@ -103,11 +103,11 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	} else if (tok[n].type == TT_SEMI_COLON) {
 		node->type = ASTS_EMPTY;
 		n++;
-	} else if ((res = parseASTExp(&node->c.exp, tok + n, scope))) {
-		node->type = ASTS_EXP;
+	} else if ((res = parseASTExp((ASTNode *) &node->c.nodeBuf, tok + n, scope))) {
+		node->type = ASTS_NODE;
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
-			freeASTExp(&node->c.exp);
+			freeASTNode(&node->c.nodeBuf);
 			return 0;
 		}
 		n++;
@@ -133,8 +133,8 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_COMPOUND:
 			n += printASTCompStm(node->c.compStm);
 			break;
-		case ASTS_EXP:
-			n += printASTExp(&node->c.exp);
+		case ASTS_NODE:
+			n += printASTNode(&node->c.nodeBuf);
 			break;
 		case ASTS_IF:
 			n += printASTIf(&node->c.ifStm);

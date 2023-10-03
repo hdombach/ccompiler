@@ -534,7 +534,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 		declarator->initializer = NULL;
 	}
 	if (declarator->bitField) {
-		freeASTExp(declarator->bitField);
+		freeASTNode(declarator->bitField);
 		free(declarator->bitField);
 		declarator->bitField = NULL;
 	}
@@ -698,7 +698,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	if (declarator->bitField) {
 		n += printf(", \"bitfield\": ");
-		n += printASTExp(declarator->bitField);
+		n += printASTNode(declarator->bitField);
 	}
 
 	n += printf("}");

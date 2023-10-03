@@ -18,7 +18,7 @@ void freeASTLabel(ASTLabel *label) {
 			free(label->c.identifier);
 			break;
 		case AST_LT_CASE:
-			freeASTExp(label->c.expression);
+			freeASTNode(label->c.expression);
 			break;
 		default:
 			break;
@@ -113,7 +113,7 @@ int printASTLabel(ASTLabel const *label) {
 			n += printf("\"case\"");
 
 			n += printf(", \"expression\": ");
-			n += printASTExp(label->c.expression);
+			n += printASTNode(label->c.expression);
 			break;
 		default:
 			n += printf("\"unknown\"");

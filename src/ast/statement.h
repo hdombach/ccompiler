@@ -4,13 +4,14 @@
 #include "expression.h"
 #include "if.h"
 #include "label.h"
+#include "node.h"
 #include "switch.h"
 #include "while.h"
 
 typedef enum {
 	ASTS_UNKNOWN,
 	ASTS_COMPOUND,
-	ASTS_EXP,
+	ASTS_NODE,
 	ASTS_IF,
 	ASTS_EMPTY,
 	ASTS_BREAK,
@@ -27,7 +28,7 @@ typedef struct ASTStm {
 	ASTStmType type;	
 	union {
 		struct ASTCompStm *compStm;
-		ASTExp exp;
+		ASTNodeBuf nodeBuf;
 		ASTIf ifStm;
 		ASTSwitch switchStm;
 		ASTWhile whileStm;

@@ -16,7 +16,7 @@ void initASTIf(ASTIf *node) {
 
 void freeASTIf(ASTIf *node) {
 	if (node->expression) {
-		freeASTExp(node->expression);
+		freeASTNode(node->expression);
 		free(node->expression);
 	}
 
@@ -115,7 +115,7 @@ int printASTIf(ASTIf const *node) {
 
 	if (node->expression) {
 		n += printf(", \"expression\": ");
-		n += printASTExp(node->expression);
+		n += printASTNode(node->expression);
 	}
 
 	if (node->trueStatement) {

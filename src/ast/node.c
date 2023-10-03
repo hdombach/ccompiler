@@ -61,7 +61,7 @@ char *astNodeTypeStr(ASTNodeType type) {
 
 
 
-int printASTNode(ASTNode *node) {
+int printASTNode(ASTNode const *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return printASTIntContant((ASTIntConstant *) node);
 		case AST_IDENTIFIER: return printASTIdentifier((ASTIdentifier *) node);

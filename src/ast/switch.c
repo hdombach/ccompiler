@@ -14,7 +14,7 @@ void initASTSwitch(ASTSwitch *node) {
 
 void freeASTSwitch(ASTSwitch *node) {
 	if (node->expression) {
-		freeASTExp(node->expression);
+		freeASTNode(node->expression);
 		free(node->expression);
 	}
 
@@ -91,7 +91,7 @@ int printASTSwitch(const ASTSwitch *node) {
 
 	if (node->expression) {
 		n += printf(", \"expression\": ");
-		n += printASTExp(node->expression);
+		n += printASTNode(node->expression);
 	}
 
 	if (node->statement) {

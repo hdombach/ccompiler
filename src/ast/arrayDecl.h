@@ -4,9 +4,9 @@
 
 struct ASTDeclarator;
 struct ASTScope;
-struct ASTExp;
+
 typedef struct ASTArrayDecl {
-	struct ASTExp *exp;
+	struct ASTNode *exp;
 	struct ASTDeclarator *encl;
 } ASTArrayDecl;
 

@@ -4,7 +4,6 @@
 #include "../token.h"
 #include "node.h"
 
-struct ASTExp;
 struct ASTDeclaration;
 struct ASTParam;
 struct ASTScope;

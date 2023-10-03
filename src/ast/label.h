@@ -1,6 +1,6 @@
 #pragma once
 
-struct ASTExp;
+struct ASTNode;
 struct Token;
 struct ASTScope;
 
@@ -15,7 +15,7 @@ typedef struct ASTLabel {
 	ASTLabelType type;
 	union {
 		char *identifier;
-		struct ASTExp *expression;
+		struct ASTNode *expression;
 	} c;
 } ASTLabel;
 

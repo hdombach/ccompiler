@@ -99,7 +99,7 @@ typedef struct ASTDeclarator {
 	/* Used when representing contents of pointer*/
 	ASTTypeQualifier qualifiers;
 	ASTInitializer *initializer;
-	ASTExp *bitField;
+	ASTNode *bitField;
 } ASTDeclarator;
 
 typedef struct ASTDeclaration {
