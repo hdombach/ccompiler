@@ -2,6 +2,7 @@
 
 #include "../util/dlist.h"
 #include "../token.h"
+#include "node.h"
 #include "statement.h"
 #include "declaration.h"
 
@@ -19,7 +20,7 @@ typedef struct {
 	ASTCompItemType type;
 	union {
 		ASTStm statement;
-		ASTDeclaration declaration;
+		ASTNodeBuf declaration;
 	} c;
 } ASTCompItem;
 

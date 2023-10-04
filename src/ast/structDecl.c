@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "node.h"
 #include "structDecl.h"
 #include "astUtil.h"
 #include "declaration.h"
@@ -35,10 +36,11 @@ int parseASTStructDeclItem(
 		return 0;
 	}
 
-	ASTDeclaration tempDeclaration;
-	if ((res = parseASTDeclaration(&tempDeclaration, tok + n, scope))) {
-		item->c.declaration = malloc(sizeof(ASTDeclaration));
-		*item->c.declaration = tempDeclaration;
+	ASTNodeBuf tempBuf;
+	ASTDeclaration *tempDeclaration = (ASTDeclaration *) &tempBuf;
+	if ((res = parseASTDeclaration(tempDeclaration, tok + n, scope))) {
+		item->c.declaration = malloc(AST_NODE_S);
+		mvASTNode(item->c.declaration, tempDeclaration);
 		item->type = AST_SDT_VAR;
 		n += res;
 	}

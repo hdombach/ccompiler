@@ -2,6 +2,7 @@
 
 #include "declaration.h"
 #include "funcDef.h"
+#include "node.h"
 #include "scope.h"
 
 typedef enum {
@@ -13,7 +14,7 @@ typedef enum {
 typedef struct {
 	ASTFileItemType type;
 	union {
-		ASTDeclaration declaration;
+		ASTNodeBuf declaration;
 		ASTFuncDef funcDef;
 	} c;
 } ASTFileItem;

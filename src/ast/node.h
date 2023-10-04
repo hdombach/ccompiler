@@ -20,6 +20,7 @@ typedef enum ASTNodeType {
 	AST_POSTFIX_OPERATION,
 
 	AST_PARAM, /* temp */
+	AST_DECLARATION,
 } ASTNodeType;
 
 typedef struct ASTNode {

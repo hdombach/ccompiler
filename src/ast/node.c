@@ -8,6 +8,7 @@
 #include "node.h"
 #include "operation.h"
 #include "param.h"
+#include "structDecl.h"
 
 void initASTNode(ASTNode *node) {
 	node->type = AST_UNKNOWN;
@@ -27,6 +28,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_PREFIX_OPERATION:
 		case AST_POSTFIX_OPERATION: freeASTOperation((ASTOperation *)node); break;
 		case AST_PARAM: freeASTParam((ASTParam *) node); break;
+		case AST_DECLARATION: freeASTDeclaration((ASTDeclaration *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -53,6 +55,7 @@ char *_astNodeTypes[] = {
 	"postfix operation",
 
 	"param",
+	"declaration",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -76,6 +79,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_PREFIX_OPERATION:
 		case AST_POSTFIX_OPERATION: return printASTOperation((ASTOperation *) node);
 		case AST_PARAM: return printASTParam((ASTParam *) node);
+		case AST_DECLARATION: return printASTDeclaration((ASTDeclaration *) node);
 		default: return printf("\"(null)\"");
 	}
 }

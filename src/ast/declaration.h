@@ -8,6 +8,7 @@
 #include "initializer.h"
 #include "structDecl.h"
 #include "funcDecl.h"
+#include "node.h"
 
 // https://en.cppreference.com/w/c/language/declarations
 
@@ -103,6 +104,7 @@ typedef struct ASTDeclarator {
 } ASTDeclarator;
 
 typedef struct ASTDeclaration {
+	ASTNode node;
 	ASTTypeSpec typeSpec;
 	DList declarators;
 } ASTDeclaration;

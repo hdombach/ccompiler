@@ -707,6 +707,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 }
 
 void initASTDeclaration(ASTDeclaration *declaration) {
+	freeASTNode((ASTNode *) declaration);
 	initASTTypeSpec(&declaration->typeSpec);
 	initDList(&declaration->declarators, sizeof(ASTDeclaration));
 }
@@ -721,6 +722,7 @@ int parseASTDeclaration(
 		const Token *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTDeclaration);
 	int n = 0, res;
 	ASTDeclarator tempDeclarator;
 
