@@ -81,6 +81,9 @@ int parseASTFuncOperation(
 
 	node->func = malloc(sizeof(ASTNodeBuf)); 
 	mvASTNode(node->func, func);
+
+	node->node.type = AST_FUNC_OPERATION;
+
 	return n;
 }
 
@@ -242,6 +245,8 @@ int parseASTCondOperation(
 		return 0;
 	}
 
+	node->node.type = AST_COND_OPERATION;
+
 	return n;
 }
 
@@ -317,6 +322,8 @@ int _parseASTCastOperation(
 		freeASTOperation(node);
 		return 0;
 	}
+
+	node->node.type = AST_CAST_OPERATION;
 
 	return n;
 }

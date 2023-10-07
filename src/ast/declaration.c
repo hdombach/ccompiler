@@ -511,7 +511,7 @@ void initASTDeclarator(ASTDeclarator *declarator) {
 void freeASTDeclarator(ASTDeclarator *declarator) {
 	switch (declarator->type) {
 		case AST_DT_IDENTIFIER:
-			//free(declarator->c.identifier);
+			free(declarator->c.identifier);
 			break;
 		case AST_DT_POINTER:
 			if (declarator->c.pointer) {

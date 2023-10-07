@@ -19,6 +19,7 @@ void freeASTLabel(ASTLabel *label) {
 			break;
 		case AST_LT_CASE:
 			freeASTNode(label->c.expression);
+			free(label->c.expression);
 			break;
 		default:
 			break;
