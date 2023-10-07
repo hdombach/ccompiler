@@ -1,11 +1,13 @@
 #pragma once
 
 #include "../token.h"
+#include "node.h"
 
 struct ASTDeclarator;
 struct ASTScope;
 
 typedef struct ASTArrayDecl {
+	struct ASTNode node;
 	struct ASTNode *exp;
 	struct ASTDeclarator *encl;
 } ASTArrayDecl;

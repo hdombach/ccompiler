@@ -28,6 +28,7 @@ int parseASTArrayDecl(
 		const Token *tok,
 		ASTDeclarator *encl,
 		ASTScope const *scope) {
+	AST_VALID(ASTArrayDecl);
 	int n = 0, res;
 
 	initASTArrayDecl(decl);
@@ -63,6 +64,8 @@ int parseASTArrayDecl(
 		freeASTArrayDecl(decl);
 		return 0;
 	}
+
+	decl->node.type = AST_ARRAY_DECL;
 
 	return n;
 }

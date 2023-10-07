@@ -25,7 +25,7 @@ int parseASTFuncDef(
 		struct ASTScope const *scope)
 {
 	int n = 0, res;
-	ASTDeclarator *curDecl, *nextDecl;
+	ASTDeclarator *curDecl, *prevDecl;
 
 	initASTFuncDef(def);
 
@@ -48,30 +48,33 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	nextDecl = &def->funcDecl;
-	do {
-		curDecl = nextDecl;
-		nextDecl = NULL;
+	ASTDeclarator *prevPrev = NULL;
+	prevDecl = NULL;
+	curDecl = &def->funcDecl;
+	while (curDecl) {
+		prevPrev = prevDecl;
+		prevDecl = curDecl;
 		switch (curDecl->type) {
 			case AST_DT_POINTER:
-				nextDecl = curDecl->c.pointer;
+				curDecl = curDecl->c.pointer;
 				break;
 			case AST_DT_ARRAY:
-				nextDecl = curDecl->c.array.encl;
+				curDecl = ((ASTArrayDecl *) curDecl->c.array)->encl;
 				break;
 			case AST_DT_FUNC:
-				nextDecl = curDecl->c.func.encl;
-				if (nextDecl && nextDecl->type == AST_DT_IDENTIFIER) {
-					nextDecl = NULL;
-					break;
+				curDecl = curDecl->c.func.encl;
+				if (curDecl && curDecl->type == AST_DT_IDENTIFIER) {
+					curDecl = NULL;
 				}
 				break;
 			default:
+				curDecl = NULL;
 				break;
 		}
-	} while (nextDecl);
+	}
 
-	if (curDecl->type != AST_DT_FUNC) {
+
+	if (!prevDecl || prevDecl->type != AST_DT_FUNC) {
 		freeASTFuncDef(def);
 		return 0;
 	}

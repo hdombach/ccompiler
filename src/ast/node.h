@@ -21,6 +21,7 @@ typedef enum ASTNodeType {
 
 	AST_PARAM, /* temp */
 	AST_DECLARATION,
+	AST_ARRAY_DECL,
 } ASTNodeType;
 
 typedef struct ASTNode {

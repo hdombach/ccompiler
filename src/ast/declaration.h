@@ -94,7 +94,7 @@ typedef struct ASTDeclarator {
 	union {
 		char *identifier;
 		struct ASTDeclarator *pointer;
-		ASTArrayDecl array;
+		ASTNode *array;
 		ASTFuncDecl func;
 	} c;
 	/* Used when representing contents of pointer*/

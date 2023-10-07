@@ -520,7 +520,8 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			}
 			break;
 		case AST_DT_ARRAY:
-			freeASTArrayDecl(&declarator->c.array);
+			freeASTArrayDecl((ASTArrayDecl *) declarator->c.array);
+			free(declarator->c.array);
 			break;
 		case AST_DT_FUNC:
 			freeASTFuncDecl(&declarator->c.func);
@@ -610,6 +611,7 @@ int parseASTDeclarator(
 	} else {
 		while (tok[n].type == TT_O_BRACE) {
 			ASTDeclarator temp, *tempPtr;
+			ASTNodeBuf buf;
 
 			if (declarator->type == AST_DT_UNKNOWN) {
 				tempPtr = NULL;
@@ -620,13 +622,15 @@ int parseASTDeclarator(
 			}
 
 			initASTDeclarator(declarator);
-			if ((res = parseASTArrayDecl(&declarator->c.array, tok + n, tempPtr, scope))) {
+			if ((res = parseASTArrayDecl((ASTArrayDecl *) &buf, tok + n, tempPtr, scope))) {
 				n += res;
 				declarator->type = AST_DT_ARRAY;
 			} else {
 				freeASTDeclarator(declarator);
 				return 0;
 			}
+			declarator->c.array = malloc(AST_NODE_S);
+			mvASTNode(declarator->c.array, (ASTNode *) &buf);
 		}
 	}
 
@@ -678,7 +682,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 		}
 	} else if (declarator->type == AST_DT_ARRAY) {
 		n += printf(", \"array\": ");
-		n += printASTArrayDecl(&declarator->c.array);
+		n += printASTArrayDecl(declarator->c.array);
 	} else if (declarator->type == AST_DT_FUNC) {
 		n += printf(", \"func\": ");
 		n += printASTFuncDecl(&declarator->c.func);
@@ -709,7 +713,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 void initASTDeclaration(ASTDeclaration *declaration) {
 	freeASTNode((ASTNode *) declaration);
 	initASTTypeSpec(&declaration->typeSpec);
-	initDList(&declaration->declarators, sizeof(ASTDeclaration));
+	initDList(&declaration->declarators, AST_NODE_S);
 }
 
 void freeASTDeclaration(ASTDeclaration *declaration) {
@@ -825,12 +829,13 @@ char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
 				declarator = declarator->c.pointer;
 				break;
 			case AST_DT_ARRAY:
-				declarator = declarator->c.array.encl;
+				declarator = ((ASTArrayDecl *) &declarator->c.array)->encl;
 				break;
 			case AST_DT_FUNC:
 				declarator = declarator->c.func.encl;
 				break;
 			default:
+				declarator = NULL;
 				break;
 		}
 	}
