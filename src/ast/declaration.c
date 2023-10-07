@@ -8,6 +8,7 @@
 #include "enumDecl.h"
 #include "expression.h"
 #include "funcDecl.h"
+#include "identifier.h"
 #include "initializer.h"
 #include "structDecl.h"
 #include "scope.h"
@@ -511,6 +512,7 @@ void initASTDeclarator(ASTDeclarator *declarator) {
 void freeASTDeclarator(ASTDeclarator *declarator) {
 	switch (declarator->type) {
 		case AST_DT_IDENTIFIER:
+			freeASTNode((ASTNode *) declarator->c.identifier);
 			free(declarator->c.identifier);
 			break;
 		case AST_DT_POINTER:
@@ -525,6 +527,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			break;
 		case AST_DT_FUNC:
 			freeASTFuncDecl(declarator->c.func);
+			free(declarator->c.func);
 			break;
 		default:
 			break;
@@ -547,6 +550,7 @@ int parseASTDeclarator(
 		ASTScope const *scope)
 {
 	int n = 0, res;
+	ASTNodeBuf tempBuf;
 
 	initASTDeclarator(declarator);
 
@@ -554,10 +558,12 @@ int parseASTDeclarator(
 		return 0;
 	}
 
-	if (tok[n].type == TT_IDENTIFIER) {
+	if ((res = parseASTIdentifier((ASTIdentifier *) &tempBuf, tok + n, scope))) {
+		tempBuf.node.type = AST_IDENTIFIER_DECL;
 		declarator->type = AST_DT_IDENTIFIER;
-		declarator->c.identifier = strdup(tok[n].contents);
-		n++;
+		declarator->c.identifier = malloc(AST_NODE_S);
+		mvASTNode((ASTNode *) declarator->c.identifier, (ASTNode *) &tempBuf);
+		n += res;
 	} else if (tok[n].type == TT_O_PARAN) {
 		n++;
 		if ((res = parseASTDeclarator(declarator, tok + n, scope))) {
@@ -573,16 +579,16 @@ int parseASTDeclarator(
 			return 0;
 		}
 	} else if (tok[n].type == TT_MULT) {
-		ASTDeclarator tempDeclarator;
+		ASTNodeBuf tempBuf;
 		n++;
 
 		while ((res = parseASTTypeQualifier(&declarator->qualifiers, tok + n))) {
 			n += res;
 		}
 
-		if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
-			declarator->c.pointer = malloc(sizeof(ASTDeclarator));
-			*declarator->c.pointer = tempDeclarator;
+		if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
+			declarator->c.pointer = malloc(AST_NODE_S);
+			mvASTNode((ASTNode *) declarator->c.pointer, (ASTNode *) &tempBuf);
 			n += res;
 		} else {
 			declarator->c.pointer = NULL;
@@ -591,18 +597,18 @@ int parseASTDeclarator(
 	}
 
 	if (tok[n].type == TT_O_PARAN) {
-		ASTDeclarator temp, *tempPtr;
 		ASTNodeBuf tempBuf;
+		ASTNode *enclBuf;
 
 		if (declarator->type == AST_DT_UNKNOWN) {
-			tempPtr = NULL;
+			enclBuf = NULL;
 		} else {
-			temp = *declarator;
-			tempPtr = &temp;
+			enclBuf = malloc(AST_NODE_S);
+			mvASTNode(enclBuf, (ASTNode *) declarator);
 			initASTDeclarator(declarator);
 		}
 
-		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, tempPtr, scope))) {
+		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, (ASTDeclarator *) enclBuf, scope))) {
 			n += res;
 			declarator->type = AST_DT_FUNC;
 			declarator->c.func = malloc(AST_NODE_S);
@@ -613,19 +619,18 @@ int parseASTDeclarator(
 		}
 	} else {
 		while (tok[n].type == TT_O_BRACE) {
-			ASTDeclarator temp, *tempPtr;
+			ASTNode *enclBuf;
 			ASTNodeBuf buf;
 
 			if (declarator->type == AST_DT_UNKNOWN) {
-				tempPtr = NULL;
+				enclBuf = NULL;
 			} else {
-				temp = *declarator;
-				tempPtr = &temp;
+				enclBuf = malloc(AST_NODE_S);
+				mvASTNode(enclBuf, declarator);
 				initASTDeclarator(declarator);
 			}
 
-			initASTDeclarator(declarator);
-			if ((res = parseASTArrayDecl((ASTArrayDecl *) &buf, tok + n, tempPtr, scope))) {
+			if ((res = parseASTArrayDecl((ASTArrayDecl *) &buf, tok + n, enclBuf, scope))) {
 				n += res;
 				declarator->type = AST_DT_ARRAY;
 			} else {
@@ -675,7 +680,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	if (declarator->type == AST_DT_IDENTIFIER) {
 		n += printf(", \"name\": ");
-		n += printf("\"%s\"", declarator->c.identifier);
+		n += printf("\"%s\"", declarator->c.identifier->name);
 	} else if (declarator->type == AST_DT_POINTER) {
 		n += printf(", \"pointer\": ");
 		if (declarator->c.pointer) {
@@ -731,7 +736,7 @@ int parseASTDeclaration(
 {
 	AST_VALID(ASTDeclaration);
 	int n = 0, res;
-	ASTDeclarator tempDeclarator;
+	ASTNodeBuf tempDeclarator;
 
 	initASTDeclaration(declaration);
 
@@ -753,7 +758,7 @@ int parseASTDeclaration(
 	}
 
 	while (1) {
-		if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
+		if ((res = parseASTDeclarator((ASTDeclarator *) &tempDeclarator, tok + n, scope))) {
 			n += res;
 			dlistApp(&declaration->declarators, &tempDeclarator);
 		} else {
@@ -827,7 +832,7 @@ char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
 	while (declarator) {
 		switch (declarator->type) {
 			case AST_DT_IDENTIFIER:
-				return strdup(declarator->c.identifier);
+				return strdup(declarator->c.identifier->name);
 			case AST_DT_POINTER:
 				declarator = declarator->c.pointer;
 				break;

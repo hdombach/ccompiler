@@ -23,6 +23,8 @@ typedef enum ASTNodeType {
 	AST_DECLARATION,
 	AST_ARRAY_DECL,
 	AST_FUNC_DECL,
+	AST_IDENTIFIER_DECL,
+	AST_DECLARATOR,
 } ASTNodeType;
 
 typedef struct ASTNode {

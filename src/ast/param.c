@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "node.h"
 #include "param.h"
 #include "astUtil.h"
 #include "declaration.h"
@@ -23,7 +24,7 @@ void freeASTParam(ASTParam *param) {
 int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 	AST_VALID(ASTParam);
 	int n = 0, res;
-	ASTDeclarator tempDeclarator;
+	ASTNodeBuf tempBuf;
 
 	initASTParam(param);
 
@@ -39,10 +40,10 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTDeclarator(&tempDeclarator, tok + n, scope))) {
+	if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
 		n += res;
-		param->declarator = malloc(sizeof(ASTDeclarator));
-		*param->declarator = tempDeclarator;
+		param->declarator = malloc(AST_NODE_S);
+		mvASTNode((ASTNode *) param->declarator, (ASTNode *) &tempBuf);
 	}
 
 	return n;

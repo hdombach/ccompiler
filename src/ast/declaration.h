@@ -5,6 +5,7 @@
 #include "arrayDecl.h"
 #include "enumDecl.h"
 #include "expression.h"
+#include "identifier.h"
 #include "initializer.h"
 #include "structDecl.h"
 #include "funcDecl.h"
@@ -90,9 +91,10 @@ typedef enum {
 } ASTDeclaratorType;
 
 typedef struct ASTDeclarator {
+	ASTNode node;
 	ASTDeclaratorType type;
 	union {
-		char *identifier;
+		ASTIdentifier *identifier;
 		struct ASTDeclarator *pointer;
 		ASTNode *array;
 		ASTFuncDecl *func;

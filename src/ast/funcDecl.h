@@ -16,6 +16,9 @@ typedef struct ASTFuncDecl {
 
 void initASTFuncDecl(ASTFuncDecl *decl);
 void freeASTFuncDecl(ASTFuncDecl *decl);
+/*
+ * Takes ownership of encl
+ */
 int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,

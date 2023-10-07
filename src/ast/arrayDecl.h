@@ -14,6 +14,9 @@ typedef struct ASTArrayDecl {
 
 void initASTArrayDecl(ASTArrayDecl *decl);
 void freeASTArrayDecl(ASTArrayDecl *decl);
+/*
+ * Takes ownership of encl
+ */
 int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		Token const *tok,

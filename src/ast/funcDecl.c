@@ -28,8 +28,7 @@ int parseASTFuncDecl(
 
 	initASTFuncDecl(decl);
 	if (encl) {
-		decl->encl = malloc(sizeof(ASTDeclarator));
-		*decl->encl = *encl;
+		decl->encl = encl;
 	}
 	if (astHasErr()) {
 		freeASTFuncDecl(decl);

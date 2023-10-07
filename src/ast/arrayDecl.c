@@ -33,8 +33,7 @@ int parseASTArrayDecl(
 
 	initASTArrayDecl(decl);
 	if (encl) {
-		decl->encl = malloc(sizeof(ASTDeclarator));
-		*decl->encl = *encl;
+		decl->encl = encl;
 	}
 	if (astHasErr()) {
 		freeASTArrayDecl(decl);

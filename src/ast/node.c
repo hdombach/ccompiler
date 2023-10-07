@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "arrayDecl.h"
+#include "declaration.h"
 #include "expression.h"
 #include "funcDecl.h"
 #include "identifier.h"
@@ -18,6 +19,7 @@ void initASTNode(ASTNode *node) {
 
 void freeASTNode(ASTNode *node) {
 	switch (node->type) {
+		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
 
 		case AST_FUNC_OPERATION: freeASTFuncOperation((ASTFuncOperation *) node); break;
@@ -31,6 +33,9 @@ void freeASTNode(ASTNode *node) {
 		case AST_POSTFIX_OPERATION: freeASTOperation((ASTOperation *)node); break;
 		case AST_PARAM: freeASTParam((ASTParam *) node); break;
 		case AST_DECLARATION: freeASTDeclaration((ASTDeclaration *) node); break;
+		case AST_ARRAY_DECL: freeASTArrayDecl((ASTArrayDecl *) node); break;
+		case AST_FUNC_DECL: freeASTFuncDecl((ASTFuncDecl *) node); break;
+		case AST_DECLARATOR: freeASTDeclarator((ASTDeclarator *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -58,8 +63,10 @@ char *_astNodeTypes[] = {
 
 	"param",
 	"declaration",
-	"array declaration",
-	"function declaration",
+	"array declarator",
+	"function declarator",
+	"identifier declarator",
+	"declarator",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -71,6 +78,7 @@ char *astNodeTypeStr(ASTNodeType type) {
 int printASTNode(ASTNode const *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return printASTIntContant((ASTIntConstant *) node);
+		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER: return printASTIdentifier((ASTIdentifier *) node);
 
 		case AST_FUNC_OPERATION: return printASTFuncOperation((ASTFuncOperation *) node);
@@ -85,7 +93,8 @@ int printASTNode(ASTNode const *node) {
 		case AST_PARAM: return printASTParam((ASTParam *) node);
 		case AST_DECLARATION: return printASTDeclaration((ASTDeclaration *) node);
 		case AST_ARRAY_DECL: return printASTArrayDecl((ASTArrayDecl *) node);
-		case AST_FUNC_DECL: printASTFuncDecl((ASTFuncDecl *) node);
+		case AST_FUNC_DECL: return printASTFuncDecl((ASTFuncDecl *) node);
+		case AST_DECLARATOR: return printASTDeclarator((ASTDeclarator *) node);
 		default: return printf("\"(null)\"");
 	}
 }
