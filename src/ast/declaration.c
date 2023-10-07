@@ -524,7 +524,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 			free(declarator->c.array);
 			break;
 		case AST_DT_FUNC:
-			freeASTFuncDecl(&declarator->c.func);
+			freeASTFuncDecl(declarator->c.func);
 			break;
 		default:
 			break;
@@ -592,6 +592,7 @@ int parseASTDeclarator(
 
 	if (tok[n].type == TT_O_PARAN) {
 		ASTDeclarator temp, *tempPtr;
+		ASTNodeBuf tempBuf;
 
 		if (declarator->type == AST_DT_UNKNOWN) {
 			tempPtr = NULL;
@@ -601,9 +602,11 @@ int parseASTDeclarator(
 			initASTDeclarator(declarator);
 		}
 
-		if ((res = parseASTFuncDecl(&declarator->c.func, tok + n, tempPtr, scope))) {
+		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, tempPtr, scope))) {
 			n += res;
 			declarator->type = AST_DT_FUNC;
+			declarator->c.func = malloc(AST_NODE_S);
+			mvASTNode((ASTNode *) declarator->c.func, (ASTNode *) &tempBuf);
 		} else {
 			freeASTDeclarator(declarator);
 			return 0;
@@ -685,7 +688,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 		n += printASTArrayDecl(declarator->c.array);
 	} else if (declarator->type == AST_DT_FUNC) {
 		n += printf(", \"func\": ");
-		n += printASTFuncDecl(&declarator->c.func);
+		n += printASTFuncDecl(declarator->c.func);
 	} else {
 		n += printf(", \"error\": \"unknown\"");
 	}
@@ -832,7 +835,7 @@ char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
 				declarator = ((ASTArrayDecl *) &declarator->c.array)->encl;
 				break;
 			case AST_DT_FUNC:
-				declarator = declarator->c.func.encl;
+				declarator = declarator->c.func->encl;
 				break;
 			default:
 				declarator = NULL;

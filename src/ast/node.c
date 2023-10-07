@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "arrayDecl.h"
 #include "expression.h"
+#include "funcDecl.h"
 #include "identifier.h"
 #include "intConstant.h"
 #include "node.h"
@@ -56,6 +58,8 @@ char *_astNodeTypes[] = {
 
 	"param",
 	"declaration",
+	"array declaration",
+	"function declaration",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -80,6 +84,8 @@ int printASTNode(ASTNode const *node) {
 		case AST_POSTFIX_OPERATION: return printASTOperation((ASTOperation *) node);
 		case AST_PARAM: return printASTParam((ASTParam *) node);
 		case AST_DECLARATION: return printASTDeclaration((ASTDeclaration *) node);
+		case AST_ARRAY_DECL: return printASTArrayDecl((ASTArrayDecl *) node);
+		case AST_FUNC_DECL: printASTFuncDecl((ASTFuncDecl *) node);
 		default: return printf("\"(null)\"");
 	}
 }

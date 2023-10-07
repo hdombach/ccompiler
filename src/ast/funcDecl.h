@@ -2,11 +2,13 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
+#include "node.h"
 
 struct ASTDeclarator;
 struct ASTScope;
 
 typedef struct ASTFuncDecl {
+	ASTNode node;
 	DList params;
 	struct ASTDeclarator *encl;
 	int hasEllipses;

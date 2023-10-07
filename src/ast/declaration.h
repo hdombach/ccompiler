@@ -95,7 +95,7 @@ typedef struct ASTDeclarator {
 		char *identifier;
 		struct ASTDeclarator *pointer;
 		ASTNode *array;
-		ASTFuncDecl func;
+		ASTFuncDecl *func;
 	} c;
 	/* Used when representing contents of pointer*/
 	ASTTypeQualifier qualifiers;

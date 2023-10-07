@@ -62,7 +62,7 @@ int parseASTFuncDef(
 				curDecl = ((ASTArrayDecl *) curDecl->c.array)->encl;
 				break;
 			case AST_DT_FUNC:
-				curDecl = curDecl->c.func.encl;
+				curDecl = curDecl->c.func->encl;
 				if (curDecl && curDecl->type == AST_DT_IDENTIFIER) {
 					curDecl = NULL;
 				}
