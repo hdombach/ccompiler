@@ -4,18 +4,24 @@
 #include "compStatement.h"
 #include "declaration.h"
 #include "funcDecl.h"
+#include "node.h"
 #include "param.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void initASTFuncDef(ASTFuncDef *def) {
 	initASTTypeSpec(&def->typeSpec);
-	initASTDeclarator(&def->funcDecl);
+	def->funcDecl = NULL;
 	initASTCompStm(&def->compoundStm);
 }
 
 void freeASTFuncDef(ASTFuncDef *def) {
 	freeASTTypeSpec(&def->typeSpec);
-	freeASTDeclarator(&def->funcDecl);
+	if (def->funcDecl) {
+		freeASTNode(def->funcDecl);
+		free(def->funcDecl);
+		def->funcDecl = NULL;
+	}
 	freeASTCompStm(&def->compoundStm);
 }
 
@@ -25,7 +31,8 @@ int parseASTFuncDef(
 		struct ASTScope const *scope)
 {
 	int n = 0, res;
-	ASTDeclarator *curDecl, *prevDecl;
+	ASTNode *curDecl, *prevDecl;
+	ASTNodeBuf tempBuf;
 
 	initASTFuncDef(def);
 
@@ -41,29 +48,30 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	if ((res = parseASTDeclarator(&def->funcDecl, tok + n, scope))) {
+	if ((res = parseASTDeclarator(&tempBuf, tok + n, scope))) {
+		def->funcDecl = malloc(AST_NODE_S);
+		mvASTNode(def->funcDecl, &tempBuf);
 		n += res;
 	} else {
 		freeASTFuncDef(def);
 		return 0;
 	}
 
-	ASTDeclarator *prevPrev = NULL;
 	prevDecl = NULL;
-	curDecl = &def->funcDecl;
+	curDecl = def->funcDecl;
 	while (curDecl) {
-		prevPrev = prevDecl;
 		prevDecl = curDecl;
 		switch (curDecl->type) {
-			case AST_DT_POINTER:
-				curDecl = curDecl->c.pointer;
+			case AST_POINTER_DECL:
+			case AST_DECLARATOR:
+				curDecl = ((ASTDeclarator *) curDecl)->encl;
 				break;
-			case AST_DT_ARRAY:
-				curDecl = ((ASTArrayDecl *) curDecl->c.array)->encl;
+			case AST_ARRAY_DECL:
+				curDecl = ((ASTArrayDecl *) curDecl)->encl;
 				break;
-			case AST_DT_FUNC:
-				curDecl = curDecl->c.func->encl;
-				if (curDecl && curDecl->type == AST_DT_IDENTIFIER) {
+			case AST_FUNC_DECL:
+				curDecl = ((ASTFuncDecl *) curDecl)->encl;
+				if (curDecl && curDecl->type == AST_IDENTIFIER_DECL) {
 					curDecl = NULL;
 				}
 				break;
@@ -74,7 +82,7 @@ int parseASTFuncDef(
 	}
 
 
-	if (!prevDecl || prevDecl->type != AST_DT_FUNC) {
+	if (!prevDecl || prevDecl->type != AST_FUNC_DECL) {
 		freeASTFuncDef(def);
 		return 0;
 	}
@@ -102,7 +110,7 @@ int printASTFuncDef(ASTFuncDef const *def) {
 	n += printASTTypeSpec(&def->typeSpec);
 
 	n += printf(", \"Declarator\": ");
-	n += printASTDeclarator(&def->funcDecl);
+	n += printASTDeclarator(def->funcDecl);
 
 	n += printf(", \"Compound Statement\": ");
 	n += printASTCompStm(&def->compoundStm);

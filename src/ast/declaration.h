@@ -82,23 +82,10 @@ typedef struct {
  * nesting of the type.
  * *test[5] (pointer { array }) Is actually array of pointers
  */
-typedef enum {
-	AST_DT_UNKNOWN,
-	AST_DT_IDENTIFIER,
-	AST_DT_POINTER,
-	AST_DT_ARRAY,
-	AST_DT_FUNC,
-} ASTDeclaratorType;
 
 typedef struct ASTDeclarator {
 	ASTNode node;
-	ASTDeclaratorType type;
-	union {
-		ASTIdentifier *identifier;
-		struct ASTDeclarator *pointer;
-		ASTNode *array;
-		ASTFuncDecl *func;
-	} c;
+	ASTNode *encl;
 	/* Used when representing contents of pointer*/
 	ASTTypeQualifier qualifiers;
 	ASTInitializer *initializer;

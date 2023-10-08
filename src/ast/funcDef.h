@@ -11,7 +11,7 @@ struct ASTScope;
 
 typedef struct ASTFuncDef {
 	ASTTypeSpec typeSpec;
-	ASTDeclarator funcDecl;
+	ASTNode *funcDecl;
 	ASTCompStm compoundStm;
 } ASTFuncDef;
 

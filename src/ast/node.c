@@ -35,6 +35,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_DECLARATION: freeASTDeclaration((ASTDeclaration *) node); break;
 		case AST_ARRAY_DECL: freeASTArrayDecl((ASTArrayDecl *) node); break;
 		case AST_FUNC_DECL: freeASTFuncDecl((ASTFuncDecl *) node); break;
+		case AST_POINTER_DECL:
 		case AST_DECLARATOR: freeASTDeclarator((ASTDeclarator *) node); break;
 		default: break;
 	}
@@ -66,6 +67,7 @@ char *_astNodeTypes[] = {
 	"array declarator",
 	"function declarator",
 	"identifier declarator",
+	"pointer declarator",
 	"declarator",
 };
 
@@ -94,6 +96,8 @@ int printASTNode(ASTNode const *node) {
 		case AST_DECLARATION: return printASTDeclaration((ASTDeclaration *) node);
 		case AST_ARRAY_DECL: return printASTArrayDecl((ASTArrayDecl *) node);
 		case AST_FUNC_DECL: return printASTFuncDecl((ASTFuncDecl *) node);
+
+		case AST_POINTER_DECL:
 		case AST_DECLARATOR: return printASTDeclarator((ASTDeclarator *) node);
 		default: return printf("\"(null)\"");
 	}

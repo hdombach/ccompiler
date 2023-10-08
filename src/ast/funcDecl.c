@@ -2,6 +2,7 @@
 
 #include "funcDecl.h"
 #include "astUtil.h"
+#include "node.h"
 #include "param.h"
 
 void initASTFuncDecl(ASTFuncDecl *decl) {
@@ -72,6 +73,7 @@ int parseASTFuncDecl(
 		return 0;
 	}
 
+	decl->node.type = AST_FUNC_DECL;
 	return n;
 }
 
