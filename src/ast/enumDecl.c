@@ -86,6 +86,7 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 void initASTEnumDecl(ASTEnumDecl *decl) {
 	decl->name = NULL;
 	initDList(&decl->enumerators, sizeof(ASTEnumeratorDecl));
+	initASTNode((ASTNode *) decl);
 }
 
 void freeASTEnumDecl(ASTEnumDecl *decl) {
@@ -150,6 +151,7 @@ int parseASTEnumDecl(
 		return 0;
 	}
 
+	decl->node.type = AST_ENUM_DECL;
 	return n;
 }
 

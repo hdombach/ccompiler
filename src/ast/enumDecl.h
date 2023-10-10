@@ -2,6 +2,7 @@
 
 #include "../util/dlist.h"
 #include "../token.h"
+#include "node.h"
 
 struct ASTScope;
 
@@ -11,6 +12,7 @@ typedef struct ASTEnumeratorDecl {
 } ASTEnumeratorDecl;
 
 typedef struct ASTEnumDecl {
+	ASTNode node;
 	char *name;
 	DList enumerators;
 } ASTEnumDecl;

@@ -4,6 +4,7 @@
 
 #include "arrayDecl.h"
 #include "declaration.h"
+#include "enumDecl.h"
 #include "expression.h"
 #include "funcDecl.h"
 #include "identifier.h"
@@ -40,6 +41,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_DECLARATOR: freeASTDeclarator((ASTDeclarator *) node); break;
 		case AST_TYPE_SPEC: freeASTTypeSpec((ASTTypeSpec *) node); break;
 		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
+		case AST_ENUM_DECL: freeASTEnumDecl((ASTEnumDecl *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -81,6 +83,7 @@ char *_astNodeTypes[] = {
 	"type specifier",
 	"typedef name type specifier",
 	"struct declaration",
+	"enum declaration",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -114,6 +117,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_DECLARATOR: return printASTDeclarator((ASTDeclarator *) node);
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
 		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
+		case AST_ENUM_DECL: return printASTEnumDecl((ASTEnumDecl *) node);
 		default: return printf("\"(null)\"");
 	}
 }

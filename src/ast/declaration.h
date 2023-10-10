@@ -72,7 +72,7 @@ typedef struct {
 		ASTArithType arith;
 		ASTNode *typedefName;
 		ASTStructDecl *structDecl;
-		ASTEnumDecl enumDecl;
+		ASTEnumDecl *enumDecl;
 	} c;
 	Token const *tok;
 } ASTTypeSpec;

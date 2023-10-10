@@ -30,6 +30,7 @@ typedef enum ASTNodeType {
 	/* typedef reference used in type spec */
 	AST_IDENTIFIER_TS,
 	AST_STRUCT_DECL,
+	AST_ENUM_DECL,
 } ASTNodeType;
 
 typedef struct ASTNode {

@@ -85,7 +85,7 @@ int printASTParam(const ASTParam *param) {
 			n += printASTNode((ASTNode *) param->typeSpec->c.structDecl);
 			break;
 		case AST_TST_ENUM:
-			n += printASTEnumDecl(&param->typeSpec->c.enumDecl);
+			n += printASTEnumDecl(param->typeSpec->c.enumDecl);
 			break;
 		default:
 			n += printf("\"unknown\"");
