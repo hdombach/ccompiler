@@ -8,63 +8,10 @@
 #include "scope.h"
 #include "../util/callbacks.h"
 
-void initASTStructDeclItem(ASTStructDeclItem *item) {
-	item->type = AST_SDT_UNKNOWN;
-}
-
-void freeASTStructDeclItem(ASTStructDeclItem *item) {
-	switch (item->type) {
-		case AST_SDT_VAR:
-			freeASTDeclaration(item->c.declaration);
-			free(item->c.declaration);
-			break;
-		default:
-			break;
-	}
-}
-
-int parseASTStructDeclItem(
-		ASTStructDeclItem *item,
-		const Token *tok,
-		ASTScope *scope)
-{
-	int res, n = 0;
-
-	initASTStructDeclItem(item);
-
-	if (astHasErr()) {
-		return 0;
-	}
-
-	ASTNodeBuf tempBuf;
-	ASTDeclaration *tempDeclaration = (ASTDeclaration *) &tempBuf;
-	if ((res = parseASTDeclaration(tempDeclaration, tok + n, scope))) {
-		item->c.declaration = malloc(AST_NODE_S);
-		mvASTNode((ASTNode *) item->c.declaration, (ASTNode *) tempDeclaration);
-		item->type = AST_SDT_VAR;
-		n += res;
-	}
-
-	return n;
-}
-
-int printASTStructDeclItem(const ASTStructDeclItem *item) {
-	switch (item->type) {
-		case AST_SDT_VAR:
-			return printASTDeclaration(item->c.declaration);
-		default:
-			return 0;
-	}
-}
-
-/* ========================================================================= 
- * Struct Decl
- *========================================================================== */
-
 void initASTStructDecl(ASTStructDecl *decl) {
 	initASTNode((ASTNode *) decl);
 	decl->name = NULL;
-	initDList(&decl->items, sizeof(ASTStructDeclItem));
+	initDList(&decl->items, AST_NODE_S);
 	decl->scope = malloc(sizeof(ASTScope));
 	initASTScope(decl->scope);
 	decl->isUnion = 0;
@@ -74,7 +21,7 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 	if (decl->name) {
 		free(decl->name);
 	}
-	freeDList(&decl->items, (FreeFunc) freeASTStructDeclItem);
+	freeDList(&decl->items, (FreeFunc) freeASTNode);
 	freeASTScope(decl->scope);
 	free(decl->scope);
 }
@@ -115,10 +62,10 @@ int parseASTStructDecl(
 	}
 
 	while (1) {
-		ASTStructDeclItem item;
-		if ((res = parseASTStructDeclItem(&item, tok + n, decl->scope))) {
+		ASTNodeBuf tempBuf;
+		if ((res = parseASTDeclaration((ASTDeclaration *) &tempBuf, tok + n, decl->scope))) {
 			n += res;
-			dlistApp(&decl->items, &item);
+			dlistApp(&decl->items, &tempBuf);
 		} else {
 			break;
 		}
@@ -158,7 +105,7 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	} else {
 		n += printf(", \"struct declarations\": ");
 	}
-	n += printDList(&decl->items, (PrintFunc) printASTStructDeclItem);
+	n += printDList(&decl->items, (PrintFunc) printASTDeclaration);
 
 	n += printf("}");
 

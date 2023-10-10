@@ -4,31 +4,8 @@
 #include "../token.h"
 #include "node.h"
 
-typedef enum {
-	AST_SDT_UNKNOWN,
-	/* A variable declaration */
-	AST_SDT_VAR,
-	/* A bit field declaration */
-	AST_SDT_BIT,
-} ASTStructDeclItemType;
-
 typedef struct ASTDeclaration ASTDeclaration;
 typedef struct ASTScope ASTScope;
-
-typedef struct ASTStructDeclItem {
-	ASTStructDeclItemType type;
-	union {
-		ASTDeclaration *declaration;
-	} c;
-} ASTStructDeclItem;
-
-void initASTStructDeclItem(ASTStructDeclItem *item);
-void freeASTStructDeclItem(ASTStructDeclItem *item);
-int parseASTStructDeclItem(
-		ASTStructDeclItem *item,
-		Token const *tok,
-		ASTScope *scope);
-int printASTStructDeclItem(ASTStructDeclItem const *item);
 
 typedef struct {
 	ASTNode node;
