@@ -20,6 +20,7 @@ void initASTNode(ASTNode *node) {
 void freeASTNode(ASTNode *node) {
 	switch (node->type) {
 		case AST_IDENTIFIER_DECL:
+		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
 
 		case AST_FUNC_OPERATION: freeASTFuncOperation((ASTFuncOperation *) node); break;
@@ -77,6 +78,7 @@ char *_astNodeTypes[] = {
 	"pointer declarator",
 	"declarator",
 	"type specifier",
+	"typedef name type specifier",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -89,6 +91,7 @@ int printASTNode(ASTNode const *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return printASTIntContant((ASTIntConstant *) node);
 		case AST_IDENTIFIER_DECL:
+		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: return printASTIdentifier((ASTIdentifier *) node);
 
 		case AST_FUNC_OPERATION: return printASTFuncOperation((ASTFuncOperation *) node);

@@ -70,7 +70,7 @@ typedef struct {
 	ASTTypeSpecType typeSpecType;
 	union {
 		ASTArithType arith;
-		char *typedefName;
+		ASTNode *typedefName;
 		ASTStructDecl structDecl;
 		ASTEnumDecl enumDecl;
 	} c;

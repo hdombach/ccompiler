@@ -360,24 +360,21 @@ int astArithTypeNormalize(const ASTArithType *type) {
  * ========================================================================= */
 
 int _parseTypedefIdentifier(
-		char **typedefName,
+		ASTIdentifier *identifier,
 		const Token *tok,
 		ASTScope const *scope)
 {
-	if (astHasErr()) {
-		return 0;
+	int res, n = 0;
+	if ((res = parseASTIdentifier(identifier, tok + n, scope))) {
+		n += res;
+		identifier->node.type = AST_IDENTIFIER_TS;
 	}
 
-	if (tok->type != TT_IDENTIFIER) {
+	if (!astScopeIsTypedef(scope, identifier->name)) {
+		freeASTNode((ASTNode *) identifier);
 		return 0;
 	}
-
-	if (astScopeIsTypedef(scope, tok->contents)) {
-		*typedefName = strdup(tok->contents);
-		return 1;
-	} else {
-		return 0;
-	}
+	return n;
 }
 
 void initASTTypeSpec(ASTTypeSpec *typeSpec) {
@@ -412,6 +409,7 @@ int parseASTTypeSpec(
 {
 	AST_VALID(ASTTypeSpec);
 	int n = 0, res;
+	ASTNodeBuf tempBuf;
 
 	initASTTypeSpec(typeSpec);
 	if (astHasErr()) {
@@ -447,7 +445,8 @@ int parseASTTypeSpec(
 			//Typedef type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
 
-			if ((res = _parseTypedefIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
+			if ((res = _parseTypedefIdentifier((ASTIdentifier *) &tempBuf, tok + n, scope))) {
+				typeSpec->c.typedefName = dupASTNode((ASTNode *) &tempBuf);
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
 			} else {
@@ -511,7 +510,7 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 			n += printASTArithType(&typeSpec->c.arith);
 			break;
 		case AST_TST_TYPEDEF:
-			n += printf("\"%s\"", typeSpec->c.typedefName);
+			n += printASTNode(typeSpec->c.typedefName);
 			break;
 		case AST_TST_STRUCT:
 			n += printASTStructDecl(&typeSpec->c.structDecl);
