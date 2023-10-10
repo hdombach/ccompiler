@@ -26,6 +26,7 @@ typedef enum ASTNodeType {
 	AST_IDENTIFIER_DECL,
 	AST_POINTER_DECL,
 	AST_DECLARATOR,
+	AST_TYPE_SPEC,
 } ASTNodeType;
 
 typedef struct ASTNode {

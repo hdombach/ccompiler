@@ -10,13 +10,17 @@
 #include <stdlib.h>
 
 void initASTFuncDef(ASTFuncDef *def) {
-	initASTTypeSpec(&def->typeSpec);
+	def->typeSpec = NULL;
 	def->funcDecl = NULL;
 	initASTCompStm(&def->compoundStm);
 }
 
 void freeASTFuncDef(ASTFuncDef *def) {
-	freeASTTypeSpec(&def->typeSpec);
+	if (def->typeSpec) {
+		freeASTTypeSpec(def->typeSpec);
+		free(def->typeSpec);
+		def->typeSpec = NULL;
+	}
 	if (def->funcDecl) {
 		freeASTNode(def->funcDecl);
 		free(def->funcDecl);
@@ -41,7 +45,8 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	if ((res = parseASTTypeSpec(&def->typeSpec, tok + n, scope))) {
+	if ((res = parseASTTypeSpec((ASTTypeSpec *) &tempBuf, tok + n, scope))) {
+		def->typeSpec = (ASTTypeSpec *) dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		freeASTFuncDef(def);
@@ -107,7 +112,7 @@ int printASTFuncDef(ASTFuncDef const *def) {
 	n += printf("\"node type\": \"func def\"");
 
 	n += printf(", \"Type Spec\": ");
-	n += printASTTypeSpec(&def->typeSpec);
+	n += printASTTypeSpec(def->typeSpec);
 
 	n += printf(", \"Declarator\": ");
 	n += printASTDeclarator((ASTDeclarator *) def->funcDecl);

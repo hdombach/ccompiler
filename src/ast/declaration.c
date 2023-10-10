@@ -381,6 +381,7 @@ int _parseTypedefIdentifier(
 }
 
 void initASTTypeSpec(ASTTypeSpec *typeSpec) {
+	initASTNode((ASTNode *) typeSpec);
 	initASTTypeQualifier(&typeSpec->qualifiers);
 	initASTStorageClassSpec(&typeSpec->storage);
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
@@ -409,6 +410,7 @@ int parseASTTypeSpec(
 		const Token *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTTypeSpec);
 	int n = 0, res;
 
 	initASTTypeSpec(typeSpec);
@@ -494,6 +496,7 @@ int parseASTTypeSpec(
 		}
 	}
 
+	typeSpec->node.type = AST_TYPE_SPEC;
 	return n;
 }
 
@@ -711,12 +714,15 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 void initASTDeclaration(ASTDeclaration *declaration) {
 	freeASTNode((ASTNode *) declaration);
-	initASTTypeSpec(&declaration->typeSpec);
+	declaration->typeSpec = NULL;
 	initDList(&declaration->declarators, AST_NODE_S);
 }
 
 void freeASTDeclaration(ASTDeclaration *declaration) {
-	freeASTTypeSpec(&declaration->typeSpec);
+	if (declaration->typeSpec) {
+		freeASTTypeSpec(declaration->typeSpec);
+		free(declaration->typeSpec);
+	}
 	freeDList(&declaration->declarators, (FreeFunc) freeASTDeclarator);
 }
 
@@ -727,7 +733,7 @@ int parseASTDeclaration(
 {
 	AST_VALID(ASTDeclaration);
 	int n = 0, res;
-	ASTNodeBuf tempDeclarator;
+	ASTNodeBuf tempBuf;
 
 	initASTDeclaration(declaration);
 
@@ -736,7 +742,8 @@ int parseASTDeclaration(
 		return 0;
 	}
 
-	if ((res = parseASTTypeSpec(&declaration->typeSpec, tok + n, scope))) {
+	if ((res = parseASTTypeSpec((ASTTypeSpec *) &tempBuf, tok + n, scope))) {
+		declaration->typeSpec = (ASTTypeSpec *) dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		freeASTDeclaration(declaration);
@@ -749,9 +756,9 @@ int parseASTDeclaration(
 	}
 
 	while (1) {
-		if ((res = parseASTDeclarator((ASTDeclarator *) &tempDeclarator, tok + n, scope))) {
+		if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
 			n += res;
-			dlistApp(&declaration->declarators, &tempDeclarator);
+			dlistApp(&declaration->declarators, &tempBuf);
 		} else {
 			freeASTDeclaration(declaration);
 			return 0;
@@ -781,18 +788,18 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 
 	n += printf("\"node type\": \"Declaration\"");
 
-	if (declaration->typeSpec.qualifiers) {
+	if (declaration->typeSpec->qualifiers) {
 		n += printf(", \"Type Qualifiers\": ");
-		n += printASTTypeQualifier(&declaration->typeSpec.qualifiers);
+		n += printASTTypeQualifier(&declaration->typeSpec->qualifiers);
 	}
 
-	if (declaration->typeSpec.storage) {
+	if (declaration->typeSpec->storage) {
 		n += printf(", \"Storage Class Specifiers\": ");
-		n += printASTStorageClassSpec(&declaration->typeSpec.storage);
+		n += printASTStorageClassSpec(&declaration->typeSpec->storage);
 	}
 
 	n += printf(", \"type\": ");
-	n += printASTTypeSpec(&declaration->typeSpec);
+	n += printASTTypeSpec(declaration->typeSpec);
 
 	n += printf(", \"Declarators\": ");
 	n += printDList(&declaration->declarators, (PrintFunc) printASTDeclarator);
@@ -804,7 +811,7 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 
 DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 	DList result;
-	if (declaration->typeSpec.storage & AST_SC_TYPEDEF) {
+	if (declaration->typeSpec->storage & AST_SC_TYPEDEF) {
 		initDListCap(&result, sizeof(char *), declaration->declarators.size);
 		for (int i = 0; i < declaration->declarators.size; i++) {
 			ASTDeclarator const *declarator = dlistGet(&declaration->declarators, i);

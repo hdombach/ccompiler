@@ -8,13 +8,16 @@
 #include "structDecl.h"
 
 void initASTParam(ASTParam *param) {
-	initASTTypeSpec(&param->typeSpec);
+	param->typeSpec = NULL;
 	param->declarator = NULL;
 	param->node.type = AST_PARAM;
 }
 
 void freeASTParam(ASTParam *param) {
-	freeASTTypeSpec(&param->typeSpec);
+	if (param->typeSpec) {
+		freeASTTypeSpec(param->typeSpec);
+		free(param->typeSpec);
+	}
 	if (param->declarator) {
 		freeASTDeclarator(param->declarator);
 		free(param->declarator);
@@ -33,8 +36,9 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTTypeSpec(&param->typeSpec, tok + n, scope))) {
+	if ((res = parseASTTypeSpec((ASTTypeSpec *) &tempBuf, tok + n, scope))) {
 		n += res;
+		param->typeSpec = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		freeASTParam(param);
 		return 0;
@@ -56,32 +60,32 @@ int printASTParam(const ASTParam *param) {
 
 	n += printf("\"node type\": \"param\"");
 
-	if (param->typeSpec.qualifiers) {
+	if (param->typeSpec->qualifiers) {
 		n += printf(", \"Type Qualifiers\": ");
-		n += printASTTypeQualifier(&param->typeSpec.qualifiers);
+		n += printASTTypeQualifier(&param->typeSpec->qualifiers);
 	}
 
-	if (param->typeSpec.storage) {
+	if (param->typeSpec->storage) {
 		n += printf(", \"Storage Class Specifiers\": ");
-		n += printASTStorageClassSpec(&param->typeSpec.storage);
+		n += printASTStorageClassSpec(&param->typeSpec->storage);
 	}
 
 	n += printf(", \"type\": ");
-	switch (param->typeSpec.typeSpecType) {
+	switch (param->typeSpec->typeSpecType) {
 		case AST_TST_VOID:
 			n += printf("\"void\"");
 			break;
 		case AST_TST_ARITH:
-			n += printASTArithType(&param->typeSpec.c.arith);
+			n += printASTArithType(&param->typeSpec->c.arith);
 			break;
 		case AST_TST_TYPEDEF:
-			n += printf("\"%s\"", param->typeSpec.c.typedefName);
+			n += printf("\"%s\"", param->typeSpec->c.typedefName);
 			break;
 		case AST_TST_STRUCT:
-			n += printASTStructDecl(&param->typeSpec.c.structDecl);
+			n += printASTStructDecl(&param->typeSpec->c.structDecl);
 			break;
 		case AST_TST_ENUM:
-			n += printASTEnumDecl(&param->typeSpec.c.enumDecl);
+			n += printASTEnumDecl(&param->typeSpec->c.enumDecl);
 			break;
 		default:
 			n += printf("\"unknown\"");

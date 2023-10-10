@@ -10,7 +10,7 @@ struct ASTDeclarator;
 struct ASTScope;
 
 typedef struct ASTFuncDef {
-	ASTTypeSpec typeSpec;
+	ASTTypeSpec *typeSpec;
 	ASTNode *funcDecl;
 	ASTCompStm compoundStm;
 } ASTFuncDef;

@@ -64,6 +64,7 @@ typedef enum {
  * (The first chunk of a declaration)
  */
 typedef struct {
+	ASTNode node;
 	ASTTypeQualifier qualifiers;
 	ASTStorageClassSpec storage;
 	ASTTypeSpecType typeSpecType;
@@ -97,7 +98,7 @@ typedef struct ASTDeclarator {
 
 typedef struct ASTDeclaration {
 	ASTNode node;
-	ASTTypeSpec typeSpec;
+	ASTTypeSpec *typeSpec;
 	DList declarators;
 } ASTDeclaration;
 

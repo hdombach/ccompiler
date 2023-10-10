@@ -7,7 +7,7 @@
 
 typedef struct ASTParam {
 	ASTNode node;
-	ASTTypeSpec typeSpec;
+	ASTTypeSpec *typeSpec;
 	ASTDeclarator *declarator;
 } ASTParam;
 
