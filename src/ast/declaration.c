@@ -391,7 +391,8 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 			free(typeSpec->c.typedefName);
 			break;
 		case AST_TST_STRUCT:
-			freeASTStructDecl(&typeSpec->c.structDecl);
+			freeASTStructDecl(typeSpec->c.structDecl);
+			free(typeSpec->c.structDecl);
 			break;
 		case AST_TST_ENUM:
 			freeASTEnumDecl(&typeSpec->c.enumDecl);
@@ -462,8 +463,9 @@ int parseASTTypeSpec(
 				return 0;
 			}
 
-			if ((res = parseASTStructDecl(&typeSpec->c.structDecl, tok + n, scope))) {
+			if ((res = parseASTStructDecl((ASTStructDecl *) &tempBuf, tok + n, scope))) {
 				n += res;
+				typeSpec->c.structDecl = (ASTStructDecl *) dupASTNode((ASTNode *) &tempBuf);
 				typeSpec->typeSpecType = AST_TST_STRUCT;
 			} else {
 				if (!astHasErr()) {
@@ -513,7 +515,7 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 			n += printASTNode(typeSpec->c.typedefName);
 			break;
 		case AST_TST_STRUCT:
-			n += printASTStructDecl(&typeSpec->c.structDecl);
+			n += printASTStructDecl(typeSpec->c.structDecl);
 			break;
 		case AST_TST_ENUM:
 			n += printASTEnumDecl(&typeSpec->c.enumDecl);

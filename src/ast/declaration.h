@@ -71,7 +71,7 @@ typedef struct {
 	union {
 		ASTArithType arith;
 		ASTNode *typedefName;
-		ASTStructDecl structDecl;
+		ASTStructDecl *structDecl;
 		ASTEnumDecl enumDecl;
 	} c;
 	Token const *tok;

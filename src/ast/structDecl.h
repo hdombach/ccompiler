@@ -2,6 +2,7 @@
 
 #include "../util/dlist.h"
 #include "../token.h"
+#include "node.h"
 
 typedef enum {
 	AST_SDT_UNKNOWN,
@@ -30,6 +31,7 @@ int parseASTStructDeclItem(
 int printASTStructDeclItem(ASTStructDeclItem const *item);
 
 typedef struct {
+	ASTNode node;
 	char *name;
 	DList items;
 	ASTScope *scope;

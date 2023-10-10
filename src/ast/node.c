@@ -39,6 +39,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_POINTER_DECL:
 		case AST_DECLARATOR: freeASTDeclarator((ASTDeclarator *) node); break;
 		case AST_TYPE_SPEC: freeASTTypeSpec((ASTTypeSpec *) node); break;
+		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -79,6 +80,7 @@ char *_astNodeTypes[] = {
 	"declarator",
 	"type specifier",
 	"typedef name type specifier",
+	"struct declaration",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -111,6 +113,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_POINTER_DECL:
 		case AST_DECLARATOR: return printASTDeclarator((ASTDeclarator *) node);
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
+		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
 		default: return printf("\"(null)\"");
 	}
 }

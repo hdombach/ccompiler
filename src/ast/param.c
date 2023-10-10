@@ -38,7 +38,7 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 
 	if ((res = parseASTTypeSpec((ASTTypeSpec *) &tempBuf, tok + n, scope))) {
 		n += res;
-		param->typeSpec = dupASTNode((ASTNode *) &tempBuf);
+		param->typeSpec = (ASTTypeSpec *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		freeASTParam(param);
 		return 0;
@@ -79,10 +79,10 @@ int printASTParam(const ASTParam *param) {
 			n += printASTArithType(&param->typeSpec->c.arith);
 			break;
 		case AST_TST_TYPEDEF:
-			n += printf("\"%s\"", param->typeSpec->c.typedefName);
+			n += printASTNode(param->typeSpec->c.typedefName);
 			break;
 		case AST_TST_STRUCT:
-			n += printASTStructDecl(&param->typeSpec->c.structDecl);
+			n += printASTNode((ASTNode *) param->typeSpec->c.structDecl);
 			break;
 		case AST_TST_ENUM:
 			n += printASTEnumDecl(&param->typeSpec->c.enumDecl);

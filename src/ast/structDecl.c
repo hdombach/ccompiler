@@ -57,7 +57,12 @@ int printASTStructDeclItem(const ASTStructDeclItem *item) {
 	}
 }
 
+/* ========================================================================= 
+ * Struct Decl
+ *========================================================================== */
+
 void initASTStructDecl(ASTStructDecl *decl) {
+	initASTNode((ASTNode *) decl);
 	decl->name = NULL;
 	initDList(&decl->items, sizeof(ASTStructDeclItem));
 	decl->scope = malloc(sizeof(ASTScope));
@@ -126,6 +131,8 @@ int parseASTStructDecl(
 		freeASTStructDecl(decl);
 		return 0;
 	}
+
+	//decl->node.type = AST_STRU
 
 	return n;
 }
