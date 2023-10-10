@@ -8,6 +8,7 @@
 #include "node.h"
 
 void initASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
+	initASTNode((ASTNode *) decl);
 	decl->name = NULL;
 	decl->exp = NULL;
 }
@@ -27,6 +28,7 @@ int parseASTEnumeratorDecl(
 		Token const *tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTEnumeratorDecl);
 	int res, n = 0;
 
 	if (astHasErr()) {
@@ -60,6 +62,7 @@ int parseASTEnumeratorDecl(
 		return 0;
 	}
 
+	decl->node.type = AST_ENUMERATOR_DECL;
 	return n;
 }
 
@@ -85,7 +88,7 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 
 void initASTEnumDecl(ASTEnumDecl *decl) {
 	decl->name = NULL;
-	initDList(&decl->enumerators, sizeof(ASTEnumeratorDecl));
+	initDList(&decl->enumerators, AST_NODE_S);
 	initASTNode((ASTNode *) decl);
 }
 
@@ -93,7 +96,7 @@ void freeASTEnumDecl(ASTEnumDecl *decl) {
 	if (decl->name) {
 		free(decl->name);
 	}
-	freeDList(&decl->enumerators, (FreeFunc) freeASTEnumeratorDecl);
+	freeDList(&decl->enumerators, (FreeFunc) freeASTNode);
 }
 
 int parseASTEnumDecl(
@@ -101,6 +104,7 @@ int parseASTEnumDecl(
 		Token const *tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTEnumDecl);
 	int res, n = 0;
 
 	if (astHasErr()) {
@@ -128,10 +132,10 @@ int parseASTEnumDecl(
 	}
 
 	while (1) {
-		ASTEnumeratorDecl enumerator;
-		if ((res = parseASTEnumeratorDecl(&enumerator, tok + n, scope))) {
+		ASTNodeBuf tempBuf;
+		if ((res = parseASTEnumeratorDecl((ASTEnumeratorDecl *) &tempBuf, tok + n, scope))) {
 			n += res;
-			dlistApp(&decl->enumerators, &enumerator);
+			dlistApp(&decl->enumerators, &tempBuf);
 		} else {
 			break;
 		}

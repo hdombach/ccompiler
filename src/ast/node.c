@@ -42,6 +42,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_TYPE_SPEC: freeASTTypeSpec((ASTTypeSpec *) node); break;
 		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
 		case AST_ENUM_DECL: freeASTEnumDecl((ASTEnumDecl *) node); break;
+		case AST_ENUMERATOR_DECL: freeASTEnumeratorDecl((ASTEnumeratorDecl *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -84,6 +85,7 @@ char *_astNodeTypes[] = {
 	"typedef name type specifier",
 	"struct declaration",
 	"enum declaration",
+	"enumerator declaration",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -118,6 +120,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
 		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
 		case AST_ENUM_DECL: return printASTEnumDecl((ASTEnumDecl *) node);
+		case AST_ENUMERATOR_DECL: return printASTEnumeratorDecl((ASTEnumeratorDecl *) node);
 		default: return printf("\"(null)\"");
 	}
 }

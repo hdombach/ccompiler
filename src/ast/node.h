@@ -31,6 +31,7 @@ typedef enum ASTNodeType {
 	AST_IDENTIFIER_TS,
 	AST_STRUCT_DECL,
 	AST_ENUM_DECL,
+	AST_ENUMERATOR_DECL,
 } ASTNodeType;
 
 typedef struct ASTNode {

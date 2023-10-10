@@ -7,6 +7,7 @@
 struct ASTScope;
 
 typedef struct ASTEnumeratorDecl {
+	ASTNode node;
 	char *name;
 	struct ASTNode *exp;
 } ASTEnumeratorDecl;
