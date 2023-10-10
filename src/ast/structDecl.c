@@ -40,7 +40,7 @@ int parseASTStructDeclItem(
 	ASTDeclaration *tempDeclaration = (ASTDeclaration *) &tempBuf;
 	if ((res = parseASTDeclaration(tempDeclaration, tok + n, scope))) {
 		item->c.declaration = malloc(AST_NODE_S);
-		mvASTNode(item->c.declaration, tempDeclaration);
+		mvASTNode((ASTNode *) item->c.declaration, (ASTNode *) tempDeclaration);
 		item->type = AST_SDT_VAR;
 		n += res;
 	}

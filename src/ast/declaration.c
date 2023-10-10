@@ -14,6 +14,10 @@
 #include "scope.h"
 #include "node.h"
 
+/* =========================================================================
+ * ASTTypeQualifier
+ * ========================================================================= */
+
 void initASTTypeQualifier(ASTTypeQualifier *qualifiers) {
 	*qualifiers = AST_TQ_NONE;
 }
@@ -61,6 +65,10 @@ int printASTTypeQualifier(const ASTTypeQualifier *qualifiers) {
 
 	return n;
 }
+
+/* =========================================================================
+ * ASTStorageClassSpec
+ * ========================================================================= */
 
 void initASTStorageClassSpec(ASTStorageClassSpec *specs) {
 	*specs = AST_SC_NONE;
@@ -143,6 +151,10 @@ int printASTStorageClassSpec(const ASTStorageClassSpec *specs) {
 
 	return n;
 }
+
+/* =========================================================================
+ * ASTArithType
+ * ========================================================================= */
 
 void initASTArithType(ASTArithType *type) {
 	*type = AST_AT_NONE;
@@ -343,6 +355,10 @@ int astArithTypeNormalize(const ASTArithType *type) {
 	}
 }
 
+/* =========================================================================
+ * ASTTypeSpec
+ * ========================================================================= */
+
 int _parseTypedefIdentifier(
 		char **typedefName,
 		const Token *tok,
@@ -404,6 +420,7 @@ int parseASTTypeSpec(
 	typeSpec->tok = tok + n;
 	while (1) {
 		if (tok[n].type == TT_VOID) {
+			//Void type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
 				astErr("Multiple types in type specifier", tok + n);
 				freeASTTypeSpec(typeSpec);
@@ -412,6 +429,7 @@ int parseASTTypeSpec(
 			typeSpec->typeSpecType = AST_TST_VOID;
 			n++;
 		} else if (_isArith(tok[n].type)) {
+			//Number type
 			if (typeSpec->typeSpecType == AST_TST_UNKNOWN) {
 				initASTArithType(&typeSpec->c.arith);
 				n += parseASTArithType(&typeSpec->c.arith, tok + n);
@@ -424,6 +442,7 @@ int parseASTTypeSpec(
 				return 0;
 			}
 		} else if (tok[n].type == TT_IDENTIFIER) {
+			//Typedef type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
 
 			if ((res = _parseTypedefIdentifier(&typeSpec->c.typedefName, tok + n, scope))) {
@@ -435,6 +454,7 @@ int parseASTTypeSpec(
 				return 0;
 			}
 		} else if (tok[n].type == TT_STRUCT || tok[n].type == TT_UNION) {
+			//struct or union type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
 				astErr("Multiple types in type specifier", tok + n);
 				freeASTTypeSpec(typeSpec);
@@ -450,6 +470,7 @@ int parseASTTypeSpec(
 				}
 			}
 		} else if (tok[n].type == TT_ENUM) {
+			//enum type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
 				astErr("Unexpected identifier 2", tok + n);
 				freeASTTypeSpec(typeSpec);
@@ -502,6 +523,10 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 	return n;
 }
 
+/* =========================================================================
+ * ASTDeclarator
+ * ========================================================================= */
+
 void initASTDeclarator(ASTDeclarator *declarator) {
 	declarator->initializer = NULL;
 	declarator->bitField = NULL;
@@ -513,6 +538,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 	if (declarator->encl) {
 		freeASTNode(declarator->encl);
 		free(declarator->encl);
+		declarator->encl = NULL;
 	}
 	if (declarator->initializer) {
 		freeASTInitializer(declarator->initializer);
@@ -542,11 +568,14 @@ int parseASTDeclarator(
 	}
 
 	if ((res = parseASTIdentifier((ASTIdentifier *) &tempBuf, tok + n, scope))) {
+		// Main name of variable
+		// ex: int value;
 		tempBuf.node.type = AST_IDENTIFIER_DECL;
-		declarator->encl = malloc(AST_NODE_S);
-		mvASTNode((ASTNode *) declarator->encl, (ASTNode *) &tempBuf);
+		declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if (tok[n].type == TT_O_PARAN) {
+		// If type is wrapped in paranthesis
+		// ex: int (value);
 		n++;
 		if ((res = parseASTDeclarator(declarator, tok + n, scope))) {
 			n += res;
@@ -561,6 +590,7 @@ int parseASTDeclarator(
 			return 0;
 		}
 	} else if (tok[n].type == TT_MULT) {
+		//Specifing a pointer
 		n++;
 
 		while ((res = parseASTTypeQualifier(&declarator->qualifiers, tok + n))) {
@@ -569,8 +599,7 @@ int parseASTDeclarator(
 
 		if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
 			tempBuf.node.type = AST_POINTER_DECL;
-			declarator->encl = malloc(AST_NODE_S);
-			mvASTNode((ASTNode *) declarator->encl, (ASTNode *) &tempBuf);
+			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 			n += res;
 		} else {
 			declarator->encl = NULL;
@@ -578,6 +607,7 @@ int parseASTDeclarator(
 	}
 
 	if (tok[n].type == TT_O_PARAN) {
+		//Searches forward for a function declaration
 		ASTNode *enclBuf = NULL;
 
 		if (!declarator->encl) {
@@ -587,30 +617,28 @@ int parseASTDeclarator(
 
 		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, (ASTDeclarator *) enclBuf, scope))) {
 			n += res;
-			declarator->encl = malloc(AST_NODE_S);
-			mvASTNode((ASTNode *) declarator->encl, (ASTNode *) &tempBuf);
+			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 		} else {
 			freeASTDeclarator(declarator);
 			return 0;
 		}
 	} else {
 		while (tok[n].type == TT_O_BRACE) {
+			//Searches forward for an array declaration
 			ASTNode *enclBuf = NULL;
-			ASTNodeBuf buf;
 
 			if (!declarator->encl) {
 				enclBuf = declarator->encl;
 				declarator->encl = NULL;
 			}
 
-			if ((res = parseASTArrayDecl((ASTArrayDecl *) &buf, tok + n, enclBuf, scope))) {
+			if ((res = parseASTArrayDecl((ASTArrayDecl *) &tempBuf, tok + n, enclBuf, scope))) {
 				n += res;
 			} else {
 				freeASTDeclarator(declarator);
 				return 0;
 			}
-			declarator->encl = malloc(AST_NODE_S);
-			mvASTNode(declarator->encl, (ASTNode *) &buf);
+			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 		}
 	}
 
@@ -676,6 +704,10 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	return n;
 }
+
+/* =========================================================================
+ * ASTDeclaration
+ * ========================================================================= */
 
 void initASTDeclaration(ASTDeclaration *declaration) {
 	freeASTNode((ASTNode *) declaration);
@@ -788,22 +820,21 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 }
 
 char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
-	while (declarator) {
-		switch (declarator->node.type) {
+	ASTNode *curDecl = (ASTNode *) declarator;
+	while (curDecl) {
+		switch (curDecl->type) {
 			case AST_IDENTIFIER_DECL:
-				return strdup(((ASTIdentifier *) declarator)->name);
-				break;
-			case AST_POINTER_DECL:
-				declarator = (ASTDeclarator *) declarator->encl;
-				break;
-			case AST_ARRAY_DECL:
-				declarator = ((ASTArrayDecl *) declarator)->encl;
-				break;
-			case AST_FUNC_DECL:
-				declarator = ((ASTFuncDecl *) declarator)->encl;
+				return strdup(((ASTIdentifier *) curDecl)->name);
 				break;
 			case AST_DECLARATOR:
-				declarator = declarator->encl;
+			case AST_POINTER_DECL:
+				curDecl = ((ASTDeclarator *) curDecl)->encl;
+				break;
+			case AST_ARRAY_DECL:
+				curDecl = (ASTNode *) ((ASTArrayDecl *) curDecl)->encl;
+				break;
+			case AST_FUNC_DECL:
+				curDecl = (ASTNode *) ((ASTFuncDecl *) curDecl)->encl;
 				break;
 			default:
 				declarator = NULL;

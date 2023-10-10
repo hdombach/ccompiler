@@ -48,9 +48,9 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	if ((res = parseASTDeclarator(&tempBuf, tok + n, scope))) {
+	if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
 		def->funcDecl = malloc(AST_NODE_S);
-		mvASTNode(def->funcDecl, &tempBuf);
+		mvASTNode(def->funcDecl, (ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		freeASTFuncDef(def);
@@ -67,10 +67,10 @@ int parseASTFuncDef(
 				curDecl = ((ASTDeclarator *) curDecl)->encl;
 				break;
 			case AST_ARRAY_DECL:
-				curDecl = ((ASTArrayDecl *) curDecl)->encl;
+				curDecl = (ASTNode *) ((ASTArrayDecl *) curDecl)->encl;
 				break;
 			case AST_FUNC_DECL:
-				curDecl = ((ASTFuncDecl *) curDecl)->encl;
+				curDecl = (ASTNode *) ((ASTFuncDecl *) curDecl)->encl;
 				if (curDecl && curDecl->type == AST_IDENTIFIER_DECL) {
 					curDecl = NULL;
 				}
@@ -110,7 +110,7 @@ int printASTFuncDef(ASTFuncDef const *def) {
 	n += printASTTypeSpec(&def->typeSpec);
 
 	n += printf(", \"Declarator\": ");
-	n += printASTDeclarator(def->funcDecl);
+	n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
 
 	n += printf(", \"Compound Statement\": ");
 	n += printASTCompStm(&def->compoundStm);

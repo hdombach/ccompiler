@@ -20,6 +20,6 @@ void freeASTArrayDecl(ASTArrayDecl *decl);
 int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		Token const *tok,
-		struct ASTDeclarator *encl,
+		struct ASTNode *encl,
 		struct ASTScope const *scope);
 int printASTArrayDecl(ASTArrayDecl const *decl);

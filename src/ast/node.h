@@ -35,6 +35,7 @@ typedef struct ASTNode {
 void initASTNode(ASTNode *node);
 void freeASTNode(ASTNode *node);
 void mvASTNode(ASTNode *dest, ASTNode *src);
+ASTNode *dupASTNode(ASTNode *node);
 char *astNodeTypeStr(ASTNodeType type);
 int printASTNode(ASTNode const *node);
 

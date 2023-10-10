@@ -26,14 +26,14 @@ void freeASTArrayDecl(ASTArrayDecl *decl) {
 int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		const Token *tok,
-		ASTDeclarator *encl,
+		ASTNode *encl,
 		ASTScope const *scope) {
 	AST_VALID(ASTArrayDecl);
 	int n = 0, res;
 
 	initASTArrayDecl(decl);
 	if (encl) {
-		decl->encl = encl;
+		decl->encl = (ASTDeclarator *) encl;
 	}
 	if (astHasErr()) {
 		freeASTArrayDecl(decl);

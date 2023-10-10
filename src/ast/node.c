@@ -47,6 +47,12 @@ void mvASTNode(ASTNode *dest, ASTNode *src) {
 	src->type = AST_UNKNOWN;
 }
 
+ASTNode *dupASTNode(ASTNode *node) {
+	ASTNode *result = malloc(AST_NODE_S);
+	mvASTNode(result, node);
+	return result;
+}
+
 char *_astNodeTypes[] = {
 	"unknown",
 	"int constant",

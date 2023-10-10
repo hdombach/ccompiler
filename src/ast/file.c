@@ -13,7 +13,7 @@ void initASTFileItem(ASTFileItem *item) {
 void freeASTFileItem(ASTFileItem *item) {
 	switch (item->type) {
 		case AST_FIT_DECL:
-			freeASTDeclaration(&item->c.declaration);
+			freeASTDeclaration((ASTDeclaration *) &item->c.declaration);
 			break;
 		case AST_FIT_FUNC_DEF:
 			freeASTFuncDef(&item->c.funcDef);
@@ -38,7 +38,7 @@ int parseASTFileItem(
 	if ((res = parseASTFuncDef(&item->c.funcDef, tok + n, scope))) {
 		n += res;
 		item->type = AST_FIT_FUNC_DEF;
-	} else if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
+	} else if ((res = parseASTDeclaration((ASTDeclaration *) &item->c.declaration, tok + n, scope))) {
 		n += res;
 		item->type = AST_FIT_DECL;
 	} else {
@@ -54,7 +54,7 @@ int printASTFileItem(const ASTFileItem *item) {
 
 	switch (item->type) {
 		case AST_FIT_DECL:
-			n += printASTDeclaration(&item->c.declaration);
+			n += printASTDeclaration((ASTDeclaration *) &item->c.declaration);
 			break;
 		case AST_FIT_FUNC_DEF:
 			n += printASTFuncDef(&item->c.funcDef);
@@ -70,7 +70,7 @@ DList astFileItemTypes(const ASTFileItem *item) {
 
 	switch (item->type) {
 		case AST_FIT_DECL:
-			result = astDeclarationTypedefNames(&item->c.declaration);
+			result = astDeclarationTypedefNames((ASTDeclaration *) &item->c.declaration);
 			break;
 		default:
 			initDListEmpty(&result, sizeof(char *));

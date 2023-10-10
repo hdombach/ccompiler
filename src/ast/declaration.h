@@ -85,6 +85,9 @@ typedef struct {
 
 typedef struct ASTDeclarator {
 	ASTNode node;
+	/*
+	 * Can be AST_POINTER_DECL, AST_ARRAY_DECL, AST_FUNC_DECL, AST_IDENTIFIER_DECL
+	 */
 	ASTNode *encl;
 	/* Used when representing contents of pointer*/
 	ASTTypeQualifier qualifiers;

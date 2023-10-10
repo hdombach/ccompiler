@@ -15,7 +15,7 @@ void freeASTCompItem(ASTCompItem *item) {
 			freeASTStm(&item->c.statement);
 			break;
 		case AST_CIT_DECL:
-			freeASTDeclaration(&item->c.declaration);
+			freeASTDeclaration((ASTDeclaration *) &item->c.declaration);
 			break;
 		default:
 			break;
@@ -39,7 +39,7 @@ int parseASTCompItem(
 	if ((res = parseASTStm(&item->c.statement, tok + n, scope))) {
 		n += res;
 		item->type = AST_CIT_STM;
-	} else if ((res = parseASTDeclaration(&item->c.declaration, tok + n, scope))) {
+	} else if ((res = parseASTDeclaration((ASTDeclaration *) &item->c.declaration, tok + n, scope))) {
 		n += res;
 		item->type = AST_CIT_DECL;
 	} else {
@@ -58,7 +58,7 @@ int printASTCompItem(const ASTCompItem *node) {
 			n += printASTStm(&node->c.statement);
 			break;
 		case AST_CIT_DECL:
-			n += printASTDeclaration(&node->c.declaration);
+			n += printASTDeclaration((ASTDeclaration *) &node->c.declaration);
 			break;
 		default:
 			break;

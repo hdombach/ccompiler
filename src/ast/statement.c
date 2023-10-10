@@ -107,7 +107,7 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		node->type = ASTS_NODE;
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
-			freeASTNode(&node->c.nodeBuf);
+			freeASTNode((ASTNode *) &node->c.nodeBuf);
 			return 0;
 		}
 		n++;
@@ -134,7 +134,7 @@ int printASTStm(ASTStm const *node) {
 			n += printASTCompStm(node->c.compStm);
 			break;
 		case ASTS_NODE:
-			n += printASTNode(&node->c.nodeBuf);
+			n += printASTNode((ASTNode *) &node->c.nodeBuf);
 			break;
 		case ASTS_IF:
 			n += printASTIf(&node->c.ifStm);
