@@ -9,7 +9,7 @@ struct ASTScope;
 typedef struct ASTArrayDecl {
 	struct ASTNode node;
 	struct ASTNode *exp;
-	struct ASTDeclarator *encl;
+	struct ASTNode *encl;
 } ASTArrayDecl;
 
 void initASTArrayDecl(ASTArrayDecl *decl);

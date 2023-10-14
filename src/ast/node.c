@@ -3,16 +3,21 @@
 #include <string.h>
 
 #include "arrayDecl.h"
+#include "compStatement.h"
 #include "declaration.h"
 #include "enumDecl.h"
 #include "expression.h"
 #include "funcDecl.h"
 #include "identifier.h"
+#include "if.h"
 #include "intConstant.h"
 #include "node.h"
 #include "operation.h"
 #include "param.h"
+#include "statement.h"
 #include "structDecl.h"
+#include "switch.h"
+#include "while.h"
 
 void initASTNode(ASTNode *node) {
 	node->type = AST_UNKNOWN;
@@ -23,7 +28,6 @@ void freeASTNode(ASTNode *node) {
 		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
-
 		case AST_FUNC_OPERATION: freeASTFuncOperation((ASTFuncOperation *) node); break;
 		case AST_COND_OPERATION: freeASTCondOperation((ASTCondOperation *) node); break;
 		case AST_SUBS_OPERATION:
@@ -43,6 +47,12 @@ void freeASTNode(ASTNode *node) {
 		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
 		case AST_ENUM_DECL: freeASTEnumDecl((ASTEnumDecl *) node); break;
 		case AST_ENUMERATOR_DECL: freeASTEnumeratorDecl((ASTEnumeratorDecl *) node); break;
+		case AST_STM: freeASTStm((ASTStm *) node); break;
+		case AST_COMP_STM: freeASTCompStm((ASTCompStm *) node); break;
+		case AST_IF: freeASTIf((ASTIf *) node); break;
+		case AST_SWITCH: freeASTSwitch((ASTSwitch *) node); break;
+		case AST_WHILE: freeASTWhile((ASTWhile *) node); break;
+		case AST_INT_CONSTANT:
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -63,7 +73,6 @@ char *_astNodeTypes[] = {
 	"unknown",
 	"int constant",
 	"identifier",
-
 	"function call operation",
 	"subscript operation",
 	"conditional operation",
@@ -73,7 +82,6 @@ char *_astNodeTypes[] = {
 	"binary operation",
 	"prefix operation",
 	"postfix operation",
-
 	"param",
 	"declaration",
 	"array declarator",
@@ -86,6 +94,11 @@ char *_astNodeTypes[] = {
 	"struct declaration",
 	"enum declaration",
 	"enumerator declaration",
+	"statement",
+	"compound statement",
+	"if statement",
+	"switch statement",
+	"while statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -100,7 +113,6 @@ int printASTNode(ASTNode const *node) {
 		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: return printASTIdentifier((ASTIdentifier *) node);
-
 		case AST_FUNC_OPERATION: return printASTFuncOperation((ASTFuncOperation *) node);
 		case AST_COND_OPERATION: return printASTCondOperation((ASTCondOperation *) node);
 		case AST_SUBS_OPERATION:
@@ -114,13 +126,17 @@ int printASTNode(ASTNode const *node) {
 		case AST_DECLARATION: return printASTDeclaration((ASTDeclaration *) node);
 		case AST_ARRAY_DECL: return printASTArrayDecl((ASTArrayDecl *) node);
 		case AST_FUNC_DECL: return printASTFuncDecl((ASTFuncDecl *) node);
-
 		case AST_POINTER_DECL:
 		case AST_DECLARATOR: return printASTDeclarator((ASTDeclarator *) node);
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
 		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
 		case AST_ENUM_DECL: return printASTEnumDecl((ASTEnumDecl *) node);
 		case AST_ENUMERATOR_DECL: return printASTEnumeratorDecl((ASTEnumeratorDecl *) node);
-		default: return printf("\"(null)\"");
+		case AST_STM: return printASTStm((ASTStm *) node);
+		case AST_COMP_STM: return printASTCompStm((ASTCompStm *) node);
+		case AST_IF: return printASTIf((ASTIf *) node);
+		case AST_SWITCH: return printASTSwitch((ASTSwitch *) node);
+		case AST_WHILE: return printASTWhile((ASTWhile *) node);
+		default: return printf("\"(unknown node)\"");
 	}
 }

@@ -16,7 +16,7 @@ struct ASTScope;
 typedef struct {
 	ASTInitializerType type;
 	union {
-		ASTNodeBuf nodeBuf;
+		ASTNode *exp;
 		DList initializerList;
 	} c;
 } ASTInitializer;

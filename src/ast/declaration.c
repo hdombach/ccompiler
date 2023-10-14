@@ -468,6 +468,7 @@ int parseASTTypeSpec(
 				if (!astHasErr()) {
 					astErr("Invalid struct declaration", tok + n);
 				}
+				return 0;
 			}
 		} else if (tok[n].type == TT_ENUM) {
 			//enum type
@@ -485,6 +486,7 @@ int parseASTTypeSpec(
 				if (!astHasErr()) {
 					astErr("Invalid enum declaration", tok + n);
 				}
+				return 0;
 			}
 		} else if ((res = parseASTStorageClassSpec(&typeSpec->storage, tok + n))) {
 			n += res;
@@ -555,6 +557,7 @@ int parseASTDeclarator(
 		const Token *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTDeclarator);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
@@ -707,7 +710,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
  * ========================================================================= */
 
 void initASTDeclaration(ASTDeclaration *declaration) {
-	freeASTNode((ASTNode *) declaration);
+	initASTNode((ASTNode *) declaration);
 	declaration->typeSpec = NULL;
 	initDList(&declaration->declarators, AST_NODE_S);
 }
@@ -746,6 +749,7 @@ int parseASTDeclaration(
 
 	if (tok[n].type == TT_SEMI_COLON) {
 		n++;
+		declaration->node.type = AST_DECLARATION;
 		return n;
 	}
 
@@ -772,6 +776,7 @@ int parseASTDeclaration(
 	}
 	n++;
 
+	declaration->node.type = AST_DECLARATION;
 	return n;
 }
 
@@ -780,7 +785,7 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 
 	n += printf("{");
 
-	n += printf("\"node type\": \"Declaration\"");
+	n += printf("\"node type\": \"Declarationn\"");
 
 	if (declaration->typeSpec->qualifiers) {
 		n += printf(", \"Type Qualifiers\": ");

@@ -16,26 +16,16 @@ typedef enum {
 	AST_CIT_DECL,
 } ASTCompItemType;
 
-typedef struct {
-	ASTCompItemType type;
-	union {
-		ASTStm statement;
-		ASTNodeBuf declaration;
-	} c;
-} ASTCompItem;
-
 typedef struct ASTCompStm {
+	ASTNode node;
 	DList items;
 	struct ASTScope *scope;
 } ASTCompStm;
 
-void initASTCompItem(ASTCompItem *item);
-void freeASTCompItem(ASTCompItem *item);
 int parseASTCompItem(
-		ASTCompItem *item,
+		ASTNode *node,
 		Token const *tok,
 		struct ASTScope const *scope);
-int printASTCompItem(ASTCompItem const *node);
 
 void initASTCompStm(ASTCompStm *node);
 void freeASTCompStm(ASTCompStm *node);

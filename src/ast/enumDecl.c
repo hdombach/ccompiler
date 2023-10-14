@@ -48,6 +48,7 @@ int parseASTEnumeratorDecl(
 	if (tok[n].type == TT_EQL) {
 		n++;
 	} else {
+		decl->node.type = AST_ENUMERATOR_DECL;
 		return n;
 	}
 
@@ -128,6 +129,7 @@ int parseASTEnumDecl(
 	if (tok[n].type == TT_O_CURLY) {
 		n++;
 	} else {
+		decl->node.type = AST_ENUM_DECL;
 		return n;
 	}
 

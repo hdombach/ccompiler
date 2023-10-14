@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "doWhile.h"
+#include "node.h"
 #include "statement.h"
 #include "compStatement.h"
 #include "expression.h"
@@ -12,6 +13,7 @@
 #include "while.h"
 
 void initASTStm(ASTStm *node) {
+	initASTNode((ASTNode *) node);
 	node->type = ASTS_UNKNOWN;
 	node->label = NULL;
 }
@@ -19,20 +21,30 @@ void initASTStm(ASTStm *node) {
 void freeASTStm(ASTStm *node) {
 	switch (node->type) {
 		case ASTS_COMPOUND:
-			freeASTCompStm(node->c.compStm);
+			freeASTNode(node->c.compStm);
 			free(node->c.compStm);
 			break;
 		case ASTS_NODE:
-			freeASTNode((ASTNode *) &node->c.nodeBuf);
+			freeASTNode(node->c.node);
+			free(node->c.node);
 			break;
 		case ASTS_IF:
-			freeASTIf(&node->c.ifStm);
+			if (node->c.ifStm) {
+				freeASTIf((ASTIf *) node->c.ifStm);
+				free(node->c.ifStm);
+			}
 			break;
 		case ASTS_SWITCH:
-			freeASTSwitch(&node->c.switchStm);
+			if (node->c.switchStm) {
+				freeASTNode(node->c.switchStm);
+				free(node->c.switchStm);
+			}
 			break;
 		case ASTS_WHILE:
-			freeASTWhile(&node->c.whileStm);
+			if (node->c.whileStm) {
+				freeASTNode(node->c.whileStm);
+				free(node->c.whileStm);
+			}
 			break;
 		case ASTS_DO_WHILE:
 			freeASTDoWhile(&node->c.doWhileStm);
@@ -50,9 +62,10 @@ void freeASTStm(ASTStm *node) {
 }
 
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
+	AST_VALID(ASTStm);
 	int res, n = 0;
-	ASTCompStm tempCompStm;
 	ASTLabel tempLabel;
+	ASTNodeBuf tempBuf;
 
 	initASTStm(node);
 	if (astHasErr()) {
@@ -66,18 +79,20 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		n += res;
 	}
 
-	if ((res = parseASTCompStm(&tempCompStm, tok + n, scope))) {
-		n += res;
+	if ((res = parseASTCompStm((ASTCompStm *) &tempBuf, tok + n, scope))) {
+		node->c.compStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_COMPOUND;
-		node->c.compStm = malloc(sizeof(ASTCompStm));
-		*node->c.compStm = tempCompStm;
-	} else if ((res = parseASTIf(&node->c.ifStm, tok + n, scope))) {
+		n += res;
+	} else if ((res = parseASTIf((ASTIf *) &tempBuf, tok + n, scope))) {
+		node->c.ifStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_IF;
 		n += res;
-	} else if ((res = parseASTSwitch(&node->c.switchStm, tok + n, scope))) {
+	} else if ((res = parseASTSwitch((ASTSwitch *) &tempBuf, tok + n, scope))) {
+		node->c.switchStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_SWITCH;
 		n += res;
-	} else if ((res = parseASTWhile(&node->c.whileStm, tok + n, scope))) {
+	} else if ((res = parseASTWhile((ASTWhile *) &tempBuf, tok + n, scope))) {
+		node->c.whileStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_WHILE;
 		n += res;
 	} else if ((res = parseASTDoWhile(&node->c.doWhileStm, tok + n, scope))) {
@@ -103,16 +118,18 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	} else if (tok[n].type == TT_SEMI_COLON) {
 		node->type = ASTS_EMPTY;
 		n++;
-	} else if ((res = parseASTExp((ASTNode *) &node->c.nodeBuf, tok + n, scope))) {
-		node->type = ASTS_NODE;
+	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
-			freeASTNode((ASTNode *) &node->c.nodeBuf);
+			freeASTStm(node);
 			return 0;
 		}
 		n++;
+		node->type = ASTS_NODE;
+		node->c.node = dupASTNode((ASTNode *) &tempBuf);
 	}
 
+	node->node.type = AST_STM;
 	return n;
 }
 
@@ -131,19 +148,19 @@ int printASTStm(ASTStm const *node) {
 
 	switch (node->type) {
 		case ASTS_COMPOUND:
-			n += printASTCompStm(node->c.compStm);
+			n += printASTNode(node->c.compStm);
 			break;
 		case ASTS_NODE:
-			n += printASTNode((ASTNode *) &node->c.nodeBuf);
+			n += printASTNode(node->c.node);
 			break;
 		case ASTS_IF:
-			n += printASTIf(&node->c.ifStm);
+			n += printASTNode(node->c.ifStm);
 			break;
 		case ASTS_SWITCH:
-			n += printASTSwitch(&node->c.switchStm);
+			n += printASTNode(node->c.switchStm);
 			break;
 		case ASTS_WHILE:
-			n += printASTWhile(&node->c.whileStm);
+			n += printASTNode(node->c.whileStm);
 			break;
 		case ASTS_DO_WHILE:
 			n += printASTDoWhile(&node->c.doWhileStm);

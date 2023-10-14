@@ -7,6 +7,7 @@
 #include "astUtil.h"
 
 void initASTWhile(ASTWhile *node) {
+	initASTNode((ASTNode *) node);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -81,6 +82,8 @@ int parseASTWhile(
 		freeASTWhile(node);
 		return 0;
 	}
+
+	node->node.type = AST_WHILE;
 	
 	return n;
 }

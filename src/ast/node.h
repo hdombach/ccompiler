@@ -8,7 +8,6 @@ typedef enum ASTNodeType {
 	AST_UNKNOWN,
 	AST_INT_CONSTANT,
 	AST_IDENTIFIER,
-
 	AST_FUNC_OPERATION,
 	AST_SUBS_OPERATION,
 	AST_COND_OPERATION,
@@ -18,7 +17,6 @@ typedef enum ASTNodeType {
 	AST_BINARY_OPERATION,
 	AST_PREFIX_OPERATION,
 	AST_POSTFIX_OPERATION,
-
 	AST_PARAM, /* temp */
 	AST_DECLARATION,
 	AST_ARRAY_DECL,
@@ -26,12 +24,16 @@ typedef enum ASTNodeType {
 	AST_IDENTIFIER_DECL,
 	AST_POINTER_DECL,
 	AST_DECLARATOR,
-	AST_TYPE_SPEC,
-	/* typedef reference used in type spec */
-	AST_IDENTIFIER_TS,
+	AST_TYPE_SPEC, 
+	AST_IDENTIFIER_TS, /* typedef reference used in type spec */
 	AST_STRUCT_DECL,
 	AST_ENUM_DECL,
 	AST_ENUMERATOR_DECL,
+	AST_STM,
+	AST_COMP_STM,
+	AST_IF,
+	AST_SWITCH,
+	AST_WHILE,
 } ASTNodeType;
 
 typedef struct ASTNode {

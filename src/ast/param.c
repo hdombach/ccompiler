@@ -50,6 +50,7 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 		mvASTNode((ASTNode *) param->declarator, (ASTNode *) &tempBuf);
 	}
 
+	param->node.type = AST_PARAM;
 	return n;
 }
 

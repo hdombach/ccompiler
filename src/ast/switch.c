@@ -8,6 +8,7 @@
 #include "astUtil.h"
 
 void initASTSwitch(ASTSwitch *node) {
+	initASTNode((ASTNode *) node);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -25,6 +26,7 @@ void freeASTSwitch(ASTSwitch *node) {
 }
 
 int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
+	AST_VALID(ASTSwitch);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 	ASTNode *tempNode = (ASTNode *) &tempBuf;
@@ -78,6 +80,8 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 		freeASTSwitch(node);
 		return 0;
 	}
+
+	node->node.type = AST_SWITCH;
 
 	return n;
 }

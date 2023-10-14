@@ -1,11 +1,14 @@
 #pragma once
 
+#include "node.h"
+
 struct ASTNode;
 struct ASTStm;
 struct Token;
 struct ASTScope;
 
 typedef struct ASTWhile {
+	ASTNode node;
 	struct ASTNode *expression;
 	struct ASTStm *statement;
 } ASTWhile;

@@ -25,13 +25,14 @@ struct ASTScope;
 struct ASTCompStm;
 
 typedef struct ASTStm {
+	ASTNode node;
 	ASTStmType type;	
 	union {
-		struct ASTCompStm *compStm;
-		ASTNodeBuf nodeBuf;
-		ASTIf ifStm;
-		ASTSwitch switchStm;
-		ASTWhile whileStm;
+		ASTNode *compStm;
+		ASTNode *node;
+		ASTNode *ifStm;
+		ASTNode *switchStm;
+		ASTNode *whileStm;
 		ASTDoWhile doWhileStm;
 	} c;
 	ASTLabel *label;

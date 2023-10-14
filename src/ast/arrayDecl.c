@@ -18,7 +18,7 @@ void freeASTArrayDecl(ASTArrayDecl *decl) {
 		free(decl->exp);
 	}
 	if (decl->encl) {
-		freeASTDeclarator(decl->encl);
+		freeASTNode(decl->encl);
 		free(decl->encl);
 	}
 }
@@ -33,7 +33,7 @@ int parseASTArrayDecl(
 
 	initASTArrayDecl(decl);
 	if (encl) {
-		decl->encl = (ASTDeclarator *) encl;
+		decl->encl = encl;
 	}
 	if (astHasErr()) {
 		freeASTArrayDecl(decl);
@@ -83,7 +83,7 @@ int printASTArrayDecl(const ASTArrayDecl *decl) {
 
 	if (decl->encl) {
 		n += printf(", \"enclosing type\": ");
-		n += printASTDeclarator(decl->encl);
+		n += printASTNode(decl->encl);
 	}
 
 	n += printf("}");

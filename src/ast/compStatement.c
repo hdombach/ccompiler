@@ -1,78 +1,41 @@
 #include "compStatement.h"
 #include "../util/dlist.h"
 #include "declaration.h"
+#include "node.h"
 #include "statement.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
 
-void initASTCompItem(ASTCompItem *item) {
-	item->type = AST_CIT_UNKNOWN;
-}
-
-void freeASTCompItem(ASTCompItem *item) {
-	switch (item->type) {
-		case AST_CIT_STM:
-			freeASTStm(&item->c.statement);
-			break;
-		case AST_CIT_DECL:
-			freeASTDeclaration((ASTDeclaration *) &item->c.declaration);
-			break;
-		default:
-			break;
-	}
-}
-
 int parseASTCompItem(
-		ASTCompItem *item,
+		ASTNode *node,
 		const Token *tok,
 		struct ASTScope const *scope)
 {
 	int res, n = 0;
-	ASTStm stm;
+	initASTNode(node);
 
-	initASTCompItem(item);
 	if (astHasErr()) {
-		freeASTCompItem(item);
 		return 0;
 	}
 
-	if ((res = parseASTStm(&item->c.statement, tok + n, scope))) {
+	if ((res = parseASTStm((ASTStm *) node, tok + n, scope))) {
 		n += res;
-		item->type = AST_CIT_STM;
-	} else if ((res = parseASTDeclaration((ASTDeclaration *) &item->c.declaration, tok + n, scope))) {
+	} else if ((res = parseASTDeclaration((ASTDeclaration *) node, tok + n, scope))) {
 		n += res;
-		item->type = AST_CIT_DECL;
 	} else {
-		freeASTCompItem(item);
+		freeASTNode(node);
 		return 0;
-	}
-
-	return n;
-}
-
-int printASTCompItem(const ASTCompItem *node) {
-	int n = 0;
-
-	switch (node->type) {
-		case AST_CIT_STM:
-			n += printASTStm(&node->c.statement);
-			break;
-		case AST_CIT_DECL:
-			n += printASTDeclaration((ASTDeclaration *) &node->c.declaration);
-			break;
-		default:
-			break;
 	}
 
 	return n;
 }
 
 void initASTCompStm(ASTCompStm *node) {
-	initDListEmpty(&node->items, sizeof(ASTCompItem));
+	initDListEmpty(&node->items, AST_NODE_S);
 }
 
 void freeASTCompStm(ASTCompStm *node) {
-	freeDList(&node->items, (FreeFunc) freeASTCompItem);
+	freeDList(&node->items, (FreeFunc) freeASTNode);
 }
 
 int parseASTCompStm(
@@ -80,8 +43,9 @@ int parseASTCompStm(
 		const Token *tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTCompStm);
 	int res, n = 0;
-	ASTCompItem item;
+	ASTNodeBuf tempBuf;
 
 	if (astHasErr()) {
 		return 0;
@@ -94,8 +58,8 @@ int parseASTCompStm(
 
 	initASTCompStm(node);
 	while (!astHasErr()) {
-		if ((res = parseASTCompItem(&item, tok + n, scope))) {
-			dlistApp(&node->items, &item);
+		if ((res = parseASTCompItem((ASTNode *) &tempBuf, tok + n, scope))) {
+			dlistApp(&node->items, &tempBuf);
 			n += res;
 		} else {
 			break;
@@ -108,6 +72,7 @@ int parseASTCompStm(
 	}
 	n++;
 
+	node->node.type = AST_COMP_STM;
 
 	return n;
 }
@@ -115,7 +80,7 @@ int parseASTCompStm(
 int printASTCompStm(const ASTCompStm *node) {
 	int n = 0;
 
-	n += printDList(&node->items, (PrintFunc) printASTCompItem);
+	n += printDList(&node->items, (PrintFunc) printASTNode);
 
 	return n;
 }

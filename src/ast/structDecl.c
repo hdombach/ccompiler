@@ -11,7 +11,7 @@
 void initASTStructDecl(ASTStructDecl *decl) {
 	initASTNode((ASTNode *) decl);
 	decl->name = NULL;
-	initDList(&decl->items, AST_NODE_S);
+	initDListEmpty(&decl->items, AST_NODE_S);
 	decl->scope = malloc(sizeof(ASTScope));
 	initASTScope(decl->scope);
 	decl->isUnion = 0;
@@ -31,8 +31,10 @@ int parseASTStructDecl(
 		const Token *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTStructDecl);
 	int res, n = 0;
 
+	decl->node.type = AST_UNKNOWN;
 	if (astHasErr()) {
 		return 0;
 	}
@@ -58,11 +60,12 @@ int parseASTStructDecl(
 	if (tok[n].type == TT_O_CURLY) {
 		n++;
 	} else {
+		decl->node.type = AST_STRUCT_DECL;
 		return n;
 	}
 
+	ASTNodeBuf tempBuf;
 	while (1) {
-		ASTNodeBuf tempBuf;
 		if ((res = parseASTDeclaration((ASTDeclaration *) &tempBuf, tok + n, decl->scope))) {
 			n += res;
 			dlistApp(&decl->items, &tempBuf);
@@ -79,8 +82,7 @@ int parseASTStructDecl(
 		return 0;
 	}
 
-	//decl->node.type = AST_STRU
-
+	decl->node.type = AST_STRUCT_DECL;
 	return n;
 }
 
@@ -105,7 +107,7 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	} else {
 		n += printf(", \"struct declarations\": ");
 	}
-	n += printDList(&decl->items, (PrintFunc) printASTDeclaration);
+	n += printDList(&decl->items, (PrintFunc) printASTNode);
 
 	n += printf("}");
 

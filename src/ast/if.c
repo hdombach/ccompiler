@@ -9,6 +9,7 @@
 #include "../token.h"
 
 void initASTIf(ASTIf *node) {
+	initASTNode((ASTNode *) node);
 	node->expression = NULL;
 	node->trueStatement = NULL;
 	node->falseStatement = NULL;
@@ -32,6 +33,7 @@ void freeASTIf(ASTIf *node) {
 }
 
 int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope) {
+	AST_VALID(ASTIf);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 	ASTNode *tempNode = (ASTNode *) &tempBuf;
@@ -90,6 +92,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 	if (tok[n].type == TT_ELSE) {
 		n++;
 	} else {
+		node->node.type = AST_IF;
 		return n;
 	}
 
@@ -102,6 +105,8 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 		freeASTIf(node);
 		return 0;
 	}
+
+	node->node.type = AST_IF;
 
 	return n;
 }

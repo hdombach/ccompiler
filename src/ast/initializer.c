@@ -11,7 +11,7 @@ void initASTInitializer(ASTInitializer *initializer) {
 void freeASTInitializer(ASTInitializer *initializer) {
 	switch (initializer->type) {
 		case AST_IT_NODE:
-			freeASTNode((ASTNode *) &initializer->c.nodeBuf);
+			freeASTNode(initializer->c.exp);
 			break;
 		case AST_IT_LIST:
 			freeDList(&initializer->c.initializerList, (FreeFunc) freeASTInitializer);
@@ -28,6 +28,7 @@ int parseASTInitializer(
 		ASTScope const *scope)
 {
 	int n = 0, res;
+	ASTNodeBuf tempBuf;
 	initASTInitializer(initializer);
 	if (astHasErr()) {
 		return 0;
@@ -59,11 +60,11 @@ int parseASTInitializer(
 			freeASTInitializer(initializer);
 			return 0;
 		}
-	} else if ((res = parseASTExp((ASTNode *) &initializer->c.nodeBuf, tok + n, scope))) {
+	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+		initializer->c.exp = dupASTNode((ASTNode *) &tempBuf);
 		initializer->type = AST_IT_NODE;
 		n += res;
 	} else {
-		freeASTNode((ASTNode *) &initializer->c.nodeBuf);
 		return 0;
 	}
 
@@ -75,7 +76,7 @@ int printASTInitializer(const ASTInitializer *initializer) {
 
 	switch (initializer->type) {
 		case AST_IT_NODE:
-			n += printASTNode((ASTNode *) &initializer->c.nodeBuf);
+			n += printASTNode(initializer->c.exp);
 			break;
 		case AST_IT_LIST:
 			n += printDList(
