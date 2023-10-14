@@ -301,6 +301,9 @@ int printASTArithType(const ASTArithType *type) {
 	return n;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wswitch"
+
 int astArithTypeNormalize(const ASTArithType *type) {
 	switch (*type) {
 		case AST_AT_CHAR:
@@ -355,6 +358,9 @@ int astArithTypeNormalize(const ASTArithType *type) {
 	}
 }
 
+#pragma clang diagnostic pop
+
+
 /* =========================================================================
  * ASTTypeSpec
  * ========================================================================= */
@@ -383,23 +389,13 @@ void initASTTypeSpec(ASTTypeSpec *typeSpec) {
 	initASTStorageClassSpec(&typeSpec->storage);
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 	typeSpec->tok = NULL;
+	typeSpec->content = NULL;
 }
 
 void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
-	switch (typeSpec->typeSpecType) {
-		case AST_TST_TYPEDEF:
-			free(typeSpec->c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			freeASTStructDecl(typeSpec->c.structDecl);
-			free(typeSpec->c.structDecl);
-			break;
-		case AST_TST_ENUM:
-			freeASTEnumDecl(typeSpec->c.enumDecl);
-			free(typeSpec->c.enumDecl);
-			break;
-		default:
-			break;
+	if (typeSpec->content) {
+		freeASTNode(typeSpec->content);
+		free(typeSpec->content);
 	}
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
 }
@@ -433,11 +429,11 @@ int parseASTTypeSpec(
 		} else if (_isArith(tok[n].type)) {
 			//Number type
 			if (typeSpec->typeSpecType == AST_TST_UNKNOWN) {
-				initASTArithType(&typeSpec->c.arith);
-				n += parseASTArithType(&typeSpec->c.arith, tok + n);
+				initASTArithType(&typeSpec->arith);
+				n += parseASTArithType(&typeSpec->arith, tok + n);
 				typeSpec->typeSpecType = AST_TST_ARITH;
 			} else if (typeSpec->typeSpecType == AST_TST_ARITH) {
-				n +=  parseASTArithType(&typeSpec->c.arith, tok + n);
+				n +=  parseASTArithType(&typeSpec->arith, tok + n);
 			} else {
 				astErr("Multiple types in type specifier", tok + n);
 				freeASTTypeSpec(typeSpec);
@@ -448,7 +444,7 @@ int parseASTTypeSpec(
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) break;
 
 			if ((res = _parseTypedefIdentifier((ASTIdentifier *) &tempBuf, tok + n, scope))) {
-				typeSpec->c.typedefName = dupASTNode((ASTNode *) &tempBuf);
+				typeSpec->content = dupASTNode((ASTNode *) &tempBuf);
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
 			} else {
@@ -466,7 +462,7 @@ int parseASTTypeSpec(
 
 			if ((res = parseASTStructDecl((ASTStructDecl *) &tempBuf, tok + n, scope))) {
 				n += res;
-				typeSpec->c.structDecl = (ASTStructDecl *) dupASTNode((ASTNode *) &tempBuf);
+				typeSpec->content = dupASTNode((ASTNode *) &tempBuf);
 				typeSpec->typeSpecType = AST_TST_STRUCT;
 			} else {
 				if (!astHasErr()) {
@@ -483,7 +479,7 @@ int parseASTTypeSpec(
 
 			if ((res = parseASTEnumDecl((ASTEnumDecl *) &tempBuf, tok + n, scope))) {
 				n += res;
-				typeSpec->c.enumDecl = (ASTEnumDecl *) dupASTNode((ASTNode *) &tempBuf);
+				typeSpec->content = dupASTNode((ASTNode *) &tempBuf);
 				typeSpec->typeSpecType = AST_TST_ENUM;
 			} else {
 				if (!astHasErr()) {
@@ -511,19 +507,14 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 			n += printf("\"void\"");
 			break;
 		case AST_TST_ARITH:
-			n += printASTArithType(&typeSpec->c.arith);
-			break;
-		case AST_TST_TYPEDEF:
-			n += printASTNode(typeSpec->c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			n += printASTStructDecl(typeSpec->c.structDecl);
-			break;
-		case AST_TST_ENUM:
-			n += printASTEnumDecl(typeSpec->c.enumDecl);
+			n += printASTArithType(&typeSpec->arith);
 			break;
 		default:
-			n += printf("\"unknown\"");
+			if (typeSpec->content) {
+				n += printASTNode(typeSpec->content);
+			} else {
+				n += printf("\"unknown\"");
+			}
 	}
 
 	return n;

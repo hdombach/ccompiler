@@ -68,12 +68,8 @@ typedef struct {
 	ASTTypeQualifier qualifiers;
 	ASTStorageClassSpec storage;
 	ASTTypeSpecType typeSpecType;
-	union {
-		ASTArithType arith;
-		ASTNode *typedefName;
-		ASTStructDecl *structDecl;
-		ASTEnumDecl *enumDecl;
-	} c;
+	ASTArithType arith;
+	ASTNode *content;
 	Token const *tok;
 } ASTTypeSpec;
 

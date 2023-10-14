@@ -76,19 +76,15 @@ int printASTParam(const ASTParam *param) {
 			n += printf("\"void\"");
 			break;
 		case AST_TST_ARITH:
-			n += printASTArithType(&param->typeSpec->c.arith);
-			break;
-		case AST_TST_TYPEDEF:
-			n += printASTNode(param->typeSpec->c.typedefName);
-			break;
-		case AST_TST_STRUCT:
-			n += printASTNode((ASTNode *) param->typeSpec->c.structDecl);
-			break;
-		case AST_TST_ENUM:
-			n += printASTEnumDecl(param->typeSpec->c.enumDecl);
+			n += printASTArithType(&param->typeSpec->arith);
 			break;
 		default:
-			n += printf("\"unknown\"");
+			if (param->typeSpec->content) {
+				n += printASTNode(param->typeSpec->content);
+			} else {
+				n += printf("\"unknown\"");
+			}
+			break;
 	}
 
 	if (param->declarator) {
