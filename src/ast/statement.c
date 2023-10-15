@@ -127,54 +127,20 @@ int printASTContinue(const ASTContinue *node) {
 
 void initASTStm(ASTStm *node) {
 	initASTNode((ASTNode *) node);
-	node->type = ASTS_UNKNOWN;
 	node->label = NULL;
+	node->content = NULL;
 }
 
 void freeASTStm(ASTStm *node) {
-	switch (node->type) {
-		case ASTS_COMPOUND:
-			freeASTNode(node->c.compStm);
-			free(node->c.compStm);
-			break;
-		case ASTS_NODE:
-			freeASTNode(node->c.node);
-			free(node->c.node);
-			break;
-		case ASTS_IF:
-			if (node->c.ifStm) {
-				freeASTIf((ASTIf *) node->c.ifStm);
-				free(node->c.ifStm);
-			}
-			break;
-		case ASTS_SWITCH:
-			if (node->c.switchStm) {
-				freeASTNode(node->c.switchStm);
-				free(node->c.switchStm);
-			}
-			break;
-		case ASTS_WHILE:
-			if (node->c.whileStm) {
-				freeASTNode(node->c.whileStm);
-				free(node->c.whileStm);
-			}
-			break;
-		case ASTS_DO_WHILE:
-			if (node->c.doWhileStm) {
-				freeASTNode(node->c.doWhileStm);
-				free(node->c.doWhileStm);
-			}
-			break;
-		default:
-			break;
+	if (node->content) {
+		freeASTNode(node->content);
+		free(node->content);
 	}
-
 	if (node->label) {
 		freeASTLabel(node->label);
 		free(node->label);
 		node->label = NULL;
 	}
-	node->type = ASTS_UNKNOWN;
 }
 
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
@@ -196,36 +162,28 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	}
 
 	if ((res = parseASTCompStm((ASTCompStm *) &tempBuf, tok + n, scope))) {
-		node->c.compStm = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_COMPOUND;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTIf((ASTIf *) &tempBuf, tok + n, scope))) {
-		node->c.ifStm = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_IF;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTSwitch((ASTSwitch *) &tempBuf, tok + n, scope))) {
-		node->c.switchStm = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_SWITCH;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTWhile((ASTWhile *) &tempBuf, tok + n, scope))) {
-		node->c.whileStm = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_WHILE;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTDoWhile((ASTDoWhile *) &tempBuf, tok + n, scope))) {
-		node->c.doWhileStm = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_DO_WHILE;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTBreak((ASTBreak *) &tempBuf, tok + n, scope))) {
-		node->c.node = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_BREAK;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTContinue((ASTBreak *) &tempBuf, tok + n, scope))) {
-		node->c.node = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_CONTINUE;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {
-		node->c.node = dupASTNode((ASTNode *) &tempBuf);
-		node->type = ASTS_EMPTY;
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
@@ -234,8 +192,7 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 			return 0;
 		}
 		n++;
-		node->type = ASTS_NODE;
-		node->c.node = dupASTNode((ASTNode *) &tempBuf);
+		node->content = dupASTNode((ASTNode *) &tempBuf);
 	}
 
 	node->node.type = AST_STM;
@@ -255,31 +212,8 @@ int printASTStm(ASTStm const *node) {
 		n += printf(", \"content\": ");
 	}
 
-	switch (node->type) {
-		case ASTS_COMPOUND:
-			n += printASTNode(node->c.compStm);
-			break;
-		case ASTS_EMPTY:
-		case ASTS_BREAK:
-		case ASTS_CONTINUE:
-		case ASTS_NODE:
-			n += printASTNode(node->c.node);
-			break;
-		case ASTS_IF:
-			n += printASTNode(node->c.ifStm);
-			break;
-		case ASTS_SWITCH:
-			n += printASTNode(node->c.switchStm);
-			break;
-		case ASTS_WHILE:
-			n += printASTNode(node->c.whileStm);
-			break;
-		case ASTS_DO_WHILE:
-			n += printASTNode(node->c.doWhileStm);
-			break;
-		default:
-			n += printf("{\"type\": \"Statement\", \"value\": \"unknown\"}");
-			break;
+	if (node->content) {
+		n += printASTNode(node->content);
 	}
 
 	if (node->label) {

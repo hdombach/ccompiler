@@ -38,33 +38,12 @@ void initASTContinue(ASTContinue *node);
 int parseASTContinue(ASTContinue *node, Token const *tok, struct ASTScope const *scope);
 int printASTContinue(ASTContinue const *node);
 
-typedef enum {
-	ASTS_UNKNOWN,
-	ASTS_COMPOUND,
-	ASTS_NODE,
-	ASTS_IF,
-	ASTS_EMPTY,
-	ASTS_BREAK,
-	ASTS_CONTINUE,
-	ASTS_SWITCH,
-	ASTS_WHILE,
-	ASTS_DO_WHILE,
-} ASTStmType;
-
 struct ASTScope;
 struct ASTCompStm;
 
 typedef struct ASTStm {
 	ASTNode node;
-	ASTStmType type;	
-	union {
-		ASTNode *compStm;
-		ASTNode *node;
-		ASTNode *ifStm;
-		ASTNode *switchStm;
-		ASTNode *whileStm;
-		ASTNode *doWhileStm;
-	} c;
+	ASTNode *content;
 	ASTLabel *label;
 } ASTStm;
 
