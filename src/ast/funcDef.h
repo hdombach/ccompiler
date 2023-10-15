@@ -5,11 +5,13 @@
 #include "compStatement.h"
 #include "declaration.h"
 #include "funcDecl.h"
+#include "node.h"
 
 struct ASTDeclarator;
 struct ASTScope;
 
 typedef struct ASTFuncDef {
+	ASTNode node;
 	ASTTypeSpec *typeSpec;
 	ASTNode *funcDecl;
 	ASTCompStm compoundStm;

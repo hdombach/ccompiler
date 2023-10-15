@@ -9,6 +9,7 @@
 #include "enumDecl.h"
 #include "expression.h"
 #include "funcDecl.h"
+#include "funcDef.h"
 #include "identifier.h"
 #include "if.h"
 #include "intConstant.h"
@@ -58,6 +59,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_EMPTY_STM:
 		case AST_BREAK: 
 		case AST_CONTINUE: break;
+		case AST_FUNC_DEF: freeASTFuncDef((ASTFuncDef *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -108,6 +110,7 @@ char *_astNodeTypes[] = {
 	"empty statement",
 	"break statement",
 	"continue statement",
+	"function definition",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -150,6 +153,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_EMPTY_STM: return printASTEmptyStm((ASTEmptyStm *) node);
 		case AST_BREAK: return printASTBreak((ASTBreak *) node);
 		case AST_CONTINUE: return printASTContinue((ASTContinue *) node);
+		case AST_FUNC_DEF: return printASTFuncDef((ASTFuncDef *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }

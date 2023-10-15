@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 void initASTFuncDef(ASTFuncDef *def) {
+	initASTNode((ASTNode *) def);
 	def->typeSpec = NULL;
 	def->funcDecl = NULL;
 	initASTCompStm(&def->compoundStm);
@@ -101,6 +102,7 @@ int parseASTFuncDef(
 		return 0;
 	}
 
+	def->node.type = AST_FUNC_DEF;
 	return n;
 }
 

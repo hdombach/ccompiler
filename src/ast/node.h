@@ -38,6 +38,7 @@ typedef enum ASTNodeType {
 	AST_EMPTY_STM,
 	AST_BREAK,
 	AST_CONTINUE,
+	AST_FUNC_DEF,
 } ASTNodeType;
 
 typedef struct ASTNode {
