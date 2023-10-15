@@ -47,7 +47,10 @@ void freeASTStm(ASTStm *node) {
 			}
 			break;
 		case ASTS_DO_WHILE:
-			freeASTDoWhile(&node->c.doWhileStm);
+			if (node->c.doWhileStm) {
+				freeASTNode(node->c.doWhileStm);
+				free(node->c.doWhileStm);
+			}
 			break;
 		default:
 			break;
@@ -95,7 +98,8 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		node->c.whileStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_WHILE;
 		n += res;
-	} else if ((res = parseASTDoWhile(&node->c.doWhileStm, tok + n, scope))) {
+	} else if ((res = parseASTDoWhile((ASTDoWhile *) &tempBuf, tok + n, scope))) {
+		node->c.doWhileStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_DO_WHILE;
 		n += res;
 	} else if (tok[n].type == TT_BREAK) {
@@ -163,7 +167,7 @@ int printASTStm(ASTStm const *node) {
 			n += printASTNode(node->c.whileStm);
 			break;
 		case ASTS_DO_WHILE:
-			n += printASTDoWhile(&node->c.doWhileStm);
+			n += printASTNode(node->c.doWhileStm);
 			break;
 		case ASTS_EMPTY:
 			n += printf("\"empty\"");

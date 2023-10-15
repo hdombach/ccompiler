@@ -33,7 +33,7 @@ typedef struct ASTStm {
 		ASTNode *ifStm;
 		ASTNode *switchStm;
 		ASTNode *whileStm;
-		ASTDoWhile doWhileStm;
+		ASTNode *doWhileStm;
 	} c;
 	ASTLabel *label;
 } ASTStm;

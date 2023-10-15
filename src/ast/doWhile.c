@@ -8,6 +8,7 @@
 #include "while.h"
 
 void initASTDoWhile(ASTDoWhile *node) {
+	initASTNode((ASTNode *) node);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -29,6 +30,7 @@ int parseASTDoWhile(
 		const struct Token *tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTDoWhile);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 	ASTNode *tempNode = (ASTNode *) &tempBuf;
@@ -97,6 +99,7 @@ int parseASTDoWhile(
 		return 0;
 	}
 
+	node->node.type = AST_DO_WHILE;
 	return n;
 }
 

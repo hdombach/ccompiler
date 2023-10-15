@@ -5,6 +5,7 @@
 #include "arrayDecl.h"
 #include "compStatement.h"
 #include "declaration.h"
+#include "doWhile.h"
 #include "enumDecl.h"
 #include "expression.h"
 #include "funcDecl.h"
@@ -25,6 +26,7 @@ void initASTNode(ASTNode *node) {
 
 void freeASTNode(ASTNode *node) {
 	switch (node->type) {
+		case AST_INT_CONSTANT: break;
 		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
@@ -52,7 +54,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_IF: freeASTIf((ASTIf *) node); break;
 		case AST_SWITCH: freeASTSwitch((ASTSwitch *) node); break;
 		case AST_WHILE: freeASTWhile((ASTWhile *) node); break;
-		case AST_INT_CONSTANT:
+		case AST_DO_WHILE: freeASTDoWhile((ASTDoWhile *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -99,6 +101,7 @@ char *_astNodeTypes[] = {
 	"if statement",
 	"switch statement",
 	"while statement",
+	"do while statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -137,6 +140,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_IF: return printASTIf((ASTIf *) node);
 		case AST_SWITCH: return printASTSwitch((ASTSwitch *) node);
 		case AST_WHILE: return printASTWhile((ASTWhile *) node);
+		case AST_DO_WHILE: return printASTDoWhile((ASTDoWhile *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }
