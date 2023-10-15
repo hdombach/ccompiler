@@ -55,6 +55,9 @@ void freeASTNode(ASTNode *node) {
 		case AST_SWITCH: freeASTSwitch((ASTSwitch *) node); break;
 		case AST_WHILE: freeASTWhile((ASTWhile *) node); break;
 		case AST_DO_WHILE: freeASTDoWhile((ASTDoWhile *) node); break;
+		case AST_EMPTY_STM:
+		case AST_BREAK: 
+		case AST_CONTINUE: break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -102,6 +105,9 @@ char *_astNodeTypes[] = {
 	"switch statement",
 	"while statement",
 	"do while statement",
+	"empty statement",
+	"break statement",
+	"continue statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -141,6 +147,9 @@ int printASTNode(ASTNode const *node) {
 		case AST_SWITCH: return printASTSwitch((ASTSwitch *) node);
 		case AST_WHILE: return printASTWhile((ASTWhile *) node);
 		case AST_DO_WHILE: return printASTDoWhile((ASTDoWhile *) node);
+		case AST_EMPTY_STM: return printASTEmptyStm((ASTEmptyStm *) node);
+		case AST_BREAK: return printASTBreak((ASTBreak *) node);
+		case AST_CONTINUE: return printASTContinue((ASTContinue *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }

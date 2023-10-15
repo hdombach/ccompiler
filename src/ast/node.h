@@ -35,6 +35,9 @@ typedef enum ASTNodeType {
 	AST_SWITCH,
 	AST_WHILE,
 	AST_DO_WHILE,
+	AST_EMPTY_STM,
+	AST_BREAK,
+	AST_CONTINUE,
 } ASTNodeType;
 
 typedef struct ASTNode {

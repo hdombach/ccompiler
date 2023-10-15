@@ -12,6 +12,119 @@
 #include "switch.h"
 #include "while.h"
 
+/***********************************************************************
+ * Empty Statement
+ ***********************************************************************/
+
+void initASTEmptyStm(ASTEmptyStm *node) {
+	initASTNode((ASTNode *) node);
+}
+
+int parseASTEmptyStm(
+		ASTEmptyStm *node,
+		const Token *tok,
+		const struct ASTScope *scope)
+{
+	AST_VALID(ASTEmptyStm);
+	int n = 0;
+
+	initASTEmptyStm(node);
+	if (astHasErr()) {
+		return 0;
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		return 0;
+	}
+
+	node->type = AST_EMPTY_STM;
+	return n;
+}
+
+int printASTEmptyStm(const ASTEmptyStm *node) {
+	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
+}
+
+/***********************************************************************
+ * Break Statement
+ ***********************************************************************/
+
+void initASTBreak(ASTBreak *node) {
+	initASTNode((ASTNode *) node);
+}
+
+int parseASTBreak(
+		ASTBreak *node,
+		const Token *tok,
+		const struct ASTScope *scope)
+{
+	AST_VALID(ASTBreak);
+	int n = 0;
+
+	initASTBreak(node);
+	if (astHasErr()) {
+		return 0;
+	}
+
+	if (tok[n].type == TT_BREAK) {
+		n++;
+	} else {
+		return 0;
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		return 0;
+	}
+
+	node->type = AST_BREAK;
+	return n;
+}
+
+int printASTBreak(const ASTBreak *node) {
+	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
+}
+
+void initASTContinue(ASTContinue *node) {
+	initASTNode((ASTNode *) node);
+}
+
+int parseASTContinue(
+		ASTContinue *node,
+		Token const *tok,
+		struct ASTScope const *scope)
+{
+	AST_VALID(ASTContinue);
+	int n = 0;
+
+	initASTContinue(node);
+	if (astHasErr()) {
+		return 0;
+	}
+
+	if (tok[n].type == TT_CONTINUE) {
+		n++;
+	} else {
+		return 0;
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		return 0;
+	}
+
+	node->type = AST_CONTINUE;
+	return n;
+}
+
+int printASTContinue(const ASTContinue *node) {
+	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
+}
+
 void initASTStm(ASTStm *node) {
 	initASTNode((ASTNode *) node);
 	node->type = ASTS_UNKNOWN;
@@ -102,26 +215,18 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		node->c.doWhileStm = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_DO_WHILE;
 		n += res;
-	} else if (tok[n].type == TT_BREAK) {
-		n++;
-		if (tok[n].type == TT_SEMI_COLON) {
-			n++;
-		} else {
-			freeASTStm(node);
-			return 0;
-		}
+	} else if ((res = parseASTBreak((ASTBreak *) &tempBuf, tok + n, scope))) {
+		node->c.node = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_BREAK;
-	} else if (tok[n].type == TT_CONTINUE) {
-		n++;
-		if (tok[n].type == TT_SEMI_COLON) {
-			n++;
-		} else {
-			freeASTStm(node);
-			return 0;
-		}
-	} else if (tok[n].type == TT_SEMI_COLON) {
+		n += res;
+	} else if ((res = parseASTContinue((ASTBreak *) &tempBuf, tok + n, scope))) {
+		node->c.node = dupASTNode((ASTNode *) &tempBuf);
+		node->type = ASTS_CONTINUE;
+		n += res;
+	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {
+		node->c.node = dupASTNode((ASTNode *) &tempBuf);
 		node->type = ASTS_EMPTY;
-		n++;
+		n += res;
 	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
@@ -154,6 +259,9 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_COMPOUND:
 			n += printASTNode(node->c.compStm);
 			break;
+		case ASTS_EMPTY:
+		case ASTS_BREAK:
+		case ASTS_CONTINUE:
 		case ASTS_NODE:
 			n += printASTNode(node->c.node);
 			break;
@@ -169,14 +277,6 @@ int printASTStm(ASTStm const *node) {
 		case ASTS_DO_WHILE:
 			n += printASTNode(node->c.doWhileStm);
 			break;
-		case ASTS_EMPTY:
-			n += printf("\"empty\"");
-			break;
-		case ASTS_BREAK:
-			n += printf("\"break\"");
-			break;
-		case ASTS_CONTINUE:
-			n += printf("\"continue\"");
 		default:
 			n += printf("{\"type\": \"Statement\", \"value\": \"unknown\"}");
 			break;

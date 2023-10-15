@@ -8,6 +8,36 @@
 #include "switch.h"
 #include "while.h"
 
+/***********************************************************************
+ * Empty Statement
+ ***********************************************************************/
+
+typedef ASTNode ASTEmptyStm;
+
+void initASTEmptyStm(ASTEmptyStm *node);
+int parseASTEmptyStm(ASTEmptyStm *node, Token const *tok, struct ASTScope const *scope);
+int printASTEmptyStm(ASTEmptyStm const *node);
+
+/***********************************************************************
+ * Break Statement
+ ***********************************************************************/
+
+typedef ASTNode ASTBreak;
+
+void initASTBreak(ASTBreak *node);
+int parseASTBreak(ASTBreak *node,  Token const *tok, struct ASTScope const *scope);
+int printASTBreak(ASTBreak const *node);
+
+/***********************************************************************
+ * Continue Statement
+ ***********************************************************************/
+
+typedef ASTNode ASTContinue;
+
+void initASTContinue(ASTContinue *node);
+int parseASTContinue(ASTContinue *node, Token const *tok, struct ASTScope const *scope);
+int printASTContinue(ASTContinue const *node);
+
 typedef enum {
 	ASTS_UNKNOWN,
 	ASTS_COMPOUND,
