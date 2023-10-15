@@ -4,73 +4,38 @@
 #include "scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
+#include "node.h"
 #include <stdio.h>
 
-void initASTFileItem(ASTFileItem *item) {
-	item->type = AST_FIT_UNKNOWN;
-}
-
-void freeASTFileItem(ASTFileItem *item) {
-	switch (item->type) {
-		case AST_FIT_DECL:
-			freeASTDeclaration((ASTDeclaration *) &item->c.declaration);
-			break;
-		case AST_FIT_FUNC_DEF:
-			freeASTFuncDef(&item->c.funcDef);
-			break;
-		default:
-			break;
-	}
-}
-
 int parseASTFileItem(
-		ASTFileItem *item,
+		ASTNode *item,
 		const Token *tok,
 		ASTScope const *scope)
 {
 	int n = 0, res;
 
-	initASTFileItem(item);
+	initASTNode(item);
 	if (astHasErr()) {
 		return 0;
 	}
 
-	if ((res = parseASTFuncDef(&item->c.funcDef, tok + n, scope))) {
+	if ((res = parseASTFuncDef((ASTFuncDef *) item, tok + n, scope))) {
 		n += res;
-		item->type = AST_FIT_FUNC_DEF;
-	} else if ((res = parseASTDeclaration((ASTDeclaration *) &item->c.declaration, tok + n, scope))) {
+	} else if ((res = parseASTDeclaration((ASTDeclaration *) item, tok + n, scope))) {
 		n += res;
-		item->type = AST_FIT_DECL;
 	} else {
-		freeASTFileItem(item);
 		return 0;
 	}
 
 	return n;
 }
 
-int printASTFileItem(const ASTFileItem *item) {
-	int n = 0;
-
-	switch (item->type) {
-		case AST_FIT_DECL:
-			n += printASTDeclaration((ASTDeclaration *) &item->c.declaration);
-			break;
-		case AST_FIT_FUNC_DEF:
-			n += printASTFuncDef(&item->c.funcDef);
-			break;
-		default:
-			break;
-	}
-	return n;
-}
-
-DList astFileItemTypes(const ASTFileItem *item) {
+DList astFileItemTypes(const ASTNode *item) {
 	DList result;
 
 	switch (item->type) {
-		case AST_FIT_DECL:
-			result = astDeclarationTypedefNames((ASTDeclaration *) &item->c.declaration);
+		case AST_DECLARATION:
+			result = astDeclarationTypedefNames((ASTDeclaration *) item);
 			break;
 		default:
 			initDListEmpty(&result, sizeof(char *));
@@ -81,27 +46,27 @@ DList astFileItemTypes(const ASTFileItem *item) {
 }
 
 void initASTFile(ASTFile *file) {
-	initDList(&file->items, sizeof(ASTFileItem));
+	initDList(&file->items, AST_NODE_S);
 	initASTScope(&file->scope);
 }
 
 void freeASTFile(ASTFile *file) {
-	freeDList(&file->items, (FreeFunc) freeASTFileItem);
+	freeDList(&file->items, (FreeFunc) freeASTNode);
 	freeASTScope(&file->scope);
 }
 
 int parseASTFile(ASTFile *file, const Token *tok) {
 	int n = 0, res;
-	ASTFileItem tempItem;
+	ASTNodeBuf tempBuf;
 
 	initASTFile(file);
 
 	while (1) {
-		if ((res = parseASTFileItem(&tempItem, tok + n, &file->scope))) {
+		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, &file->scope))) {
 			n += res;
-			dlistApp(&file->items, &tempItem);
+			dlistApp(&file->items, &tempBuf);
 
-			DList newTypes = astFileItemTypes(&tempItem);
+			DList newTypes = astFileItemTypes((ASTNode *) &tempBuf);
 			astScopeAddTypedefNames(&file->scope, newTypes);
 		} else if (tok[n].type == TT_NEWLINE) {
 			n++;
@@ -124,7 +89,7 @@ int printASTFile(const ASTFile *file) {
 	n += printf("\"node type\": \"file\"");
 
 	n += printf(", \"declerations\": ");
-	n += printDList(&file->items, (PrintFunc) printASTFileItem);
+	n += printDList(&file->items, (PrintFunc) printASTNode);
 
 	n += printf("}");
 

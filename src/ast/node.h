@@ -39,6 +39,7 @@ typedef enum ASTNodeType {
 	AST_BREAK,
 	AST_CONTINUE,
 	AST_FUNC_DEF,
+	AST_FILE,
 } ASTNodeType;
 
 typedef struct ASTNode {

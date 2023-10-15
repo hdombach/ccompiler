@@ -8,6 +8,7 @@
 #include "doWhile.h"
 #include "enumDecl.h"
 #include "expression.h"
+#include "file.h"
 #include "funcDecl.h"
 #include "funcDef.h"
 #include "identifier.h"
@@ -60,6 +61,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_BREAK: 
 		case AST_CONTINUE: break;
 		case AST_FUNC_DEF: freeASTFuncDef((ASTFuncDef *) node); break;
+		case AST_FILE: freeASTFile((ASTFile *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -111,6 +113,7 @@ char *_astNodeTypes[] = {
 	"break statement",
 	"continue statement",
 	"function definition",
+	"file",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -154,6 +157,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_BREAK: return printASTBreak((ASTBreak *) node);
 		case AST_CONTINUE: return printASTContinue((ASTContinue *) node);
 		case AST_FUNC_DEF: return printASTFuncDef((ASTFuncDef *) node);
+		case AST_FILE: return printASTFile((ASTFile *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }

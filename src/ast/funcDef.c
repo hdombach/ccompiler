@@ -35,6 +35,7 @@ int parseASTFuncDef(
 		Token const * tok,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTFuncDef);
 	int n = 0, res;
 	ASTNode *curDecl, *prevDecl;
 	ASTNodeBuf tempBuf;
