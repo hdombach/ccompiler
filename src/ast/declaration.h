@@ -88,7 +88,7 @@ typedef struct ASTDeclarator {
 	ASTNode *encl;
 	/* Used when representing contents of pointer*/
 	ASTTypeQualifier qualifiers;
-	ASTInitializer *initializer;
+	ASTNode *initializer;
 	ASTNode *bitField;
 } ASTDeclarator;
 

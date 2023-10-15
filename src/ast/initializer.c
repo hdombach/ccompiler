@@ -4,88 +4,76 @@
 #include "scope.h"
 #include "node.h"
 
-void initASTInitializer(ASTInitializer *initializer) {
-	initializer->type = AST_IT_UNKNOWN;
+void initASTInitializerList(ASTInitializerList *list) {
+	initASTNode((ASTNode *) list);
+	initDListEmpty(&list->list, AST_NODE_S);
 }
 
-void freeASTInitializer(ASTInitializer *initializer) {
-	switch (initializer->type) {
-		case AST_IT_NODE:
-			freeASTNode(initializer->c.exp);
-			break;
-		case AST_IT_LIST:
-			freeDList(&initializer->c.initializerList, (FreeFunc) freeASTInitializer);
-			break;
-		default:
-			break;
-	}
-	initializer->type = AST_IT_UNKNOWN;
+void freeASTInitializerList(ASTInitializerList *list) {
+	freeDList(&list->list, (FreeFunc) freeASTNode);
 }
 
-int parseASTInitializer(
-		ASTInitializer *initializer,
+int parseASTInitializerList(
+		ASTInitializerList *list,
 		const Token *tok,
-		ASTScope const *scope)
+		const struct ASTScope *scope)
 {
-	int n = 0, res;
+	int res, n = 0;
 	ASTNodeBuf tempBuf;
-	initASTInitializer(initializer);
+	initASTInitializerList(list);
 	if (astHasErr()) {
+		freeASTInitializerList(list);
 		return 0;
 	}
 
 	if (tok[n].type == TT_O_CURLY) {
-		initDList(&initializer->c.initializerList, sizeof(ASTInitializer));
-		initializer->type = AST_IT_LIST;
 		n++;
-		while (1) {
-			ASTInitializer temp;
-			if ((res = parseASTInitializer(&temp, tok + n, scope))) {
-				n += res;
-				dlistApp(&initializer->c.initializerList, &temp);
-			} else {
-				break;
-			}
-
-			if (tok[n].type == TT_COMMA) {
-				n++;
-			} else {
-				break;
-			}
-		}
-		if (tok[n].type == TT_C_CURLY) {
-			n++;
-		} else {
-			astErr("Expecing }", tok + n);
-			freeASTInitializer(initializer);
-			return 0;
-		}
-	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
-		initializer->c.exp = dupASTNode((ASTNode *) &tempBuf);
-		initializer->type = AST_IT_NODE;
-		n += res;
 	} else {
+		freeASTInitializerList(list);
 		return 0;
 	}
 
+	while (1) {
+		if ((res = parseASTInitializer((ASTNode *) &tempBuf, tok + n, scope))) {
+			n += res;
+			dlistApp(&list->list, &tempBuf);
+		} else {
+			break;
+		}
+
+		if (tok[n].type == TT_COMMA) {
+			n++;
+		} else {
+			break;
+		}
+	}
+
+	if (tok[n].type == TT_C_CURLY) {
+		n++;
+	} else {
+		astErr("Expecting }", tok + n);
+		freeASTInitializerList(list);
+		return 0;
+	}
+
+	list->node.type = AST_INITIALIZER_LIST;
 	return n;
 }
 
-int printASTInitializer(const ASTInitializer *initializer) {
-	int n = 0;
+int printASTInitializerList(const ASTInitializerList *list) {
+	return printDList(&list->list, (PrintFunc) printASTNode);
+}
 
-	switch (initializer->type) {
-		case AST_IT_NODE:
-			n += printASTNode(initializer->c.exp);
-			break;
-		case AST_IT_LIST:
-			n += printDList(
-					&initializer->c.initializerList,
-					(PrintFunc) printASTInitializer);
-			break;
-		default:
-			break;
+int parseASTInitializer(
+		ASTNode *node,
+		const Token *tok,
+		ASTScope const *scope)
+{
+	int res;
+
+	if ((res = parseASTInitializerList((ASTInitializerList *) node, tok, scope))) {
+		return res;
+	} else {
+		return parseASTExp14(node, tok, scope);
 	}
-
-	return n;
 }

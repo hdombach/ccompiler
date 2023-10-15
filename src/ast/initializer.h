@@ -13,18 +13,20 @@ typedef enum {
 
 struct ASTScope;
 
-typedef struct {
-	ASTInitializerType type;
-	union {
-		ASTNode *exp;
-		DList initializerList;
-	} c;
-} ASTInitializer;
+typedef struct ASTInitializerList {
+	ASTNode node;
+	DList list;
+} ASTInitializerList;
 
-void initASTInitializer(ASTInitializer *initializer);
-void freeASTInitializer(ASTInitializer *initializer);
-int parseASTInitializer(
-		ASTInitializer *initializer,
+void initASTInitializerList(ASTInitializerList *list);
+void freeASTInitializerList(ASTInitializerList *list);
+int parseASTInitializerList(
+		ASTInitializerList *list,
 		Token const *tok,
 		struct ASTScope const *scope);
-int printASTInitializer(ASTInitializer const *initializer);
+int printASTInitializerList(ASTInitializerList const *list);
+
+int parseASTInitializer(
+		ASTNode *node,
+		Token const *tok,
+		struct ASTScope const *scope);

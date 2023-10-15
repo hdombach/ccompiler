@@ -40,6 +40,7 @@ typedef enum ASTNodeType {
 	AST_CONTINUE,
 	AST_FUNC_DEF,
 	AST_FILE,
+	AST_INITIALIZER_LIST,
 } ASTNodeType;
 
 typedef struct ASTNode {

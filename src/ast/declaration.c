@@ -540,7 +540,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 		declarator->encl = NULL;
 	}
 	if (declarator->initializer) {
-		freeASTInitializer(declarator->initializer);
+		freeASTNode(declarator->initializer);
 		free(declarator->initializer);
 		declarator->initializer = NULL;
 	}
@@ -644,9 +644,9 @@ int parseASTDeclarator(
 
 	if (tok[n].type == TT_EQL) {
 		n++;
-		declarator->initializer = malloc(sizeof(ASTInitializer));
-		if ((res = parseASTInitializer(declarator->initializer, tok + n, scope))) {
+		if ((res = parseASTInitializer((ASTNode *) &tempBuf, tok + n, scope))) {
 			n += res;
+			declarator->initializer = dupASTNode((ASTNode *) &tempBuf);
 		} else {
 			astErr("Expecting expression following =", tok + n);
 			free(declarator->initializer);
@@ -692,7 +692,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	if (declarator->initializer) {
 		n += printf(", \"initializer\": ");
-		n += printASTInitializer(declarator->initializer);
+		n += printASTNode(declarator->initializer);
 	}
 
 	if (declarator->bitField) {

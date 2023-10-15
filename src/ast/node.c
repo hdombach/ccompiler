@@ -13,6 +13,7 @@
 #include "funcDef.h"
 #include "identifier.h"
 #include "if.h"
+#include "initializer.h"
 #include "intConstant.h"
 #include "node.h"
 #include "operation.h"
@@ -62,6 +63,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_CONTINUE: break;
 		case AST_FUNC_DEF: freeASTFuncDef((ASTFuncDef *) node); break;
 		case AST_FILE: freeASTFile((ASTFile *) node); break;
+		case AST_INITIALIZER_LIST: freeASTInitializerList((ASTInitializerList *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -114,6 +116,7 @@ char *_astNodeTypes[] = {
 	"continue statement",
 	"function definition",
 	"file",
+	"initializer list",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -158,6 +161,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_CONTINUE: return printASTContinue((ASTContinue *) node);
 		case AST_FUNC_DEF: return printASTFuncDef((ASTFuncDef *) node);
 		case AST_FILE: return printASTFile((ASTFile *) node);
+		case AST_INITIALIZER_LIST: return printASTInitializerList((ASTInitializerList *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }
