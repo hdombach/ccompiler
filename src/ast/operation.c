@@ -904,8 +904,10 @@ int printASTOperation(ASTOperation const *node) {
 	n += printf("{");
 	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
 
-	n += printf(", \"operand\": ");
-	n += printJsonStr(tokTypeStr(node->tokType));
+	if (node->tokType != TT_UNKNOWN) {
+		n += printf(", \"operand\": ");
+		n += printJsonStr(tokTypeStr(node->tokType));
+	}
 
 	if (node->lhs) {
 		n += printf(", \"lhs\": ");

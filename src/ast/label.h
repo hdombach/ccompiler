@@ -1,28 +1,43 @@
 #pragma once
 
-struct ASTNode;
+#include "node.h"
+
 struct Token;
 struct ASTScope;
 
-typedef enum ASTLabelType {
-	AST_LT_UNKNOWN,
-	AST_LT_IDENTIFIER,
-	AST_LT_CASE,
-	AST_LT_DEFAULT,
-} ASTLabelType;
+typedef struct ASTLblIdentifier {
+	ASTNode node;
+	char *name;
+} ASTLblIdentifier;
 
-typedef struct ASTLabel {
-	ASTLabelType type;
-	union {
-		char *identifier;
-		struct ASTNode *expression;
-	} c;
-} ASTLabel;
+void initASTLblIdentifier(ASTLblIdentifier *node);
+void freeASTLblIdentifier(ASTLblIdentifier *node);
+int parseASTLblIdentifier(
+		ASTLblIdentifier *node,
+		struct Token const *tok,
+		const struct ASTScope *scope);
+int printASTLblIdentifier(ASTLblIdentifier const *node);
 
-void initASTLabel(ASTLabel *label);
-void freeASTLabel(ASTLabel *label);
+typedef struct ASTLblCase {
+	ASTNode node;
+	struct ASTNode *expression;
+} ASTLblCase;
+
+void initASTLblCase(ASTLblCase *node);
+void freeASTLblCase(ASTLblCase *node);
+int parseASTLblCase(
+		ASTLblCase *node,
+		struct Token const *tok,
+		const struct ASTScope *scope);
+int printASTLblCase(ASTLblCase const *node);
+
+int parseASTLblDefault(
+		ASTNode *node,
+		struct Token const *tok,
+		const struct ASTScope *scope);
+int printASTLblDefault(ASTNode const *node);
+
 int parseASTLabel(
-		ASTLabel *label,
+		struct ASTNode *label,
 		struct Token const *tok,
 		struct ASTScope const *scope);
-int printASTLabel(ASTLabel const *label);

@@ -137,7 +137,7 @@ void freeASTStm(ASTStm *node) {
 		free(node->content);
 	}
 	if (node->label) {
-		freeASTLabel(node->label);
+		freeASTNode(node->label);
 		free(node->label);
 		node->label = NULL;
 	}
@@ -146,7 +146,6 @@ void freeASTStm(ASTStm *node) {
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	AST_VALID(ASTStm);
 	int res, n = 0;
-	ASTLabel tempLabel;
 	ASTNodeBuf tempBuf;
 
 	initASTStm(node);
@@ -155,9 +154,8 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTLabel(&tempLabel, tok + n, scope))) {
-		node->label = malloc(sizeof(ASTLabel));
-		*node->label = tempLabel;
+	if ((res = parseASTLabel((ASTNode *) &tempBuf, tok + n, scope))) {
+		node->label = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	}
 
@@ -206,8 +204,10 @@ int printASTStm(ASTStm const *node) {
 		n += printf("{");
 		n += printf("\"node type\": \"statement\"");
 
-		n += printf(", \"label\": ");
-		n += printASTLabel(node->label);
+		if (node->label) {
+			n += printf(", \"label\": ");
+			n += printASTNode(node->label);
+		}
 
 		n += printf(", \"content\": ");
 	}

@@ -8,119 +8,183 @@
 #include "../util/util.h"
 #include "node.h"
 
-void initASTLabel(ASTLabel *label) {
-	label->type = AST_LT_UNKNOWN;
+void initASTLblIdentifier(ASTLblIdentifier *node) {
+	initASTNode((ASTNode *) node);
+	node->name = NULL;
 }
 
-void freeASTLabel(ASTLabel *label) {
-	switch (label->type) {
-		case AST_LT_IDENTIFIER:
-			free(label->c.identifier);
-			break;
-		case AST_LT_CASE:
-			freeASTNode(label->c.expression);
-			free(label->c.expression);
-			break;
-		default:
-			break;
+void freeASTLblIdentifier(ASTLblIdentifier *node) {
+	if (node->name) {
+		free(node->name);
 	}
-	label->type = AST_LT_UNKNOWN;
 }
 
-int parseASTLabel(
-		ASTLabel *label,
-		struct Token const *tok,
+int parseASTLblIdentifier(
+		ASTLblIdentifier *node,
+		const struct Token *tok,
 		struct ASTScope const *scope)
 {
 	int n = 0, res;
 	char *tempIdentifier;
-	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
-
-	initASTLabel(label);
+	initASTLblIdentifier(node);
 	if (astHasErr()) {
-		freeASTLabel(label);
+		freeASTLblIdentifier(node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_IDENTIFIER) {
 		tempIdentifier = tok[n].contents;
 		n++;
-		if (tok[n].type == TT_COLON) {
-			n++;
-		} else {
-			freeASTLabel(label);
-			return 0;
-		}
-		label->type = AST_LT_IDENTIFIER;
-		label->c.identifier = strdup(tempIdentifier);
-
-	} else if (tok[n].type == TT_CASE) {
-		n++;
-
-		if ((res = parseASTExp(tempNode, tok + n, scope))) {
-			n += res;
-		} else {
-			freeASTLabel(label);
-			astErr("Expected expression following case", tok + n);
-			return 0;
-		}
-
-		if (tok[n].type == TT_COLON) {
-			n++;
-		} else {
-			freeASTLabel(label);
-			astErr("Expecting : following case", tok + n);
-			return 0;
-		}
-
-		label->type = AST_LT_CASE;
-		label->c.expression = malloc(AST_NODE_S);
-		mvASTNode(label->c.expression, tempNode);
-	} else if (tok[n].type == TT_DEFAULT) {
-		n++;
-
-		if (tok[n].type == TT_COLON) {
-			n++;
-		} else {
-			freeASTLabel(label);
-			astErr("expecting : following default", tok + n);
-			return 0;
-		}
-		label->type = AST_LT_DEFAULT;
+	} else {
+		freeASTLblIdentifier(node);
+		return 0;
 	}
+
+	if (tok[n].type == TT_COLON) {
+		n++;
+	} else {
+		freeASTLblIdentifier(node);
+		return 0;
+	}
+	node->name = strdup(tempIdentifier);
+	node->node.type = AST_LBL_IDENTIFIER;
 	return n;
 }
 
-int printASTLabel(ASTLabel const *label) {
+int printASTLblIdentifier(const ASTLblIdentifier *node) {
 	int n = 0;
 
 	n += printf("{");
 
-	n += printf("\"node type\": \"label\"");
+	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
 
-	n += printf(", \"label type\": ");
-	switch(label->type) {
-		case AST_LT_DEFAULT:
-			n += printf("\"default\"");
-			break;
-		case AST_LT_IDENTIFIER:
-			n += printf("\"identifier\"");
+	n += printf(", \"identifier\": \"%s\"", node->name);
 
-			n += printf(", \"name\": ");
-			n += printJsonStr(label->c.identifier);
-			break;
-		case AST_LT_CASE:
-			n += printf("\"case\"");
+	n += printf("}");
 
-			n += printf(", \"expression\": ");
-			n += printASTNode(label->c.expression);
-			break;
-		default:
-			n += printf("\"unknown\"");
+	return n;
+}
+
+void initASTLblCase(ASTLblCase *node) {
+	initASTNode((ASTNode *) node);
+	node->expression = NULL;
+}
+
+void freeASTLblCase(ASTLblCase *node) {
+	if (node->expression) {
+		freeASTNode(node->expression);
+		free(node->expression);
+	}
+}
+
+int parseASTLblCase(
+		ASTLblCase *node,
+		const struct Token *tok,
+		struct ASTScope const *scope)
+{
+	int n = 0, res;
+	ASTNodeBuf tempBuf;
+	initASTLblCase(node);
+	if (astHasErr()) {
+		freeASTLblCase(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_CASE) {
+		n++;
+	} else {
+		freeASTLblCase(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+		node->expression = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
+	} else {
+		freeASTLblCase(node);
+		astErr("Expected expression following case", tok + n);
+		return 0;
+	}
+
+	if (tok[n].type == TT_COLON) {
+		n++;
+	} else {
+		freeASTLblCase(node);
+		astErr("Expecting : following case", tok + n);
+		return 0;
+	}
+
+	node->node.type = AST_LBL_CASE;
+
+	return n;
+}
+
+int printASTLblCase(const ASTLblCase *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
+
+	if (node->expression) {
+		n += printf(", \"expression\": ");
+		n += printASTNode(node->expression);
 	}
 
 	n += printf("}");
 
 	return n;
+}
+
+int parseASTLblDefault(
+		ASTNode *node,
+		const struct Token *tok,
+		struct ASTScope const *scope)
+{
+	int n = 0, res;
+	ASTNodeBuf tempBuf;
+	initASTNode(node);
+	if (astHasErr()) {
+		freeASTNode(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_DEFAULT) {
+		n++;
+	} else {
+		freeASTNode(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_COLON) {
+		n++;
+	} else {
+		freeASTNode(node);
+		return 0;
+	}
+
+	node->type = AST_LBL_DEFAULT;
+
+	return n;
+}
+
+int printASTLblDefault(const ASTNode *node) {
+	return printf("\"%s\"", astNodeTypeStr(node->type));
+}
+
+int parseASTLabel(
+		ASTNode *node,
+		struct Token const *tok,
+		struct ASTScope const *scope)
+{
+	int res;
+
+	if ((res = parseASTLblIdentifier((ASTLblIdentifier *) node, tok, scope))) {
+		return res;
+	} else if ((res = parseASTLblCase((ASTLblCase *) node, tok, scope))) {
+		return res;
+	} else if ((res = parseASTLblDefault(node, tok, scope))) {
+		return res;
+	}
+	return 0;
 }

@@ -41,6 +41,9 @@ typedef enum ASTNodeType {
 	AST_FUNC_DEF,
 	AST_FILE,
 	AST_INITIALIZER_LIST,
+	AST_LBL_IDENTIFIER,
+	AST_LBL_CASE,
+	AST_LBL_DEFAULT,
 } ASTNodeType;
 
 typedef struct ASTNode {

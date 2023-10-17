@@ -44,7 +44,7 @@ struct ASTCompStm;
 typedef struct ASTStm {
 	ASTNode node;
 	ASTNode *content;
-	ASTLabel *label;
+	ASTNode *label;
 } ASTStm;
 
 void initASTStm(ASTStm *node);
