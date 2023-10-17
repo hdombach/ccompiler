@@ -56,8 +56,7 @@ int parseASTFuncDef(
 	}
 
 	if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
-		def->funcDecl = malloc(AST_NODE_S);
-		mvASTNode(def->funcDecl, (ASTNode *) &tempBuf);
+		def->funcDecl = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		freeASTFuncDef(def);

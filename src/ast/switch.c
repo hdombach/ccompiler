@@ -29,8 +29,6 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 	AST_VALID(ASTSwitch);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
-	ASTStm tempStatement;
 
 	initASTSwitch(node);
 	if (astHasErr()) {
@@ -53,10 +51,9 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTExp(tempNode, tok + n, scope))) {
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(AST_NODE_S);
-		mvASTNode(node->expression, tempNode);
+		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expecting expression following switch", tok + n);
 		freeASTSwitch(node);
@@ -71,10 +68,9 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTStm(&tempStatement, tok + n, scope))) {
+	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->statement = malloc(sizeof(ASTStm));
-		*node->statement = tempStatement;
+		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expecting statement following switch", tok + n);
 		freeASTSwitch(node);

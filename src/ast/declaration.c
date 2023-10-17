@@ -370,6 +370,7 @@ int _parseTypedefIdentifier(
 		const Token *tok,
 		ASTScope const *scope)
 {
+	AST_VALID(ASTIdentifier);
 	int res, n = 0;
 	if ((res = parseASTIdentifier(identifier, tok + n, scope))) {
 		n += res;

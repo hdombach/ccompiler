@@ -25,7 +25,9 @@ int parseASTFuncDecl(
 		struct ASTDeclarator *encl,
 		struct ASTScope const *scope)
 {
+	AST_VALID(ASTFuncDecl);
 	int n = 0, res;
+	ASTNodeBuf tempBuf;
 
 	initASTFuncDecl(decl);
 	if (encl) {
@@ -45,9 +47,8 @@ int parseASTFuncDecl(
 
 	if (tok[n].type != TT_C_PARAN) {
 		while (1) {
-			ASTParam param;
-			if ((res = parseASTParam(&param, tok + n, scope))) {
-				dlistApp(&decl->params, &param);
+			if ((res = parseASTParam((ASTParam *) &tempBuf, tok + n, scope))) {
+				dlistApp(&decl->params, &tempBuf);
 				n += res;
 			} else if (tok[n].type == TT_DOTS) {
 				decl->hasEllipses = 1;

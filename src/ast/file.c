@@ -56,6 +56,7 @@ void freeASTFile(ASTFile *file) {
 }
 
 int parseASTFile(ASTFile *file, const Token *tok) {
+	AST_VALID(ASTFile);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 

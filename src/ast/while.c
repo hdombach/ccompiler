@@ -31,8 +31,6 @@ int parseASTWhile(
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
-	ASTStm tempStm;
 
 	initASTWhile(node);
 	if (astHasErr()) {
@@ -55,10 +53,9 @@ int parseASTWhile(
 		return 0;
 	}
 
-	if ((res = parseASTExp(tempNode, tok + n, scope))) {
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(AST_NODE_S);
-		mvASTNode(node->expression, tempNode);
+		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expecting expression after while", tok + n);
 		freeASTWhile(node);
@@ -73,10 +70,9 @@ int parseASTWhile(
 		return 0;
 	}
 
-	if ((res = parseASTStm(&tempStm, tok + n, scope))) {
+	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->statement = malloc(sizeof(ASTStm));
-		*node->statement = tempStm;
+		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expecting statement after while", tok + n);
 		freeASTWhile(node);

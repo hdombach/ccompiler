@@ -75,8 +75,7 @@ int parseASTDoWhile(
 
 	if ((res = parseASTExp(tempNode, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(AST_NODE_S);
-		mvASTNode(node->expression, tempNode);
+		node->expression = dupASTNode((ASTNode *) &tempNode);
 	} else {
 		astErr("Expected expression after do while statement", tok + n);
 		freeASTDoWhile(node);

@@ -36,8 +36,6 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 	AST_VALID(ASTIf);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
-	ASTStm tempStatement;
 
 	initASTIf(node);
 
@@ -61,10 +59,9 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 		return 0;
 	}
 
-	if ((res = parseASTExp(tempNode, tok + n, scope))) {
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->expression = malloc(AST_NODE_S);
-		mvASTNode(node->expression, tempNode);
+		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("expected expression", tok + n);
 		freeASTIf(node);
@@ -79,10 +76,9 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 		return 0;
 	}
 
-	if ((res = parseASTStm(&tempStatement, tok + n, scope))) {
+	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->trueStatement = malloc(sizeof(ASTStm));
-		*node->trueStatement = tempStatement;
+		node->trueStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expected statement", tok + n);
 		freeASTIf(node);
@@ -96,10 +92,9 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 		return n;
 	}
 
-	if ((res = parseASTStm(&tempStatement, tok + n, scope))) {
+	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->falseStatement = malloc(sizeof(ASTStm));
-		*node->falseStatement = tempStatement;
+		node->falseStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expected statement", tok + n);
 		freeASTIf(node);

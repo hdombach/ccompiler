@@ -48,11 +48,9 @@ int parseASTArrayDecl(
 	}
 
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
-	if ((res = parseASTExp(tempNode, tok + n, scope))) {
-		decl->exp = malloc(AST_NODE_S);
-		mvASTNode(decl->exp, tempNode);
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+		decl->exp = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	}
 

@@ -18,6 +18,7 @@ int parseASTInitializerList(
 		const Token *tok,
 		const struct ASTScope *scope)
 {
+	AST_VALID(ASTInitializerList);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 	initASTInitializerList(list);

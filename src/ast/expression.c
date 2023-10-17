@@ -348,7 +348,6 @@ int parseASTExp2(ASTNode *node, Token const *tok, ASTScope const *scope) {
 int parseASTExp1(ASTNode *node, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
 
 	initASTNode(node);
 	if (astHasErr()) {
@@ -364,8 +363,8 @@ int parseASTExp1(ASTNode *node, Token const *tok, ASTScope const *scope) {
 	}
 
 	while (1) {
-		if ((res = parseASTOperation1((ASTOperation *) tempNode, tok + n, scope, (ASTNode *) node))) {
-			mvASTNode(node, tempNode);
+		if ((res = parseASTOperation1((ASTOperation *) &tempBuf, tok + n, scope, (ASTNode *) node))) {
+			mvASTNode(node, (ASTNode *) &tempBuf);
 			n += res;
 		} else {
 			return n;

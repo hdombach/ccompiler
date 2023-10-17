@@ -46,8 +46,7 @@ int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
 
 	if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
 		n += res;
-		param->declarator = malloc(AST_NODE_S);
-		mvASTNode((ASTNode *) param->declarator, (ASTNode *) &tempBuf);
+		param->declarator = (ASTDeclarator *) dupASTNode((ASTNode *) &tempBuf);
 	}
 
 	param->node.type = AST_PARAM;
