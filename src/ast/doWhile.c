@@ -33,7 +33,6 @@ int parseASTDoWhile(
 	AST_VALID(ASTDoWhile);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	ASTNode *tempNode = (ASTNode *) &tempBuf;
 	ASTStm tempStm;
 
 	initASTDoWhile(node);
@@ -73,9 +72,9 @@ int parseASTDoWhile(
 		return 0;
 	}
 
-	if ((res = parseASTExp(tempNode, tok + n, scope))) {
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->expression = dupASTNode((ASTNode *) &tempNode);
+		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		astErr("Expected expression after do while statement", tok + n);
 		freeASTDoWhile(node);

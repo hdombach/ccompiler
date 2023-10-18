@@ -9,6 +9,7 @@
 #include "enumDecl.h"
 #include "expression.h"
 #include "file.h"
+#include "for.h"
 #include "funcDecl.h"
 #include "funcDef.h"
 #include "identifier.h"
@@ -68,6 +69,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_LBL_IDENTIFIER: freeASTLblIdentifier((ASTLblIdentifier *) node); break;
 		case AST_LBL_CASE: freeASTLblCase((ASTLblCase *) node); break;
 		case AST_LBL_DEFAULT: break;
+		case AST_FOR: freeASTFor((ASTFor *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -123,7 +125,8 @@ char *_astNodeTypes[] = {
 	"initializer list",
 	"identifier label",
 	"case label",
-	"default label"
+	"default label",
+	"for statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -172,6 +175,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_LBL_IDENTIFIER: return printASTLblIdentifier((ASTLblIdentifier *) node);
 		case AST_LBL_CASE: return printASTLblCase((ASTLblCase *) node);
 		case AST_LBL_DEFAULT: return printASTLblDefault(node);
+		case AST_FOR: return printASTFor((ASTFor *) node);
 		default: return printf("\"(unknown node)\"");
 	}
 }
