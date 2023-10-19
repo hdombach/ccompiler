@@ -16,10 +16,7 @@ int main() {
 	macroDictTest();
 	wordDictTest();
 
-	testsTotal++;
-
 	tPrintResult();
-
 
 	if (testsPassed == testsTotal) {
 		return 0;
