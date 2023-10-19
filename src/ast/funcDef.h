@@ -17,7 +17,7 @@ typedef struct ASTFuncDef {
 	ASTCompStm compoundStm;
 } ASTFuncDef;
 
-void initASTFuncDef(ASTFuncDef *def);
+void initASTFuncDef(ASTFuncDef *def, Token const *tok);
 void freeASTFuncDef(ASTFuncDef *def);
 int parseASTFuncDef(
 		ASTFuncDef *def,

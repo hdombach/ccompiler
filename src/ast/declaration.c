@@ -384,8 +384,8 @@ int _parseTypedefIdentifier(
 	return n;
 }
 
-void initASTTypeSpec(ASTTypeSpec *typeSpec) {
-	initASTNode((ASTNode *) typeSpec);
+void initASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok) {
+	initASTNode((ASTNode *) typeSpec, tok);
 	initASTTypeQualifier(&typeSpec->qualifiers);
 	initASTStorageClassSpec(&typeSpec->storage);
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
@@ -410,7 +410,7 @@ int parseASTTypeSpec(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTTypeSpec(typeSpec);
+	initASTTypeSpec(typeSpec, tok);
 	if (astHasErr()) {
 		freeASTTypeSpec(typeSpec);
 		return 0;
@@ -527,7 +527,8 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
  * ASTDeclarator
  * ========================================================================= */
 
-void initASTDeclarator(ASTDeclarator *declarator) {
+void initASTDeclarator(ASTDeclarator *declarator, Token const *tok) {
+	initASTNode((ASTNode *) declarator, tok);
 	declarator->initializer = NULL;
 	declarator->bitField = NULL;
 	declarator->qualifiers = AST_TQ_NONE;
@@ -562,7 +563,7 @@ int parseASTDeclarator(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTDeclarator(declarator);
+	initASTDeclarator(declarator, tok);
 
 	if (astHasErr()) {
 		return 0;
@@ -710,8 +711,8 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
  * ASTDeclaration
  * ========================================================================= */
 
-void initASTDeclaration(ASTDeclaration *declaration) {
-	initASTNode((ASTNode *) declaration);
+void initASTDeclaration(ASTDeclaration *declaration, Token const *tok) {
+	initASTNode((ASTNode *) declaration, tok);
 	declaration->typeSpec = NULL;
 	initDList(&declaration->declarators, AST_NODE_S);
 }
@@ -733,7 +734,7 @@ int parseASTDeclaration(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTDeclaration(declaration);
+	initASTDeclaration(declaration, tok);
 
 	if (astHasErr()) {
 		freeASTDeclaration(declaration);

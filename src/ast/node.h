@@ -47,12 +47,19 @@ typedef enum ASTNodeType {
 	AST_FOR,
 } ASTNodeType;
 
+struct ASTScope;
+struct Token;
+
 typedef struct ASTNode {
 	ASTNodeType type;
+	struct ASTNode *parent;
+	struct ASTScope *curScope;
+	struct Token const *tok;
 } ASTNode;
 
-void initASTNode(ASTNode *node);
+void initASTNode(ASTNode *node, struct Token const *tok);
 void freeASTNode(ASTNode *node);
+void astNodeSetParent(ASTNode *node, ASTNode *parent);
 void mvASTNode(ASTNode *dest, ASTNode *src);
 ASTNode *dupASTNode(ASTNode *node);
 char *astNodeTypeStr(ASTNodeType type);

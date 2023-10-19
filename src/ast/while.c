@@ -6,8 +6,8 @@
 #include "statement.h"
 #include "astUtil.h"
 
-void initASTWhile(ASTWhile *node) {
-	initASTNode((ASTNode *) node);
+void initASTWhile(ASTWhile *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -32,7 +32,7 @@ int parseASTWhile(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTWhile(node);
+	initASTWhile(node, tok);
 	if (astHasErr()) {
 		freeASTWhile(node);
 		return 0;

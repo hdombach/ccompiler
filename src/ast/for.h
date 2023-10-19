@@ -12,7 +12,7 @@ typedef struct ASTFor {
 	ASTNode *loopStm;
 } ASTFor;
 
-void initASTFor(ASTFor *node);
+void initASTFor(ASTFor *node, Token const *tok);
 void freeASTFor(ASTFor *node);
 int parseASTFor(
 		ASTFor *node,

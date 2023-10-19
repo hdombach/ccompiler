@@ -12,7 +12,7 @@ int parseASTCompItem(
 		struct ASTScope const *scope)
 {
 	int res, n = 0;
-	initASTNode(node);
+	initASTNode(node, tok);
 
 	if (astHasErr()) {
 		return 0;
@@ -30,7 +30,8 @@ int parseASTCompItem(
 	return n;
 }
 
-void initASTCompStm(ASTCompStm *node) {
+void initASTCompStm(ASTCompStm *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	initDListEmpty(&node->items, AST_NODE_S);
 }
 
@@ -56,7 +57,7 @@ int parseASTCompStm(
 	}
 	n++;
 
-	initASTCompStm(node);
+	initASTCompStm(node, tok);
 	while (!astHasErr()) {
 		if ((res = parseASTCompItem((ASTNode *) &tempBuf, tok + n, scope))) {
 			dlistApp(&node->items, &tempBuf);

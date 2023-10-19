@@ -18,7 +18,7 @@ typedef struct ASTInitializerList {
 	DList list;
 } ASTInitializerList;
 
-void initASTInitializerList(ASTInitializerList *list);
+void initASTInitializerList(ASTInitializerList *list, Token const *tok);
 void freeASTInitializerList(ASTInitializerList *list);
 int parseASTInitializerList(
 		ASTInitializerList *list,

@@ -7,8 +7,8 @@
 #include "../util/util.h"
 #include "node.h"
 
-void initASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
-	initASTNode((ASTNode *) decl);
+void initASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok) {
+	initASTNode((ASTNode *) decl, tok);
 	decl->name = NULL;
 	decl->exp = NULL;
 }
@@ -35,7 +35,7 @@ int parseASTEnumeratorDecl(
 		return 0;
 	}
 
-	initASTEnumeratorDecl(decl);
+	initASTEnumeratorDecl(decl, tok);
 
 	if (tok[n].type == TT_IDENTIFIER) {
 		decl->name = strdup(tok[n].contents);
@@ -87,10 +87,10 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 	return n;
 }
 
-void initASTEnumDecl(ASTEnumDecl *decl) {
+void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 	decl->name = NULL;
 	initDList(&decl->enumerators, AST_NODE_S);
-	initASTNode((ASTNode *) decl);
+	initASTNode((ASTNode *) decl, tok);
 }
 
 void freeASTEnumDecl(ASTEnumDecl *decl) {
@@ -112,7 +112,7 @@ int parseASTEnumDecl(
 		return 0;
 	}
 	
-	initASTEnumDecl(decl);
+	initASTEnumDecl(decl, tok);
 
 	if (tok[n].type == TT_ENUM) {
 		n++;

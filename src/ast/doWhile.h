@@ -12,7 +12,7 @@ typedef struct ASTDoWhile {
 	struct ASTStm *statement;
 } ASTDoWhile;
 
-void initASTDoWhile(ASTDoWhile *node);
+void initASTDoWhile(ASTDoWhile *node, struct Token const *tok);
 void freeASTDoWhile(ASTDoWhile *node);
 int parseASTDoWhile(
 		ASTDoWhile *node,

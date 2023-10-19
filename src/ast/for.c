@@ -5,8 +5,8 @@
 #include "node.h"
 #include "statement.h"
 
-void initASTFor(ASTFor *node) {
-	initASTNode((ASTNode *) node);
+void initASTFor(ASTFor *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->initClause = NULL;
 	node->condExp = NULL;
 	node->iterExp = NULL;
@@ -43,7 +43,7 @@ int parseASTFor(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTFor(node);
+	initASTFor(node, tok);
 	if (astHasErr()) {
 		freeASTFor(node);
 		return 0;

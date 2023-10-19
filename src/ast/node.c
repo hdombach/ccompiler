@@ -25,8 +25,11 @@
 #include "switch.h"
 #include "while.h"
 
-void initASTNode(ASTNode *node) {
+void initASTNode(ASTNode *node, struct Token const *tok) {
 	node->type = AST_UNKNOWN;
+	node->parent = NULL;
+	node->curScope = NULL;
+	node->tok = tok;
 }
 
 void freeASTNode(ASTNode *node) {
@@ -73,6 +76,11 @@ void freeASTNode(ASTNode *node) {
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
+}
+
+void astNodeSetParent(ASTNode *node, ASTNode *parent) {
+	node->parent = node->parent;
+	node->curScope = parent->curScope;
 }
 
 void mvASTNode(ASTNode *dest, ASTNode *src) {

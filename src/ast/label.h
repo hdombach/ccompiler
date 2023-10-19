@@ -10,7 +10,7 @@ typedef struct ASTLblIdentifier {
 	char *name;
 } ASTLblIdentifier;
 
-void initASTLblIdentifier(ASTLblIdentifier *node);
+void initASTLblIdentifier(ASTLblIdentifier *node, struct Token const *tok);
 void freeASTLblIdentifier(ASTLblIdentifier *node);
 int parseASTLblIdentifier(
 		ASTLblIdentifier *node,
@@ -23,7 +23,7 @@ typedef struct ASTLblCase {
 	struct ASTNode *expression;
 } ASTLblCase;
 
-void initASTLblCase(ASTLblCase *node);
+void initASTLblCase(ASTLblCase *node, struct Token const *tok);
 void freeASTLblCase(ASTLblCase *node);
 int parseASTLblCase(
 		ASTLblCase *node,

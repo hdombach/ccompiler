@@ -14,7 +14,7 @@ int parseASTFileItem(
 {
 	int n = 0, res;
 
-	initASTNode(item);
+	initASTNode(item, tok);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -45,7 +45,8 @@ DList astFileItemTypes(const ASTNode *item) {
 	return result;
 }
 
-void initASTFile(ASTFile *file) {
+void initASTFile(ASTFile *file, Token const *tok) {
+	initASTNode((ASTNode *) file, tok);
 	initDList(&file->items, AST_NODE_S);
 	initASTScope(&file->scope);
 }
@@ -60,7 +61,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTFile(file);
+	initASTFile(file, tok);
 
 	while (1) {
 		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, &file->scope))) {

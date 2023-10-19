@@ -35,7 +35,7 @@ typedef struct ASTOperation {
 } ASTOperation;
 
 
-void initASTFuncOperation(ASTFuncOperation *node);
+void initASTFuncOperation(ASTFuncOperation *node, Token const *tok);
 void freeASTFuncOperation(ASTFuncOperation *node);
 /* If the parse fails, func is not freed */
 int parseASTFuncOperation(
@@ -45,7 +45,7 @@ int parseASTFuncOperation(
 		struct ASTScope const *scope);
 int printASTFuncOperation(ASTFuncOperation const *node);
 
-void initASTCondOperation(ASTCondOperation *node);
+void initASTCondOperation(ASTCondOperation *node, Token const *tok);
 void freeASTCondOperation(ASTCondOperation *node);
 int parseASTCondOperation(
 		ASTCondOperation *node,
@@ -53,7 +53,7 @@ int parseASTCondOperation(
 		struct ASTScope const *scope);
 int printASTCondOperation(ASTCondOperation const *node);
 
-void initASTOperation(ASTOperation *node);
+void initASTOperation(ASTOperation *node, Token const *tok);
 void freeASTOperation(ASTOperation *node);
 int parseASTOperation15(
 		ASTOperation *node,

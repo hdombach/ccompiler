@@ -14,7 +14,7 @@ typedef struct ASTIf {
 	struct ASTStm *falseStatement;
 } ASTIf;
 
-void initASTIf(ASTIf *node);
+void initASTIf(ASTIf *node, Token const *tok);
 void freeASTIf(ASTIf *node);
 int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope);
 int printASTIf(ASTIf const *node);

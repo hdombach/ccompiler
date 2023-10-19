@@ -7,8 +7,8 @@
 #include "astUtil.h"
 #include "while.h"
 
-void initASTDoWhile(ASTDoWhile *node) {
-	initASTNode((ASTNode *) node);
+void initASTDoWhile(ASTDoWhile *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -35,7 +35,7 @@ int parseASTDoWhile(
 	ASTNodeBuf tempBuf;
 	ASTStm tempStm;
 
-	initASTDoWhile(node);
+	initASTDoWhile(node, tok);
 	if (astHasErr()) {
 		freeASTDoWhile(node);
 		return 0;

@@ -18,7 +18,7 @@ typedef struct ASTEnumDecl {
 	DList enumerators;
 } ASTEnumDecl;
 
-void initASTEnumeratorDecl(ASTEnumeratorDecl *decl);
+void initASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok);
 void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl);
 int parseASTEnumeratorDecl(
 		ASTEnumeratorDecl *decl,
@@ -26,7 +26,7 @@ int parseASTEnumeratorDecl(
 		struct ASTScope const *scope);
 int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
 
-void initASTEnumDecl(ASTEnumDecl *decl);
+void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok);
 void freeASTEnumDecl(ASTEnumDecl *decl);
 int parseASTEnumDecl(
 		ASTEnumDecl *decl,

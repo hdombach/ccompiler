@@ -8,8 +8,8 @@
 #include "statement.h"
 #include "../token.h"
 
-void initASTIf(ASTIf *node) {
-	initASTNode((ASTNode *) node);
+void initASTIf(ASTIf *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
 	node->trueStatement = NULL;
 	node->falseStatement = NULL;
@@ -37,7 +37,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scop
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 
-	initASTIf(node);
+	initASTIf(node, tok);
 
 	if (astHasErr()) {
 		freeASTIf(node);

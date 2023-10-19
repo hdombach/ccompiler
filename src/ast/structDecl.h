@@ -15,7 +15,7 @@ typedef struct {
 	int isUnion;
 } ASTStructDecl;
 
-void initASTStructDecl(ASTStructDecl *decl);
+void initASTStructDecl(ASTStructDecl *decl, Token const *tok);
 void freeASTStructDecl(ASTStructDecl *decl);
 int parseASTStructDecl(
 		ASTStructDecl *decl,

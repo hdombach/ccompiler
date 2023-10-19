@@ -12,7 +12,7 @@ typedef struct ASTArrayDecl {
 	struct ASTNode *encl;
 } ASTArrayDecl;
 
-void initASTArrayDecl(ASTArrayDecl *decl);
+void initASTArrayDecl(ASTArrayDecl *decl, struct Token const *tok);
 void freeASTArrayDecl(ASTArrayDecl *decl);
 /*
  * Takes ownership of encl

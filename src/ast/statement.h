@@ -14,7 +14,7 @@
 
 typedef ASTNode ASTEmptyStm;
 
-void initASTEmptyStm(ASTEmptyStm *node);
+void initASTEmptyStm(ASTEmptyStm *node, Token const *tok);
 int parseASTEmptyStm(ASTEmptyStm *node, Token const *tok, struct ASTScope const *scope);
 int printASTEmptyStm(ASTEmptyStm const *node);
 
@@ -24,7 +24,7 @@ int printASTEmptyStm(ASTEmptyStm const *node);
 
 typedef ASTNode ASTBreak;
 
-void initASTBreak(ASTBreak *node);
+void initASTBreak(ASTBreak *node, Token const *tok);
 int parseASTBreak(ASTBreak *node,  Token const *tok, struct ASTScope const *scope);
 int printASTBreak(ASTBreak const *node);
 
@@ -34,7 +34,7 @@ int printASTBreak(ASTBreak const *node);
 
 typedef ASTNode ASTContinue;
 
-void initASTContinue(ASTContinue *node);
+void initASTContinue(ASTContinue *node, Token const *tok);
 int parseASTContinue(ASTContinue *node, Token const *tok, struct ASTScope const *scope);
 int printASTContinue(ASTContinue const *node);
 
@@ -47,7 +47,7 @@ typedef struct ASTStm {
 	ASTNode *label;
 } ASTStm;
 
-void initASTStm(ASTStm *node);
+void initASTStm(ASTStm *node, Token const *tok);
 void freeASTStm(ASTStm *node);
 
 int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope const *scope);

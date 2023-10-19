@@ -8,8 +8,8 @@
 #include "scope.h"
 #include "../util/callbacks.h"
 
-void initASTStructDecl(ASTStructDecl *decl) {
-	initASTNode((ASTNode *) decl);
+void initASTStructDecl(ASTStructDecl *decl, Token const *tok) {
+	initASTNode((ASTNode *) decl, tok);
 	decl->name = NULL;
 	initDListEmpty(&decl->items, AST_NODE_S);
 	decl->scope = malloc(sizeof(ASTScope));
@@ -39,7 +39,7 @@ int parseASTStructDecl(
 		return 0;
 	}
 
-	initASTStructDecl(decl);
+	initASTStructDecl(decl, tok);
 	decl->scope->parent = (ASTScope *) scope; //is const in this context
 
 	if (tok[n].type == TT_STRUCT) {

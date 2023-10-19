@@ -27,7 +27,7 @@ int parseASTCompItem(
 		Token const *tok,
 		struct ASTScope const *scope);
 
-void initASTCompStm(ASTCompStm *node);
+void initASTCompStm(ASTCompStm *node, Token const *tok);
 void freeASTCompStm(ASTCompStm *node);
 int parseASTCompStm(
 		ASTCompStm *node,

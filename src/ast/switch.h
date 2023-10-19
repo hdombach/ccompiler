@@ -13,7 +13,7 @@ typedef struct ASTSwitch {
 	struct ASTStm *statement;
 } ASTSwitch;
 
-void initASTSwitch(ASTSwitch *node);
+void initASTSwitch(ASTSwitch *node, struct Token const *tok);
 void freeASTSwitch(ASTSwitch *node);
 int parseASTSwitch(
 		ASTSwitch *node,

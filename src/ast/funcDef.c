@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void initASTFuncDef(ASTFuncDef *def) {
-	initASTNode((ASTNode *) def);
+void initASTFuncDef(ASTFuncDef *def, Token const *tok) {
+	initASTNode((ASTNode *) def, tok);
 	def->typeSpec = NULL;
 	def->funcDecl = NULL;
-	initASTCompStm(&def->compoundStm);
+	initASTCompStm(&def->compoundStm, tok);
 }
 
 void freeASTFuncDef(ASTFuncDef *def) {
@@ -40,7 +40,7 @@ int parseASTFuncDef(
 	ASTNode *curDecl, *prevDecl;
 	ASTNodeBuf tempBuf;
 
-	initASTFuncDef(def);
+	initASTFuncDef(def, tok);
 
 	if (astHasErr()) {
 		freeASTFuncDef(def);

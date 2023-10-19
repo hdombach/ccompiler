@@ -7,7 +7,8 @@
 #include "node.h"
 #include "structDecl.h"
 
-void initASTArrayDecl(ASTArrayDecl *decl) {
+void initASTArrayDecl(ASTArrayDecl *decl, Token const *tok) {
+	initASTNode((ASTNode *) decl, tok);
 	decl->exp = NULL;
 	decl->encl = NULL;
 }
@@ -31,7 +32,8 @@ int parseASTArrayDecl(
 	AST_VALID(ASTArrayDecl);
 	int n = 0, res;
 
-	initASTArrayDecl(decl);
+	initASTArrayDecl(decl, tok);
+	decl->node.tok = tok;
 	if (encl) {
 		decl->encl = encl;
 	}

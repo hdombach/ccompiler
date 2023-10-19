@@ -111,7 +111,7 @@ int parseASTArithType(ASTArithType *type, Token const *tok);
 int printASTArithType(ASTArithType const *type);
 int astArithTypeNormalize(ASTArithType const *type);
 
-void initASTTypeSpec(ASTTypeSpec *typeSpec);
+void initASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok);
 void freeASTTypeSpec(ASTTypeSpec *typeSpec);
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
@@ -119,7 +119,7 @@ int parseASTTypeSpec(
 		ASTScope const *scope);
 int printASTTypeSpec(ASTTypeSpec const * typeSpec);
 
-void initASTDeclarator(ASTDeclarator *declarator);
+void initASTDeclarator(ASTDeclarator *declarator, Token const *tok);
 void freeASTDeclarator(ASTDeclarator *declarator);
 int parseASTDeclarator(
 		ASTDeclarator *declarator,
@@ -127,7 +127,7 @@ int parseASTDeclarator(
 		ASTScope const *scope);
 int printASTDeclarator(ASTDeclarator const *declarator);
 
-void initASTDeclaration(ASTDeclaration *declaration);
+void initASTDeclaration(ASTDeclaration *declaration, Token const *tok);
 void freeASTDeclaration(ASTDeclaration *declaration);
 int parseASTDeclaration(
 		ASTDeclaration *declaration,

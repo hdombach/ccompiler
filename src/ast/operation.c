@@ -16,8 +16,8 @@
  * Func Operation
  *************************************************************/
 
-void initASTFuncOperation(ASTFuncOperation *node) {
-	initASTNode((ASTNode *) node);
+void initASTFuncOperation(ASTFuncOperation *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->func = NULL;
 	initDListEmpty(&node->params, AST_NODE_S);
 }
@@ -39,7 +39,7 @@ int parseASTFuncOperation(
 	AST_VALID(ASTFuncOperation);
 	int res, n = 0;
 
-	initASTFuncOperation(node);
+	initASTFuncOperation(node, tok);
 	if (astHasErr()) {
 		freeASTFuncOperation(node);
 		return 0;
@@ -118,7 +118,7 @@ int _parseASTSubscriptOperation(
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;
@@ -156,8 +156,8 @@ int _parseASTSubscriptOperation(
  * Condition Operation (ternary)
  *************************************************************/
 
-void initASTCondOperation(ASTCondOperation *node) {
-	initASTNode((ASTNode *) node);
+void initASTCondOperation(ASTCondOperation *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->condition = NULL;
 	node->trueExp = NULL;
 	node->falseExp = NULL;
@@ -192,7 +192,7 @@ int parseASTCondOperation(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTCondOperation(node);
+	initASTCondOperation(node, tok);
 	if (astHasErr()) {
 		freeASTCondOperation(node);
 		return 0;
@@ -280,7 +280,7 @@ int _parseASTCastOperation(
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
@@ -329,7 +329,7 @@ int _parseASTSizeofOperation(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;
@@ -378,8 +378,8 @@ int _parseASTSizeofOperation(
  * Operation
  *************************************************************/
 
-void initASTOperation(ASTOperation *node) {
-	initASTNode(&node->node);
+void initASTOperation(ASTOperation *node, Token const *tok) {
+	initASTNode(&node->node, tok);
 	node->tokType = TT_UNKNOWN;
 	node->lhs = NULL;
 	node->rhs = NULL;
@@ -524,7 +524,7 @@ int _parseASTOperationBin(
 	ASTNodeBuf tempBuf;
 	TokenType tempType;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;
@@ -575,7 +575,7 @@ int _parseASTOperationPref(
 	ASTNodeBuf tempBuf;
 	TokenType tempType;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;
@@ -639,7 +639,7 @@ int parseASTOperation13(
 	int n = 0, res;
 	ASTCondOperation condOperation;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;
@@ -829,7 +829,7 @@ int parseASTOperation1(
 {
 	int n = 0, res;
 
-	initASTOperation(node);
+	initASTOperation(node, tok);
 	if (astHasErr()) {
 		freeASTOperation(node);
 		return 0;

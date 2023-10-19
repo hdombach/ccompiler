@@ -8,8 +8,8 @@
 #include "../util/util.h"
 #include "node.h"
 
-void initASTLblIdentifier(ASTLblIdentifier *node) {
-	initASTNode((ASTNode *) node);
+void initASTLblIdentifier(ASTLblIdentifier *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->name = NULL;
 }
 
@@ -26,7 +26,7 @@ int parseASTLblIdentifier(
 {
 	int n = 0, res;
 	char *tempIdentifier;
-	initASTLblIdentifier(node);
+	initASTLblIdentifier(node, tok);
 	if (astHasErr()) {
 		freeASTLblIdentifier(node);
 		return 0;
@@ -65,8 +65,8 @@ int printASTLblIdentifier(const ASTLblIdentifier *node) {
 	return n;
 }
 
-void initASTLblCase(ASTLblCase *node) {
-	initASTNode((ASTNode *) node);
+void initASTLblCase(ASTLblCase *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
 }
 
@@ -84,7 +84,7 @@ int parseASTLblCase(
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	initASTLblCase(node);
+	initASTLblCase(node, tok);
 	if (astHasErr()) {
 		freeASTLblCase(node);
 		return 0;
@@ -143,7 +143,7 @@ int parseASTLblDefault(
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	initASTNode(node);
+	initASTNode(node, tok);
 	if (astHasErr()) {
 		freeASTNode(node);
 		return 0;

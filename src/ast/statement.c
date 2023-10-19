@@ -16,8 +16,8 @@
  * Empty Statement
  ***********************************************************************/
 
-void initASTEmptyStm(ASTEmptyStm *node) {
-	initASTNode((ASTNode *) node);
+void initASTEmptyStm(ASTEmptyStm *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 }
 
 int parseASTEmptyStm(
@@ -28,7 +28,7 @@ int parseASTEmptyStm(
 	AST_VALID(ASTEmptyStm);
 	int n = 0;
 
-	initASTEmptyStm(node);
+	initASTEmptyStm(node, tok);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -51,8 +51,8 @@ int printASTEmptyStm(const ASTEmptyStm *node) {
  * Break Statement
  ***********************************************************************/
 
-void initASTBreak(ASTBreak *node) {
-	initASTNode((ASTNode *) node);
+void initASTBreak(ASTBreak *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 }
 
 int parseASTBreak(
@@ -63,7 +63,7 @@ int parseASTBreak(
 	AST_VALID(ASTBreak);
 	int n = 0;
 
-	initASTBreak(node);
+	initASTBreak(node, tok);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -88,8 +88,8 @@ int printASTBreak(const ASTBreak *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
-void initASTContinue(ASTContinue *node) {
-	initASTNode((ASTNode *) node);
+void initASTContinue(ASTContinue *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 }
 
 int parseASTContinue(
@@ -100,7 +100,7 @@ int parseASTContinue(
 	AST_VALID(ASTContinue);
 	int n = 0;
 
-	initASTContinue(node);
+	initASTContinue(node, tok);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -125,8 +125,8 @@ int printASTContinue(const ASTContinue *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
-void initASTStm(ASTStm *node) {
-	initASTNode((ASTNode *) node);
+void initASTStm(ASTStm *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->label = NULL;
 	node->content = NULL;
 }
@@ -148,7 +148,7 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
 
-	initASTStm(node);
+	initASTStm(node, tok);
 	if (astHasErr()) {
 		freeASTStm(node);
 		return 0;

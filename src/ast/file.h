@@ -16,7 +16,7 @@ int parseASTFileItem(ASTNode *item, Token const *tok, ASTScope const *scope);
 
 DList astFileItemTypes(ASTNode const *item);
 
-void initASTFile(ASTFile *file);
+void initASTFile(ASTFile *file, Token const *tok);
 void freeASTFile(ASTFile *file);
 int parseASTFile(ASTFile *file, Token const *tok);
 int printASTFile(ASTFile const *file);

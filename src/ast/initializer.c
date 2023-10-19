@@ -4,8 +4,8 @@
 #include "scope.h"
 #include "node.h"
 
-void initASTInitializerList(ASTInitializerList *list) {
-	initASTNode((ASTNode *) list);
+void initASTInitializerList(ASTInitializerList *list, Token const *tok) {
+	initASTNode((ASTNode *) list, tok);
 	initDListEmpty(&list->list, AST_NODE_S);
 }
 
@@ -21,7 +21,7 @@ int parseASTInitializerList(
 	AST_VALID(ASTInitializerList);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
-	initASTInitializerList(list);
+	initASTInitializerList(list, tok);
 	if (astHasErr()) {
 		freeASTInitializerList(list);
 		return 0;

@@ -7,8 +7,8 @@
 #include "scope.h"
 #include "astUtil.h"
 
-void initASTSwitch(ASTSwitch *node) {
-	initASTNode((ASTNode *) node);
+void initASTSwitch(ASTSwitch *node, Token const *tok) {
+	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -30,7 +30,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTSwitch(node);
+	initASTSwitch(node, tok);
 	if (astHasErr()) {
 		freeASTSwitch(node);
 		return 0;
