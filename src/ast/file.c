@@ -80,6 +80,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 		fprintASTErr(stderr);
 	}
 
+	file->node.type = AST_FILE;
 	return n;
 }
 
@@ -96,4 +97,20 @@ int printASTFile(const ASTFile *file) {
 	n += printf("}");
 
 	return n;
+}
+
+ASTTravRes astFileTrav(
+		ASTFile *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	for (int i = 0; i < node->items.size; i++) {
+		ASTNode *item = dlistGetm(&node->items, i);
+		result = astNodeTrav(item, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	return ASTT_SUCCESS;
 }

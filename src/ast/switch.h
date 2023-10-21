@@ -20,3 +20,8 @@ int parseASTSwitch(
 		struct Token const *tok,
 		struct ASTScope const *scope);
 int printASTSwitch(ASTSwitch const *node);
+ASTTravRes astSwitchTrav(
+		ASTSwitch *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
+

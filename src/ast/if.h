@@ -18,3 +18,7 @@ void initASTIf(ASTIf *node, Token const *tok);
 void freeASTIf(ASTIf *node);
 int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope);
 int printASTIf(ASTIf const *node);
+ASTTravRes astIfTrav(
+		ASTIf *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

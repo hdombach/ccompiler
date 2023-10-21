@@ -30,6 +30,10 @@ int parseASTLblCase(
 		struct Token const *tok,
 		const struct ASTScope *scope);
 int printASTLblCase(ASTLblCase const *node);
+ASTTravRes astLblCaseTrav(
+		ASTLblCase *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
 
 int parseASTLblDefault(
 		ASTNode *node,

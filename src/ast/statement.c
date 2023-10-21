@@ -222,3 +222,19 @@ int printASTStm(ASTStm const *node) {
 
 	return n;
 }
+
+ASTTravRes astStmTrav(
+		ASTStm *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav(node->content, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->label, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
+}

@@ -25,3 +25,7 @@ int parseASTFuncDecl(
 		struct ASTDeclarator *encl,
 		struct ASTScope const *scope);
 int printASTFuncDecl(ASTFuncDecl const *decl);
+ASTTravRes astFuncDeclTrav(
+		ASTFuncDecl *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

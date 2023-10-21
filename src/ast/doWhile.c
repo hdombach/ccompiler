@@ -122,3 +122,18 @@ int printASTDoWhile(const ASTDoWhile *node) {
 
 	return n;
 }
+
+ASTTravRes astDoWhileTrav(ASTDoWhile *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav((ASTNode *) node->statement, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->expression, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
+}

@@ -34,3 +34,7 @@ int parseASTCompStm(
 		Token const *tok,
 		struct ASTScope const *scope);
 int printASTCompStm(ASTCompStm const *node);
+ASTTravRes astCompStmTrav(
+		ASTCompStm *,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

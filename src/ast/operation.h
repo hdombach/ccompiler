@@ -31,7 +31,6 @@ typedef struct ASTOperation {
 	TokenType tokType;
 	ASTNode *lhs;
 	ASTNode *rhs;
-	char buf[50];
 } ASTOperation;
 
 
@@ -44,6 +43,10 @@ int parseASTFuncOperation(
 		ASTNode *func,
 		struct ASTScope const *scope);
 int printASTFuncOperation(ASTFuncOperation const *node);
+ASTTravRes astFuncOperationTrav(
+		ASTFuncOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
 
 void initASTCondOperation(ASTCondOperation *node, Token const *tok);
 void freeASTCondOperation(ASTCondOperation *node);
@@ -52,6 +55,10 @@ int parseASTCondOperation(
 		Token const *tok,
 		struct ASTScope const *scope);
 int printASTCondOperation(ASTCondOperation const *node);
+ASTTravRes astCondOperationTrav(
+		ASTCondOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
 
 void initASTOperation(ASTOperation *node, Token const *tok);
 void freeASTOperation(ASTOperation *node);
@@ -117,3 +124,8 @@ int parseASTOperation1(
 		struct ASTScope const *scope,
 		struct ASTNode *lhs);
 int printASTOperation(ASTOperation const *node);
+
+ASTTravRes astOperationTrav(
+		ASTOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

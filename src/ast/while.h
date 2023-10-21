@@ -20,3 +20,7 @@ int parseASTWhile(
 		struct Token const *tok,
 		struct ASTScope const *scope);
 int printASTWhile(ASTWhile const *node);
+ASTTravRes astWhileTrav(
+		ASTWhile *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

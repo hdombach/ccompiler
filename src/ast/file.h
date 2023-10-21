@@ -20,3 +20,7 @@ void initASTFile(ASTFile *file, Token const *tok);
 void freeASTFile(ASTFile *file);
 int parseASTFile(ASTFile *file, Token const *tok);
 int printASTFile(ASTFile const *file);
+ASTTravRes astFileTrav(
+		ASTFile *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

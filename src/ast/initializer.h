@@ -25,6 +25,10 @@ int parseASTInitializerList(
 		Token const *tok,
 		struct ASTScope const *scope);
 int printASTInitializerList(ASTInitializerList const *list);
+ASTTravRes astInitializerListTrav(
+		ASTInitializerList *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
 
 int parseASTInitializer(
 		ASTNode *node,

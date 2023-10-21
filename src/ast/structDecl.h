@@ -22,3 +22,7 @@ int parseASTStructDecl(
 		Token const *tok,
 		ASTScope const *scope);
 int printASTStructDecl(ASTStructDecl const *decl);
+ASTTravRes astStructDeclTrav(
+		ASTStructDecl *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

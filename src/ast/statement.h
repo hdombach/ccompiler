@@ -53,3 +53,7 @@ void freeASTStm(ASTStm *node);
 int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope const *scope);
 
 int printASTStm(ASTStm const *node);
+ASTTravRes astStmTrav(
+		ASTStm *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

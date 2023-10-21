@@ -14,7 +14,7 @@ typedef struct ASTFuncDef {
 	ASTNode node;
 	ASTTypeSpec *typeSpec;
 	ASTNode *funcDecl;
-	ASTCompStm compoundStm;
+	ASTCompStm *compoundStm;
 } ASTFuncDef;
 
 void initASTFuncDef(ASTFuncDef *def, Token const *tok);
@@ -24,3 +24,7 @@ int parseASTFuncDef(
 		Token const * tok,
 		struct ASTScope const *scope);
 int printASTFuncDef(ASTFuncDef const *def);
+ASTTravRes astFuncDefTrav(
+		ASTFuncDef *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

@@ -523,6 +523,20 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 	return n;
 }
 
+ASTTravRes astTypeSpecTrav(
+		ASTTypeSpec *typeSpec,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+	if (typeSpec->content) {
+		result = astNodeTrav(typeSpec->content, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	return ASTT_SUCCESS;
+}
+
 /* =========================================================================
  * ASTDeclarator
  * ========================================================================= */
@@ -707,6 +721,31 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 	return n;
 }
 
+ASTTravRes astDeclaratorTrav(
+		ASTDeclarator *declarator,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	if (declarator->encl) {	
+		result = astNodeTrav(declarator->encl, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	if (declarator->bitField) {
+		result = astNodeTrav(declarator->bitField, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	if (declarator->initializer) {
+		result = astNodeTrav(declarator->initializer, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	return ASTT_SUCCESS;
+}
+
 /* =========================================================================
  * ASTDeclaration
  * ========================================================================= */
@@ -808,6 +847,27 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	n += printf("}");
 
 	return n;
+}
+
+ASTTravRes astDeclarationTrav(
+		ASTDeclaration *declaration,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	if (declaration->typeSpec) {
+		result = astNodeTrav((ASTNode *) declaration->typeSpec, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	for (int i = 0; i < declaration->declarators.size; i++) {
+		ASTNode *declarator = dlistGetm(&declaration->declarators, i);
+		result = astNodeTrav(declarator, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	return ASTT_SUCCESS;
 }
 
 DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {

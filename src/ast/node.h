@@ -66,6 +66,19 @@ char *astNodeTypeStr(ASTNodeType type);
 int printASTNode(ASTNode const *node);
 
 
+/* The result of node traversal */
+typedef enum ASTTravRes {
+	ASTT_FAILED,
+	ASTT_SUCCESS,
+} ASTTravRes;
+typedef ASTTravRes (*ASTTravFunc)(ASTNode *);
+
+ASTTravRes astNodeTrav(
+		ASTNode *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);
+
+
 #define AST_NODE_S 128
 typedef struct ASTNodeBuf {
 	ASTNode node;

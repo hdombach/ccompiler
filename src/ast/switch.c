@@ -103,3 +103,19 @@ int printASTSwitch(const ASTSwitch *node) {
 
 	return n;
 }
+
+ASTTravRes astSwitchTrav(
+		ASTSwitch *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav(node->expression, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav((ASTNode *) node->statement, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
+}

@@ -19,3 +19,7 @@ int parseASTFor(
 		Token const *tok,
 		ASTScope const *scope);
 int printASTFor(ASTFor const *node);
+ASTTravRes astForTrav(
+		ASTFor *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc);

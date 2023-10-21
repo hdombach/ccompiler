@@ -105,6 +105,25 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 	return n;
 }
 
+ASTTravRes astFuncOperationTrav(
+		ASTFuncOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav(node->func, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	for (int i = 0; i < node->params.size; i++) {
+		ASTNode *param = dlistGetm(&node->params, i);
+		result = astNodeTrav(param, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	return ASTT_SUCCESS;
+}
+
 /*************************************************************
  * Subscript Operation
  *************************************************************/
@@ -266,6 +285,25 @@ int printASTCondOperation(ASTCondOperation const *node) {
 	n += printf("}");
 
 	return n;
+}
+
+ASTTravRes astCondOperationTrav(
+		ASTCondOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav(node->condition, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->trueExp, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->falseExp, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
 }
 
 /*************************************************************
@@ -899,4 +937,20 @@ int printASTOperation(ASTOperation const *node) {
 	n += printf("}");
 
 	return n;
+}
+
+ASTTravRes astOperationTrav(
+		ASTOperation *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav(node->lhs, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->rhs, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
 }

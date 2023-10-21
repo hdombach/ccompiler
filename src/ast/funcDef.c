@@ -13,7 +13,7 @@ void initASTFuncDef(ASTFuncDef *def, Token const *tok) {
 	initASTNode((ASTNode *) def, tok);
 	def->typeSpec = NULL;
 	def->funcDecl = NULL;
-	initASTCompStm(&def->compoundStm, tok);
+	def->compoundStm = NULL;
 }
 
 void freeASTFuncDef(ASTFuncDef *def) {
@@ -27,7 +27,10 @@ void freeASTFuncDef(ASTFuncDef *def) {
 		free(def->funcDecl);
 		def->funcDecl = NULL;
 	}
-	freeASTCompStm(&def->compoundStm);
+	if (def->compoundStm) {
+		freeASTNode((ASTNode *) def->compoundStm);
+		free(def->compoundStm);
+	}
 }
 
 int parseASTFuncDef(
@@ -93,8 +96,8 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	if ((res = parseASTCompStm(&def->compoundStm, tok + n, scope))) {
-		//printf("parsing func def\n");
+	if ((res = parseASTCompStm((ASTCompStm *) &tempBuf, tok + n, scope))) {
+		def->compoundStm = (ASTCompStm *) dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		//Don't throw error
@@ -120,9 +123,28 @@ int printASTFuncDef(ASTFuncDef const *def) {
 	n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
 
 	n += printf(", \"Compound Statement\": ");
-	n += printASTCompStm(&def->compoundStm);
+	n += printASTCompStm(def->compoundStm);
 
 	n += printf("}");
 
 	return n;
+}
+
+ASTTravRes astFuncDefTrav(
+		ASTFuncDef *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	result = astNodeTrav((ASTNode *) node->typeSpec, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav(node->funcDecl, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	result = astNodeTrav((ASTNode *) node->compoundStm, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
 }

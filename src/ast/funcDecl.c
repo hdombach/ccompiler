@@ -103,3 +103,21 @@ int printASTFuncDecl(const ASTFuncDecl *decl) {
 
 	return n;
 }
+
+ASTTravRes astFuncDeclTrav(ASTFuncDecl *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc)
+{
+	ASTTravRes result;
+
+	for (int i = 0; i < node->params.size; i++) {
+		ASTNode *param = dlistGetm(&node->params, i);
+		result = astNodeTrav(param, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
+
+	result = astNodeTrav((ASTNode *) node->encl, beforeFunc, afterFunc);
+	if (result == ASTT_FAILED) return ASTT_FAILED;
+
+	return ASTT_SUCCESS;
+}
