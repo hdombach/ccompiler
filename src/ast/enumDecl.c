@@ -94,15 +94,17 @@ ASTTravRes astEnumeratorDeclTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->exp, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->exp) {
+		result = astNodeTrav(node->exp, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }
 
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 	decl->name = NULL;
-	initDList(&decl->enumerators, AST_NODE_S);
+	initDListEmpty(&decl->enumerators, AST_NODE_S);
 	initASTNode((ASTNode *) decl, tok);
 }
 

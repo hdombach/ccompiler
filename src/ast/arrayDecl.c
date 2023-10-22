@@ -98,11 +98,15 @@ ASTTravRes astArrayDeclTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->encl, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->encl) {
+		result = astNodeTrav(node->encl, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav(node->exp, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->exp) {
+		result = astNodeTrav(node->exp, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

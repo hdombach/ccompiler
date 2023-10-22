@@ -108,8 +108,10 @@ ASTTravRes astParamTrav(
 	result = astNodeTrav((ASTNode *) param->typeSpec, beforeFunc, afterFunc);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav((ASTNode *) param->declarator, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (param->declarator) {
+		result = astNodeTrav((ASTNode *) param->declarator, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

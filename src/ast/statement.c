@@ -233,8 +233,10 @@ ASTTravRes astStmTrav(
 	result = astNodeTrav(node->content, beforeFunc, afterFunc);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav(node->label, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->label) {
+		result = astNodeTrav(node->label, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

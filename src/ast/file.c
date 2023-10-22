@@ -47,7 +47,7 @@ DList astFileItemTypes(const ASTNode *item) {
 
 void initASTFile(ASTFile *file, Token const *tok) {
 	initASTNode((ASTNode *) file, tok);
-	initDList(&file->items, AST_NODE_S);
+	initDListEmpty(&file->items, AST_NODE_S);
 	initASTScope(&file->scope);
 }
 

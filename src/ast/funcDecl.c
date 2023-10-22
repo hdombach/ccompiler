@@ -5,8 +5,9 @@
 #include "node.h"
 #include "param.h"
 
-void initASTFuncDecl(ASTFuncDecl *decl) {
-	initDList(&decl->params, sizeof(ASTParam));
+void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok) {
+	initASTNode((ASTNode *) decl, tok);
+	initDListEmpty(&decl->params, AST_NODE_S);
 	decl->encl = NULL;
 	decl->hasEllipses = 0;
 }
@@ -29,7 +30,7 @@ int parseASTFuncDecl(
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
 
-	initASTFuncDecl(decl);
+	initASTFuncDecl(decl, tok);
 	if (encl) {
 		decl->encl = encl;
 	}
@@ -116,8 +117,10 @@ ASTTravRes astFuncDeclTrav(ASTFuncDecl *node,
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
-	result = astNodeTrav((ASTNode *) node->encl, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->encl) {
+		result = astNodeTrav((ASTNode *) node->encl, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

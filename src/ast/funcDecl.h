@@ -14,7 +14,7 @@ typedef struct ASTFuncDecl {
 	int hasEllipses;
 } ASTFuncDecl;
 
-void initASTFuncDecl(ASTFuncDecl *decl);
+void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok);
 void freeASTFuncDecl(ASTFuncDecl *decl);
 /*
  * Takes ownership of encl

@@ -112,8 +112,10 @@ ASTTravRes astFuncOperationTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->func, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->func) {
+		result = astNodeTrav(node->func, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	for (int i = 0; i < node->params.size; i++) {
 		ASTNode *param = dlistGetm(&node->params, i);
@@ -294,14 +296,20 @@ ASTTravRes astCondOperationTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->condition, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->condition) {
+		result = astNodeTrav(node->condition, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav(node->trueExp, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->trueExp) {
+		result = astNodeTrav(node->trueExp, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav(node->falseExp, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->falseExp) {
+		result = astNodeTrav(node->falseExp, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }
@@ -946,11 +954,15 @@ ASTTravRes astOperationTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->lhs, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->lhs) {
+		result = astNodeTrav(node->lhs, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav(node->rhs, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->rhs) {
+		result = astNodeTrav(node->rhs, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

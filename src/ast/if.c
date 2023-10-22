@@ -140,14 +140,20 @@ ASTTravRes astIfTrav(
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->expression, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->expression) {
+		result = astNodeTrav(node->expression, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav((ASTNode *) node->trueStatement, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->trueStatement) {
+		result = astNodeTrav((ASTNode *) node->trueStatement, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
-	result = astNodeTrav((ASTNode *) node->falseStatement, beforeFunc, afterFunc);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
+	if (node->falseStatement) {
+		result = astNodeTrav((ASTNode *) node->falseStatement, beforeFunc, afterFunc);
+		if (result == ASTT_FAILED) return ASTT_FAILED;
+	}
 
 	return ASTT_SUCCESS;
 }

@@ -4,6 +4,7 @@
 #include "argParser.h"
 #include "ast/astUtil.h"
 #include "ast/macroDef.h"
+#include "ast/node.h"
 #include "ast/tokenParser.h"
 #include "ast/file.h"
 #include "preprocessor.h"
@@ -12,6 +13,11 @@
 #include "util/tokList.h"
 #include "util/dlist.h"
 #include "util/macroDict.h"
+
+ASTTravRes travTest(ASTNode *node) {
+	printf("%s\n", astNodeTypeStr(node->type));
+	return ASTT_SUCCESS;
+}
 
 int main(int argc, char **argv) {
 	Args args;
@@ -52,7 +58,8 @@ int main(int argc, char **argv) {
 
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
-			printASTFile(&astFile);
+			//printASTFile(&astFile);
+			astNodeTrav((ASTNode *) &astFile, travTest, NULL);
 			printf("\n");
 			freeASTFile(&astFile);
 		} else {

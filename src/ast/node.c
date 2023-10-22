@@ -209,16 +209,19 @@ ASTTravRes astNodeTrav(
 						(ASTFuncOperation *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_SUBS_OPERATION:
 				result = astOperationTrav(
 						(ASTOperation *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_COND_OPERATION:
 				result = astCondOperationTrav(
 						(ASTCondOperation *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_CAST_OPERATION:
 		case AST_SIZEOF_TYPE_OPERATION:
 		case AST_SIZEOF_EXP_OPERATION:
@@ -229,26 +232,31 @@ ASTTravRes astNodeTrav(
 						(ASTOperation *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_PARAM:
 				result = astParamTrav(
 						(ASTParam *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_DECLARATION:
 				result = astDeclarationTrav(
 						(ASTDeclaration *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_ARRAY_DECL:
 				result = astArrayDeclTrav(
 						(ASTArrayDecl *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_FUNC_DECL:
 				result = astFuncDeclTrav(
 						(ASTFuncDecl *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_IDENTIFIER_DECL: break;
 		case AST_POINTER_DECL:
 		case AST_DECLARATOR:
@@ -256,57 +264,68 @@ ASTTravRes astNodeTrav(
 						(ASTDeclarator *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_TYPE_SPEC:
 				result = astTypeSpecTrav(
 						(ASTTypeSpec *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_IDENTIFIER_TS: break;
 		case AST_STRUCT_DECL:
 				result = astStructDeclTrav(
 						(ASTStructDecl *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_ENUM_DECL:
-				result = astEnumeratorDeclTrav(
-						(ASTEnumeratorDecl *) node,
-						beforeFunc,
-						afterFunc);
-		case AST_ENUMERATOR_DECL:
 				result = astEnumDeclTrav(
 						(ASTEnumDecl *) node,
 						beforeFunc,
 						afterFunc);
+				break;
+		case AST_ENUMERATOR_DECL:
+				result = astEnumeratorDeclTrav(
+						(ASTEnumeratorDecl *) node,
+						beforeFunc,
+						afterFunc);
+				break;
 		case AST_STM:
 				result = astStmTrav(
 						(ASTStm *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_COMP_STM:
 				result = astCompStmTrav(
 						(ASTCompStm *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_IF:
 				result = astIfTrav(
 						(ASTIf *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_SWITCH:
 				result = astSwitchTrav(
 						(ASTSwitch *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_WHILE:
 				result = astWhileTrav(
 						(ASTWhile *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_DO_WHILE:
 				result = astDoWhileTrav(
 						(ASTDoWhile *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_EMPTY_STM: break;
 		case AST_BREAK: break;
 		case AST_CONTINUE: break;
@@ -315,28 +334,33 @@ ASTTravRes astNodeTrav(
 						(ASTFuncDef *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_FILE:
 				result = astFileTrav(
 						(ASTFile *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_INITIALIZER_LIST:
 				result = astInitializerListTrav(
 						(ASTInitializerList *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		case AST_LBL_IDENTIFIER: break;
 		case AST_LBL_CASE:
 				result = astLblCaseTrav(
 						(ASTLblCase *) node,
 						beforeFunc,
 						afterFunc);
+				break;
 		case AST_LBL_DEFAULT: break;
 		case AST_FOR:
 				result = astForTrav(
 						(ASTFor *) node, 
 						beforeFunc, 
 						afterFunc);
+				break;
 		default: return ASTT_FAILED;
 	}
 
