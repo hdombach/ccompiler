@@ -56,4 +56,5 @@ int printASTStm(ASTStm const *node);
 ASTTravRes astStmTrav(
 		ASTStm *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

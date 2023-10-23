@@ -166,20 +166,21 @@ int printASTFor(ASTFor const *node) {
 ASTTravRes astForTrav(
 		ASTFor *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->initClause, beforeFunc, afterFunc);
+	result = astNodeTrav(node->initClause, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav(node->condExp, beforeFunc, afterFunc);
+	result = astNodeTrav(node->condExp, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav(node->iterExp, beforeFunc, afterFunc);
+	result = astNodeTrav(node->iterExp, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav(node->loopStm, beforeFunc, afterFunc);
+	result = astNodeTrav(node->loopStm, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
 	return ASTT_SUCCESS;

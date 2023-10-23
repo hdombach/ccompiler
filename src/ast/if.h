@@ -21,4 +21,5 @@ int printASTIf(ASTIf const *node);
 ASTTravRes astIfTrav(
 		ASTIf *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

@@ -23,4 +23,5 @@ int printASTFile(ASTFile const *file);
 ASTTravRes astFileTrav(
 		ASTFile *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

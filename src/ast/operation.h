@@ -46,7 +46,8 @@ int printASTFuncOperation(ASTFuncOperation const *node);
 ASTTravRes astFuncOperationTrav(
 		ASTFuncOperation *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 
 void initASTCondOperation(ASTCondOperation *node, Token const *tok);
 void freeASTCondOperation(ASTCondOperation *node);
@@ -58,7 +59,8 @@ int printASTCondOperation(ASTCondOperation const *node);
 ASTTravRes astCondOperationTrav(
 		ASTCondOperation *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 
 void initASTOperation(ASTOperation *node, Token const *tok);
 void freeASTOperation(ASTOperation *node);
@@ -128,4 +130,5 @@ int printASTOperation(ASTOperation const *node);
 ASTTravRes astOperationTrav(
 		ASTOperation *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

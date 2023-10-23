@@ -526,11 +526,12 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 ASTTravRes astTypeSpecTrav(
 		ASTTypeSpec *typeSpec,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 	if (typeSpec->content) {
-		result = astNodeTrav(typeSpec->content, beforeFunc, afterFunc);
+		result = astNodeTrav(typeSpec->content, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
@@ -724,22 +725,23 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 ASTTravRes astDeclaratorTrav(
 		ASTDeclarator *declarator,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	if (declarator->encl) {	
-		result = astNodeTrav(declarator->encl, beforeFunc, afterFunc);
+		result = astNodeTrav(declarator->encl, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	if (declarator->bitField) {
-		result = astNodeTrav(declarator->bitField, beforeFunc, afterFunc);
+		result = astNodeTrav(declarator->bitField, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	if (declarator->initializer) {
-		result = astNodeTrav(declarator->initializer, beforeFunc, afterFunc);
+		result = astNodeTrav(declarator->initializer, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
@@ -852,18 +854,19 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 ASTTravRes astDeclarationTrav(
 		ASTDeclaration *declaration,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	if (declaration->typeSpec) {
-		result = astNodeTrav((ASTNode *) declaration->typeSpec, beforeFunc, afterFunc);
+		result = astNodeTrav((ASTNode *) declaration->typeSpec, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	for (int i = 0; i < declaration->declarators.size; i++) {
 		ASTNode *declarator = dlistGetm(&declaration->declarators, i);
-		result = astNodeTrav(declarator, beforeFunc, afterFunc);
+		result = astNodeTrav(declarator, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

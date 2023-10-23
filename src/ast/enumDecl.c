@@ -90,12 +90,13 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 ASTTravRes astEnumeratorDeclTrav(
 		ASTEnumeratorDecl *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	if (node->exp) {
-		result = astNodeTrav(node->exp, beforeFunc, afterFunc);
+		result = astNodeTrav(node->exp, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
@@ -198,13 +199,14 @@ int printASTEnumDecl(const ASTEnumDecl *decl) {
 
 ASTTravRes astEnumDeclTrav(ASTEnumDecl *decl,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	for (int i = 0; i < decl->enumerators.size; i++) {
 		ASTNode *node = dlistGetm(&decl->enumerators, i);
-		result = astNodeTrav(node, beforeFunc, afterFunc);
+		result = astNodeTrav(node, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

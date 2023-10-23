@@ -22,4 +22,5 @@ int printASTDoWhile(ASTDoWhile const *node);
 ASTTravRes astDoWhileTrav(
 		ASTDoWhile *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

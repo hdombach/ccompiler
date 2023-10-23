@@ -33,7 +33,8 @@ int printASTLblCase(ASTLblCase const *node);
 ASTTravRes astLblCaseTrav(
 		ASTLblCase *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 
 int parseASTLblDefault(
 		ASTNode *node,

@@ -37,4 +37,5 @@ int printASTCompStm(ASTCompStm const *node);
 ASTTravRes astCompStmTrav(
 		ASTCompStm *,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

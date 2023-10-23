@@ -133,17 +133,18 @@ int printASTFuncDef(ASTFuncDef const *def) {
 ASTTravRes astFuncDefTrav(
 		ASTFuncDef *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
-	result = astNodeTrav((ASTNode *) node->typeSpec, beforeFunc, afterFunc);
+	result = astNodeTrav((ASTNode *) node->typeSpec, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav(node->funcDecl, beforeFunc, afterFunc);
+	result = astNodeTrav(node->funcDecl, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
-	result = astNodeTrav((ASTNode *) node->compoundStm, beforeFunc, afterFunc);
+	result = astNodeTrav((ASTNode *) node->compoundStm, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
 	return ASTT_SUCCESS;

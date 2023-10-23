@@ -26,4 +26,5 @@ int printASTArrayDecl(ASTArrayDecl const *decl);
 ASTTravRes astArrayDeclTrav(
 		ASTArrayDecl *node,
 		ASTTravFunc beforefunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

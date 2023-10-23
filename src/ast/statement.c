@@ -226,15 +226,16 @@ int printASTStm(ASTStm const *node) {
 ASTTravRes astStmTrav(
 		ASTStm *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
-	result = astNodeTrav(node->content, beforeFunc, afterFunc);
+	result = astNodeTrav(node->content, beforeFunc, afterFunc, ctx);
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
 	if (node->label) {
-		result = astNodeTrav(node->label, beforeFunc, afterFunc);
+		result = astNodeTrav(node->label, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

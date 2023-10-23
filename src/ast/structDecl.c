@@ -117,13 +117,15 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 ASTTravRes astStructDeclTrav(
 		ASTStructDecl *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	for (int i = 0; i < node->items.size; i++) {
 		ASTNode *item = dlistGetm(&node->items, i);
-		result = astNodeTrav(item, beforeFunc, afterFunc);
+		result = astNodeTrav(item, beforeFunc, afterFunc,
+				ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

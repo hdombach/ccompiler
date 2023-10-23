@@ -136,22 +136,23 @@ int printASTIf(ASTIf const *node) {
 ASTTravRes astIfTrav(
 		ASTIf *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	if (node->expression) {
-		result = astNodeTrav(node->expression, beforeFunc, afterFunc);
+		result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	if (node->trueStatement) {
-		result = astNodeTrav((ASTNode *) node->trueStatement, beforeFunc, afterFunc);
+		result = astNodeTrav((ASTNode *) node->trueStatement, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	if (node->falseStatement) {
-		result = astNodeTrav((ASTNode *) node->falseStatement, beforeFunc, afterFunc);
+		result = astNodeTrav((ASTNode *) node->falseStatement, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

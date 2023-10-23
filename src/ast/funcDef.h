@@ -27,4 +27,5 @@ int printASTFuncDef(ASTFuncDef const *def);
 ASTTravRes astFuncDefTrav(
 		ASTFuncDef *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

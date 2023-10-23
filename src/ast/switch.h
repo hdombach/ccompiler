@@ -23,5 +23,6 @@ int printASTSwitch(ASTSwitch const *node);
 ASTTravRes astSwitchTrav(
 		ASTSwitch *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 

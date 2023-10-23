@@ -94,17 +94,18 @@ int printASTArrayDecl(const ASTArrayDecl *decl) {
 ASTTravRes astArrayDeclTrav(
 		ASTArrayDecl *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc)
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
 {
 	ASTTravRes result;
 
 	if (node->encl) {
-		result = astNodeTrav(node->encl, beforeFunc, afterFunc);
+		result = astNodeTrav(node->encl, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 
 	if (node->exp) {
-		result = astNodeTrav(node->exp, beforeFunc, afterFunc);
+		result = astNodeTrav(node->exp, beforeFunc, afterFunc, ctx);
 		if (result == ASTT_FAILED) return ASTT_FAILED;
 	}
 

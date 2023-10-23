@@ -28,7 +28,8 @@ int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
 ASTTravRes astEnumeratorDeclTrav(
 		ASTEnumeratorDecl *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok);
 void freeASTEnumDecl(ASTEnumDecl *decl);
@@ -40,4 +41,5 @@ int printASTEnumDecl(ASTEnumDecl const *decl);
 ASTTravRes astEnumDeclTrav(
 		ASTEnumDecl *decl,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

@@ -25,4 +25,5 @@ int printASTStructDecl(ASTStructDecl const *decl);
 ASTTravRes astStructDeclTrav(
 		ASTStructDecl *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

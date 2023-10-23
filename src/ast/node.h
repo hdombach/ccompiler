@@ -71,12 +71,20 @@ typedef enum ASTTravRes {
 	ASTT_FAILED,
 	ASTT_SUCCESS,
 } ASTTravRes;
-typedef ASTTravRes (*ASTTravFunc)(ASTNode *);
+
+typedef struct ASTTravCtx {
+	struct ASTScope *scope;
+	ASTNode *node;
+	struct ASTTravCtx *parent;
+}ASTTravCtx;
+
+typedef ASTTravRes (*ASTTravFunc)(ASTNode *, ASTTravCtx *);
 
 ASTTravRes astNodeTrav(
 		ASTNode *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *parent);
 
 
 #define AST_NODE_S 128

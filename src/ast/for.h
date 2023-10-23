@@ -22,4 +22,5 @@ int printASTFor(ASTFor const *node);
 ASTTravRes astForTrav(
 		ASTFor *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

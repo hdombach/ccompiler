@@ -28,7 +28,8 @@ int printASTInitializerList(ASTInitializerList const *list);
 ASTTravRes astInitializerListTrav(
 		ASTInitializerList *node,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);
 
 int parseASTInitializer(
 		ASTNode *node,

@@ -18,4 +18,5 @@ int printASTParam(ASTParam const *param);
 ASTTravRes astParamTrav(
 		ASTParam *param,
 		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc);
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx);

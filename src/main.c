@@ -14,7 +14,7 @@
 #include "util/dlist.h"
 #include "util/macroDict.h"
 
-ASTTravRes travTest(ASTNode *node) {
+ASTTravRes travTest(ASTNode *node, ASTTravCtx *_) {
 	printf("%s\n", astNodeTypeStr(node->type));
 	return ASTT_SUCCESS;
 }
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 			//printASTFile(&astFile);
-			astNodeTrav((ASTNode *) &astFile, travTest, NULL);
+			astNodeTrav((ASTNode *) &astFile, travTest, NULL, NULL);
 			printf("\n");
 			freeASTFile(&astFile);
 		} else {
