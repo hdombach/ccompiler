@@ -2,7 +2,7 @@
 
 #include "node.h"
 #include "../token.h"
-#include "scope.h"
+#include "../sem/scope.h"
 
 typedef struct ASTFor {
 	ASTNode node;

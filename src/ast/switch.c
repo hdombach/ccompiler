@@ -4,7 +4,7 @@
 #include "switch.h"
 #include "expression.h"
 #include "statement.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "astUtil.h"
 
 void initASTSwitch(ASTSwitch *node, Token const *tok) {

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "astUtil.h"
+#include "../ast/astUtil.h"
 #include "scope.h"
 
 void initASTScope(ASTScope *scope) {

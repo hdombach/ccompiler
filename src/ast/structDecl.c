@@ -5,7 +5,7 @@
 #include "structDecl.h"
 #include "astUtil.h"
 #include "declaration.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "../util/callbacks.h"
 
 void initASTStructDecl(ASTStructDecl *decl, Token const *tok) {

@@ -1,7 +1,7 @@
 #include "initializer.h"
 #include "astUtil.h"
 #include "expression.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "node.h"
 
 void initASTInitializerList(ASTInitializerList *list, Token const *tok) {

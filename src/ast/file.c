@@ -1,7 +1,7 @@
 #include "file.h"
 #include "declaration.h"
 #include "funcDef.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
 #include "node.h"

@@ -11,7 +11,7 @@
 #include "identifier.h"
 #include "initializer.h"
 #include "structDecl.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "node.h"
 
 /* =========================================================================

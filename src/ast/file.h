@@ -3,7 +3,7 @@
 #include "declaration.h"
 #include "funcDef.h"
 #include "node.h"
-#include "scope.h"
+#include "../sem/scope.h"
 
 typedef struct {
 	ASTNode node;

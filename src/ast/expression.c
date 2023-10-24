@@ -6,7 +6,7 @@
 #include "astUtil.h"
 #include "node.h"
 #include "operation.h"
-#include "scope.h"
+#include "../sem/scope.h"
 
 int parseASTExp(ASTNode *node, Token const *tok, ASTScope const *scope) {
 	return parseASTExp15(node, tok, scope);
