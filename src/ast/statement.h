@@ -15,7 +15,7 @@
 typedef ASTNode ASTEmptyStm;
 
 void initASTEmptyStm(ASTEmptyStm *node, Token const *tok);
-int parseASTEmptyStm(ASTEmptyStm *node, Token const *tok, struct ASTScope const *scope);
+int parseASTEmptyStm(ASTEmptyStm *node, Token const *tok, struct ASTScope *scope);
 int printASTEmptyStm(ASTEmptyStm const *node);
 
 /***********************************************************************
@@ -25,7 +25,7 @@ int printASTEmptyStm(ASTEmptyStm const *node);
 typedef ASTNode ASTBreak;
 
 void initASTBreak(ASTBreak *node, Token const *tok);
-int parseASTBreak(ASTBreak *node,  Token const *tok, struct ASTScope const *scope);
+int parseASTBreak(ASTBreak *node,  Token const *tok, struct ASTScope *scope);
 int printASTBreak(ASTBreak const *node);
 
 /***********************************************************************
@@ -35,7 +35,7 @@ int printASTBreak(ASTBreak const *node);
 typedef ASTNode ASTContinue;
 
 void initASTContinue(ASTContinue *node, Token const *tok);
-int parseASTContinue(ASTContinue *node, Token const *tok, struct ASTScope const *scope);
+int parseASTContinue(ASTContinue *node, Token const *tok, struct ASTScope *scope);
 int printASTContinue(ASTContinue const *node);
 
 struct ASTScope;
@@ -50,7 +50,7 @@ typedef struct ASTStm {
 void initASTStm(ASTStm *node, Token const *tok);
 void freeASTStm(ASTStm *node);
 
-int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope const *scope);
+int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope *scope);
 
 int printASTStm(ASTStm const *node);
 ASTTravRes astStmTrav(

@@ -12,9 +12,7 @@ typedef struct {
 } ASTFile;
 
 /* parses declaration or func def */
-int parseASTFileItem(ASTNode *item, Token const *tok, ASTScope const *scope);
-
-DList astFileItemTypes(ASTNode const *item);
+int parseASTFileItem(ASTNode *item, Token const *tok, ASTScope *scope);
 
 void initASTFile(ASTFile *file, Token const *tok);
 void freeASTFile(ASTFile *file);

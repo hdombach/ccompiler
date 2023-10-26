@@ -20,7 +20,7 @@ void freeASTStructDecl(ASTStructDecl *decl);
 int parseASTStructDecl(
 		ASTStructDecl *decl,
 		Token const *tok,
-		ASTScope const *scope);
+		ASTScope *scope);
 int printASTStructDecl(ASTStructDecl const *decl);
 ASTTravRes astStructDeclTrav(
 		ASTStructDecl *node,

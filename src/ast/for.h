@@ -17,7 +17,7 @@ void freeASTFor(ASTFor *node);
 int parseASTFor(
 		ASTFor *node,
 		Token const *tok,
-		ASTScope const *scope);
+		ASTScope *scope);
 int printASTFor(ASTFor const *node);
 ASTTravRes astForTrav(
 		ASTFor *node,

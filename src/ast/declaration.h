@@ -116,7 +116,7 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec);
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
 		Token const *tok,
-		ASTScope const *scope);
+		ASTScope *scope);
 int printASTTypeSpec(ASTTypeSpec const * typeSpec);
 ASTTravRes astTypeSpecTrav(
 		ASTTypeSpec *typeSpec,
@@ -129,7 +129,7 @@ void freeASTDeclarator(ASTDeclarator *declarator);
 int parseASTDeclarator(
 		ASTDeclarator *declarator,
 		Token const *tok,
-		ASTScope const *scope);
+		ASTScope *scope);
 int printASTDeclarator(ASTDeclarator const *declarator);
 ASTTravRes astDeclaratorTrav(
 		ASTDeclarator *declarator,
@@ -142,7 +142,7 @@ void freeASTDeclaration(ASTDeclaration *declaration);
 int parseASTDeclaration(
 		ASTDeclaration *declaration,
 		Token const *tok,
-		ASTScope const *scope);
+		ASTScope *scope);
 int printASTDeclaration(ASTDeclaration const *declaration);
 ASTTravRes astDeclarationTrav(
 		ASTDeclaration *declaration,

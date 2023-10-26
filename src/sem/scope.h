@@ -12,7 +12,7 @@ typedef struct ASTScope {
 void initASTScope(ASTScope *scope);
 void freeASTScope(ASTScope *scope);
 
-int astScopeIsTypedef(ASTScope const *scope, char const *name);
+int astScopeIsTypedef(ASTScope *scope, char const *name);
 void astScopeAddTypedefName(ASTScope *scope, char *name);
 /* Note: automatically free's names */
 void astScopeAddTypedefNames(ASTScope *scope, DList names);

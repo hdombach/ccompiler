@@ -10,7 +10,7 @@
 int parseASTFileItem(
 		ASTNode *item,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int n = 0, res;
 
@@ -28,21 +28,6 @@ int parseASTFileItem(
 	}
 
 	return n;
-}
-
-DList astFileItemTypes(const ASTNode *item) {
-	DList result;
-
-	switch (item->type) {
-		case AST_DECLARATION:
-			result = astDeclarationTypedefNames((ASTDeclaration *) item);
-			break;
-		default:
-			initDListEmpty(&result, sizeof(char *));
-			break;
-	}
-
-	return result;
 }
 
 void initASTFile(ASTFile *file, Token const *tok) {
@@ -68,8 +53,6 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 			n += res;
 			dlistApp(&file->items, &tempBuf);
 
-			DList newTypes = astFileItemTypes((ASTNode *) &tempBuf);
-			astScopeAddTypedefNames(&file->scope, newTypes);
 		} else if (tok[n].type == TT_NEWLINE) {
 			n++;
 		} else {

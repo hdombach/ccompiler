@@ -36,7 +36,7 @@ void freeASTFuncDef(ASTFuncDef *def) {
 int parseASTFuncDef(
 		ASTFuncDef *def,
 		Token const * tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTFuncDef);
 	int n = 0, res;

@@ -32,7 +32,7 @@ void freeASTIf(ASTIf *node) {
 	}
 }
 
-int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope const *scope) {
+int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 	AST_VALID(ASTIf);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;

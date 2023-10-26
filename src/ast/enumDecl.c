@@ -26,7 +26,7 @@ void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 int parseASTEnumeratorDecl(
 		ASTEnumeratorDecl *decl,
 		Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTEnumeratorDecl);
 	int res, n = 0;
@@ -119,7 +119,7 @@ void freeASTEnumDecl(ASTEnumDecl *decl) {
 int parseASTEnumDecl(
 		ASTEnumDecl *decl,
 		Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTEnumDecl);
 	int res, n = 0;

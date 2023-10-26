@@ -28,7 +28,7 @@ int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		const Token *tok,
 		ASTNode *encl,
-		ASTScope const *scope) {
+		ASTScope *scope) {
 	AST_VALID(ASTArrayDecl);
 	int n = 0, res;
 

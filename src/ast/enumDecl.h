@@ -23,7 +23,7 @@ void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl);
 int parseASTEnumeratorDecl(
 		ASTEnumeratorDecl *decl,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
 ASTTravRes astEnumeratorDeclTrav(
 		ASTEnumeratorDecl *node,
@@ -36,7 +36,7 @@ void freeASTEnumDecl(ASTEnumDecl *decl);
 int parseASTEnumDecl(
 		ASTEnumDecl *decl,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTEnumDecl(ASTEnumDecl const *decl);
 ASTTravRes astEnumDeclTrav(
 		ASTEnumDecl *decl,

@@ -25,7 +25,7 @@ void freeASTSwitch(ASTSwitch *node) {
 	}
 }
 
-int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope const *scope) {
+int parseASTSwitch(ASTSwitch *node, Token const *tok, ASTScope *scope) {
 	AST_VALID(ASTSwitch);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;

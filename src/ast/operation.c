@@ -34,7 +34,7 @@ int parseASTFuncOperation(
 		ASTFuncOperation *node,
 		const Token *tok,
 		ASTNode *func,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTFuncOperation);
 	int res, n = 0;
@@ -135,7 +135,7 @@ int _parseASTSubscriptOperation(
 		ASTOperation *node,
 		const Token *tok,
 		ASTNode *lhs,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
@@ -208,7 +208,7 @@ void freeASTCondOperation(ASTCondOperation *node) {
 int parseASTCondOperation(
 		ASTCondOperation *node,
 		Token const *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTCondOperation);
 	int n = 0, res;
@@ -323,7 +323,7 @@ ASTTravRes astCondOperationTrav(
 int _parseASTCastOperation(
 		ASTOperation *node,
 		const Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
@@ -371,7 +371,7 @@ int _parseASTCastOperation(
 int _parseASTSizeofOperation(
 		ASTOperation *node,
 		Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTOperation);
 	int n = 0, res;
@@ -559,11 +559,11 @@ int _isTokenType(TokenType type, TokenType types[]) {
 }
 
 typedef int (*_ParseOperationFunc)
-	(ASTNode *, const Token *, ASTScope const *scope);
+	(ASTNode *, const Token *, ASTScope *scope);
 int _parseASTOperationBin(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope,
+		ASTScope *scope,
 		TokenType types[],
 		_ParseOperationFunc lhsFunc,
 		_ParseOperationFunc rhsFunc)
@@ -614,7 +614,7 @@ int _parseASTOperationBin(
 int _parseASTOperationPref(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope,
+		ASTScope *scope,
 		TokenType types[],
 		_ParseOperationFunc rhsFunc)
 {
@@ -654,7 +654,7 @@ int _parseASTOperationPref(
 int parseASTOperation15(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -668,7 +668,7 @@ int parseASTOperation15(
 int parseASTOperation14(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -682,7 +682,7 @@ int parseASTOperation14(
 int parseASTOperation13(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int n = 0, res;
 	ASTCondOperation condOperation;
@@ -706,7 +706,7 @@ int parseASTOperation13(
 int parseASTOperation12(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node, 
@@ -720,7 +720,7 @@ int parseASTOperation12(
 int parseASTOperation11(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -734,7 +734,7 @@ int parseASTOperation11(
 int parseASTOperation10(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -748,7 +748,7 @@ int parseASTOperation10(
 int parseASTOperation9(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -762,7 +762,7 @@ int parseASTOperation9(
 int parseASTOperation8(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -776,7 +776,7 @@ int parseASTOperation8(
 int parseASTOperation7(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -790,7 +790,7 @@ int parseASTOperation7(
 int parseASTOperation6(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -804,7 +804,7 @@ int parseASTOperation6(
 int parseASTOperation5(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -818,7 +818,7 @@ int parseASTOperation5(
 int parseASTOperation4(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -832,7 +832,7 @@ int parseASTOperation4(
 int parseASTOperation3(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	return _parseASTOperationBin(
 			node,
@@ -846,7 +846,7 @@ int parseASTOperation3(
 int parseASTOperation2(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int n = 0, res;
 
@@ -872,7 +872,7 @@ int parseASTOperation2(
 int parseASTOperation1(
 		ASTOperation *node,
 		const Token *tok,
-		ASTScope const *scope,
+		ASTScope *scope,
 		ASTNode *lhs)
 {
 	int n = 0, res;

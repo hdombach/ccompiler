@@ -5,6 +5,7 @@
 #include "node.h"
 #include "statement.h"
 #include "declaration.h"
+#include "../sem/scope.h"
 
 struct ASTScope;
 
@@ -19,20 +20,20 @@ typedef enum {
 typedef struct ASTCompStm {
 	ASTNode node;
 	DList items;
-	struct ASTScope *scope;
+	ASTScope scope;
 } ASTCompStm;
 
 int parseASTCompItem(
 		ASTNode *node,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 
 void initASTCompStm(ASTCompStm *node, Token const *tok);
 void freeASTCompStm(ASTCompStm *node);
 int parseASTCompStm(
 		ASTCompStm *node,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTCompStm(ASTCompStm const *node);
 ASTTravRes astCompStmTrav(
 		ASTCompStm *,

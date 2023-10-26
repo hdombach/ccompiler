@@ -16,7 +16,7 @@ void freeASTInitializerList(ASTInitializerList *list) {
 int parseASTInitializerList(
 		ASTInitializerList *list,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTInitializerList);
 	int res, n = 0;
@@ -85,7 +85,7 @@ ASTTravRes astInitializerListTrav(
 int parseASTInitializer(
 		ASTNode *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int res;
 

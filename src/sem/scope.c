@@ -13,7 +13,7 @@ void freeASTScope(ASTScope *scope) {
 	freeWordDict(&scope->typedefNames);
 }
 
-int astScopeIsTypedef(const ASTScope *scope, const char *name) {
+int astScopeIsTypedef(ASTScope *scope, const char *name) {
 	if (wordDictPresent(&scope->typedefNames, name)) {
 		return 1;
 	} else if (scope->parent) {

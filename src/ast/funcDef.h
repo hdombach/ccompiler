@@ -22,7 +22,7 @@ void freeASTFuncDef(ASTFuncDef *def);
 int parseASTFuncDef(
 		ASTFuncDef *def,
 		Token const * tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTFuncDef(ASTFuncDef const *def);
 ASTTravRes astFuncDefTrav(
 		ASTFuncDef *node,

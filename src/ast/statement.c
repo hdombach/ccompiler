@@ -23,7 +23,7 @@ void initASTEmptyStm(ASTEmptyStm *node, Token const *tok) {
 int parseASTEmptyStm(
 		ASTEmptyStm *node,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTEmptyStm);
 	int n = 0;
@@ -58,7 +58,7 @@ void initASTBreak(ASTBreak *node, Token const *tok) {
 int parseASTBreak(
 		ASTBreak *node,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTBreak);
 	int n = 0;
@@ -95,7 +95,7 @@ void initASTContinue(ASTContinue *node, Token const *tok) {
 int parseASTContinue(
 		ASTContinue *node,
 		Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTContinue);
 	int n = 0;
@@ -143,7 +143,7 @@ void freeASTStm(ASTStm *node) {
 	}
 }
 
-int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
+int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	AST_VALID(ASTStm);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;

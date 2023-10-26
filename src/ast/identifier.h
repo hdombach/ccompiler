@@ -23,7 +23,7 @@ static void initASTIdentifier(ASTIdentifier *node) {
 static int parseASTIdentifier(
 		ASTIdentifier *node,
 		struct Token const *tok,
-		struct ASTScope const *scope) 
+		struct ASTScope *scope) 
 {
 	AST_VALID(ASTIdentifier);
 	if (tok->type == TT_IDENTIFIER) {

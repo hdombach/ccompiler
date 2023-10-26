@@ -29,7 +29,7 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 int parseASTStructDecl(
 		ASTStructDecl *decl,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTStructDecl);
 	int res, n = 0;

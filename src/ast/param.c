@@ -24,7 +24,7 @@ void freeASTParam(ASTParam *param) {
 	}
 }
 
-int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
+int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope) {
 	AST_VALID(ASTParam);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;

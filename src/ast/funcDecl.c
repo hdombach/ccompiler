@@ -8,12 +8,14 @@
 void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok) {
 	initASTNode((ASTNode *) decl, tok);
 	initDListEmpty(&decl->params, AST_NODE_S);
+	initASTScope(&decl->scope);
 	decl->encl = NULL;
 	decl->hasEllipses = 0;
 }
 
 void freeASTFuncDecl(ASTFuncDecl *decl) {
 	freeDList(&decl->params, (FreeFunc) freeASTParam);
+	freeASTScope(&decl->scope);
 	if (decl->encl) {
 		freeASTDeclarator(decl->encl);
 		free(decl->encl);
@@ -24,7 +26,7 @@ int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,
 		struct ASTDeclarator *encl,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTFuncDecl);
 	int n = 0, res;

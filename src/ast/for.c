@@ -38,7 +38,7 @@ void freeASTFor(ASTFor *node) {
 int parseASTFor(
 		ASTFor *node,
 		const Token *tok,
-		const ASTScope *scope)
+		ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;

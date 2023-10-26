@@ -17,7 +17,7 @@ void freeASTDoWhile(ASTDoWhile *node);
 int parseASTDoWhile(
 		ASTDoWhile *node,
 		struct Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTDoWhile(ASTDoWhile const *node);
 ASTTravRes astDoWhileTrav(
 		ASTDoWhile *node,

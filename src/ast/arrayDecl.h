@@ -21,7 +21,7 @@ int parseASTArrayDecl(
 		ASTArrayDecl *decl,
 		Token const *tok,
 		struct ASTNode *encl,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTArrayDecl(ASTArrayDecl const *decl);
 ASTTravRes astArrayDeclTrav(
 		ASTArrayDecl *node,

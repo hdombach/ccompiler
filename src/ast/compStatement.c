@@ -9,7 +9,7 @@
 int parseASTCompItem(
 		ASTNode *node,
 		const Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res, n = 0;
 	initASTNode(node, tok);
@@ -33,16 +33,18 @@ int parseASTCompItem(
 void initASTCompStm(ASTCompStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	initDListEmpty(&node->items, AST_NODE_S);
+	initASTScope(&node->scope);
 }
 
 void freeASTCompStm(ASTCompStm *node) {
 	freeDList(&node->items, (FreeFunc) freeASTNode);
+	freeASTScope(&node->scope);
 }
 
 int parseASTCompStm(
 		ASTCompStm *node,
 		const Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTCompStm);
 	int res, n = 0;

@@ -368,7 +368,7 @@ int astArithTypeNormalize(const ASTArithType *type) {
 int _parseTypedefIdentifier(
 		ASTIdentifier *identifier,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTIdentifier);
 	int res, n = 0;
@@ -404,7 +404,7 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTTypeSpec);
 	int n = 0, res;
@@ -572,7 +572,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 int parseASTDeclarator(
 		ASTDeclarator *declarator,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTDeclarator);
 	int n = 0, res;
@@ -769,11 +769,12 @@ void freeASTDeclaration(ASTDeclaration *declaration) {
 int parseASTDeclaration(
 		ASTDeclaration *declaration,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTDeclaration);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
+	DList typedefNames;
 
 	initASTDeclaration(declaration, tok);
 
@@ -818,6 +819,9 @@ int parseASTDeclaration(
 		return 0;
 	}
 	n++;
+
+	typedefNames = astDeclarationTypedefNames(declaration);
+	astScopeAddTypedefNames(scope, typedefNames);
 
 	declaration->node.type = AST_DECLARATION;
 	return n;

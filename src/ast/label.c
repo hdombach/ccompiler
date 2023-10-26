@@ -22,7 +22,7 @@ void freeASTLblIdentifier(ASTLblIdentifier *node) {
 int parseASTLblIdentifier(
 		ASTLblIdentifier *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	char *tempIdentifier;
@@ -80,7 +80,7 @@ void freeASTLblCase(ASTLblCase *node) {
 int parseASTLblCase(
 		ASTLblCase *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
@@ -153,7 +153,7 @@ ASTTravRes astLblCaseTrav(
 int parseASTLblDefault(
 		ASTNode *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
@@ -189,7 +189,7 @@ int printASTLblDefault(const ASTNode *node) {
 int parseASTLabel(
 		ASTNode *node,
 		struct Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res;
 

@@ -18,7 +18,7 @@ void freeASTSwitch(ASTSwitch *node);
 int parseASTSwitch(
 		ASTSwitch *node,
 		struct Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTSwitch(ASTSwitch const *node);
 ASTTravRes astSwitchTrav(
 		ASTSwitch *node,
