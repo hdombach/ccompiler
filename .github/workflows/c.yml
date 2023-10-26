@@ -12,8 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: make
-      run: make
+      run: make DEBUG=1 -j
     - name: make test
-      run: make build/allTests
+      run: make build/allTests DEBUG=1 -j
     - name: run tests
       run: build/allTests
+    - name: memory leak check
+      run: valgrind build/ccompiler assets/astTest.c

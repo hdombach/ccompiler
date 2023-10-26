@@ -1,6 +1,10 @@
 #template from https://gist.github.com/tomdaley92/190c68e8a84038cc91a5459409e007df
 
-CFLAGS = -g -Werror
+CFLAGS = -Werror
+ifdef DEBUG
+	CFLAGS += -g
+endif
+
 DEPFLAGS = -MMD -MP
 SRC = src
 OBJECTS := $(patsubst $(SRC)/%.c, build/%.o, $(wildcard $(SRC)/*.c))
