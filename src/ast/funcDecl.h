@@ -11,7 +11,7 @@ struct ASTScope;
 typedef struct ASTFuncDecl {
 	ASTNode node;
 	DList params;
-	struct ASTDeclarator *encl;
+	ASTNode *encl;
 	int hasEllipses;
 	/* used for params */
 	ASTScope scope;
@@ -25,7 +25,7 @@ void freeASTFuncDecl(ASTFuncDecl *decl);
 int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,
-		struct ASTDeclarator *encl,
+		ASTNode *encl,
 		struct ASTScope *scope);
 int printASTFuncDecl(ASTFuncDecl const *decl);
 ASTTravRes astFuncDeclTrav(

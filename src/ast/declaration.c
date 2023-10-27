@@ -627,12 +627,11 @@ int parseASTDeclarator(
 		//Searches forward for a function declaration
 		ASTNode *enclBuf = NULL;
 
-		if (!declarator->encl) {
+		if (declarator->encl) {
 			enclBuf = declarator->encl;
-			declarator->encl = NULL;
 		}
 
-		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, (ASTDeclarator *) enclBuf, scope))) {
+		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, enclBuf, scope))) {
 			n += res;
 			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 		} else {
@@ -644,9 +643,8 @@ int parseASTDeclarator(
 			//Searches forward for an array declaration
 			ASTNode *enclBuf = NULL;
 
-			if (!declarator->encl) {
+			if (declarator->encl) {
 				enclBuf = declarator->encl;
-				declarator->encl = NULL;
 			}
 
 			if ((res = parseASTArrayDecl((ASTArrayDecl *) &tempBuf, tok + n, enclBuf, scope))) {

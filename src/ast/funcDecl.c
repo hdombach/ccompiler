@@ -17,7 +17,7 @@ void freeASTFuncDecl(ASTFuncDecl *decl) {
 	freeDList(&decl->params, (FreeFunc) freeASTParam);
 	freeASTScope(&decl->scope);
 	if (decl->encl) {
-		freeASTDeclarator(decl->encl);
+		freeASTNode(decl->encl);
 		free(decl->encl);
 	}
 }
@@ -25,7 +25,7 @@ void freeASTFuncDecl(ASTFuncDecl *decl) {
 int parseASTFuncDecl(
 		ASTFuncDecl *decl,
 		Token const *tok,
-		struct ASTDeclarator *encl,
+		ASTNode *encl,
 		struct ASTScope *scope)
 {
 	AST_VALID(ASTFuncDecl);
@@ -99,7 +99,7 @@ int printASTFuncDecl(const ASTFuncDecl *decl) {
 
 	if (decl->encl) {
 		n += printf(", \"enclosing type\": ");
-		n += printASTDeclarator(decl->encl);
+		n += printASTNode(decl->encl);
 	}
 
 	n += printf("}");

@@ -116,14 +116,20 @@ int printASTFuncDef(ASTFuncDef const *def) {
 
 	n += printf("\"node type\": \"func def\"");
 
-	n += printf(", \"Type Spec\": ");
-	n += printASTTypeSpec(def->typeSpec);
+	if (def->typeSpec) {
+		n += printf(", \"Type Spec\": ");
+		n += printASTTypeSpec(def->typeSpec);
+	}
 
-	n += printf(", \"Declarator\": ");
-	n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
+	if (def->funcDecl) {
+		n += printf(", \"Declarator\": ");
+		n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
+	}
 
-	n += printf(", \"Compound Statement\": ");
-	n += printASTCompStm(def->compoundStm);
+	if (def->compoundStm) {
+		n += printf(", \"Compound Statement\": ");
+		n += printASTCompStm(def->compoundStm);
+	}
 
 	n += printf("}");
 
