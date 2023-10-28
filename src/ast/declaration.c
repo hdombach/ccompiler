@@ -2,17 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arrayDecl.h"
 #include "astUtil.h"
 #include "declaration.h"
-#include "enumDecl.h"
 #include "expression.h"
-#include "funcDecl.h"
 #include "identifier.h"
 #include "initializer.h"
-#include "structDecl.h"
 #include "../sem/scope.h"
 #include "node.h"
+#include "specialDecl.h"
 
 /* =========================================================================
  * ASTTypeQualifier

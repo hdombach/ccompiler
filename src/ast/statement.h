@@ -1,12 +1,10 @@
 #pragma once
 
-#include "doWhile.h"
+#include "iteration.h"
 #include "expression.h"
-#include "if.h"
+#include "selection.h"
 #include "label.h"
 #include "node.h"
-#include "switch.h"
-#include "while.h"
 
 /***********************************************************************
  * Empty Statement

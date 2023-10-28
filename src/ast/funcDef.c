@@ -3,7 +3,6 @@
 #include "astUtil.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "funcDecl.h"
 #include "node.h"
 #include "param.h"
 #include <stdio.h>

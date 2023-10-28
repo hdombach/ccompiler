@@ -4,7 +4,7 @@
 #include "../util/dlist.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "funcDecl.h"
+#include "specialDecl.h"
 #include "node.h"
 
 struct ASTDeclarator;

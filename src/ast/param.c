@@ -5,7 +5,7 @@
 #include "astUtil.h"
 #include "declaration.h"
 #include "../token.h"
-#include "structDecl.h"
+#include "specialDecl.h"
 
 void initASTParam(ASTParam *param) {
 	param->typeSpec = NULL;

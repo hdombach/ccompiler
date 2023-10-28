@@ -1,6 +1,5 @@
 #include <stdlib.h>
 
-#include "doWhile.h"
 #include "node.h"
 #include "statement.h"
 #include "compStatement.h"
@@ -8,9 +7,8 @@
 #include "astUtil.h"
 #include "label.h"
 #include "../sem/scope.h"
-#include "if.h"
-#include "switch.h"
-#include "while.h"
+#include "selection.h"
+#include "iteration.h"
 
 /***********************************************************************
  * Empty Statement

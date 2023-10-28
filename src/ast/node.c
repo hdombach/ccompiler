@@ -2,18 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arrayDecl.h"
+#include "specialDecl.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "doWhile.h"
-#include "enumDecl.h"
 #include "expression.h"
 #include "file.h"
-#include "for.h"
-#include "funcDecl.h"
 #include "funcDef.h"
 #include "identifier.h"
-#include "if.h"
+#include "selection.h"
+#include "iteration.h"
 #include "initializer.h"
 #include "intConstant.h"
 #include "label.h"
@@ -21,9 +18,6 @@
 #include "operation.h"
 #include "param.h"
 #include "statement.h"
-#include "structDecl.h"
-#include "switch.h"
-#include "while.h"
 
 void initASTNode(ASTNode *node, struct Token const *tok) {
 	node->type = AST_UNKNOWN;

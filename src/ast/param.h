@@ -2,7 +2,7 @@
 
 #include "declaration.h"
 #include "../token.h"
-#include "structDecl.h"
+#include "specialDecl.h"
 #include "node.h"
 
 typedef struct ASTParam {

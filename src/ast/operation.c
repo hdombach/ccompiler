@@ -10,7 +10,6 @@
 #include "../util/util.h"
 #include "../token.h"
 #include "param.h"
-#include "structDecl.h"
 
 /*************************************************************
  * Func Operation

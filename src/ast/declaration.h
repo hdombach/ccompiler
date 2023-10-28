@@ -2,13 +2,10 @@
 
 #include "../token.h"
 #include "../util/dlist.h"
-#include "arrayDecl.h"
-#include "enumDecl.h"
+#include "specialDecl.h"
 #include "expression.h"
 #include "identifier.h"
 #include "initializer.h"
-#include "structDecl.h"
-#include "funcDecl.h"
 #include "node.h"
 
 // https://en.cppreference.com/w/c/language/declarations
