@@ -1,9 +1,9 @@
 #pragma once
 
-#include "util/dlist.h"
+#include "util/wordList.h"
 
 typedef struct {
-	DList files;
+	WordList files;
 	int help;
 } Args;
 

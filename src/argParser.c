@@ -5,6 +5,7 @@
 #include "util/dlist.h"
 #include "util/util.h"
 #include "util/callbacks.h"
+#include "util/wordList.h"
 
 const char *ARGS_HELP_MSG =
 "usage: cmd [-h | --help] file...\n"
@@ -31,22 +32,18 @@ int _parseArg(int argc, char **argv, Args *args) {
 		return 0;
 	} else {
 		tempStr = strdup(argv[0]);
-		dlistApp(&args->files, &tempStr);
+		wordListApp(&args->files, tempStr);
 		return 1;
 	}
 }
 
-int _printStr(char **str) {
-	return printf("%s", *str);
-}
-
 void initArgs(Args *args) {
 	args->help = 0;
-	initDList(&args->files, sizeof(char*));
+	initWorldList(&args->files);
 }
 
 void freeArgs(Args *args) {
-	freeDList(&args->files, (FreeFunc) freeStr);
+	destroyWordList(&args->files);
 }
 
 int parseArgs(int argc, char **argv, Args *args) {
@@ -73,7 +70,7 @@ int argsPrint(const Args *args) {
 	n += printf("{");
 	n += printf("\"help\": %d", args->help);
 	n += printf(", \"files\": ");
-	n += printDList(&args->files, (PrintFunc) _printStr);
+	n += printWordList(&args->files);
 	n += printf("}");
 	return n;
 }

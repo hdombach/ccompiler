@@ -5,7 +5,9 @@
 #include "../util/dlist.h"
 
 typedef struct ASTScope {
-	/* A quick and dirty dict for keeping track of typedefs while building ast*/
+	/**
+	 * @brief Used while building AST to keep track of typedefs`
+	 */
 	WordDict typedefNames;
 	struct ASTScope *parent;
 } ASTScope;
