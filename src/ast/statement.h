@@ -58,10 +58,5 @@ void freeASTStm(ASTStm *node);
 int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope *scope);
 
 int printASTStm(ASTStm const *node);
-ASTTravRes astStmTrav(
-		ASTStm *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astStmChildCount(ASTStm const *node);
 ASTNode *astStmGetChild(ASTStm *node, int index);

@@ -98,25 +98,6 @@ int printASTParam(const ASTParam *param) {
 
 }
 
-ASTTravRes astParamTrav(
-		ASTParam *param,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav((ASTNode *) param->typeSpec, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	if (param->declarator) {
-		result = astNodeTrav((ASTNode *) param->declarator, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astParamChildCount(ASTParam const *node) {
 	return 2;
 }

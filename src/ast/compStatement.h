@@ -35,10 +35,5 @@ int parseASTCompStm(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTCompStm(ASTCompStm const *node);
-ASTTravRes astCompStmTrav(
-		ASTCompStm *,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astCompStmChildCount(ASTCompStm const *node);
 ASTNode *astCompStmGetChild(ASTCompStm *node, int index);

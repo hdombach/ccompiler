@@ -65,23 +65,6 @@ int printASTInitializerList(const ASTInitializerList *list) {
 	return printDList(&list->list, (PrintFunc) printASTNode);
 }
 
-ASTTravRes astInitializerListTrav(
-		ASTInitializerList *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	for (int i = 0; i < node->list.size; i++) {
-		ASTNode *item = dlistGetm(&node->list, i);
-		result = astNodeTrav(item, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astInitializerListChildCount(const ASTInitializerList *node) {
 	return node->list.size;
 }

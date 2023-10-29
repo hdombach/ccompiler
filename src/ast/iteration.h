@@ -24,11 +24,6 @@ int parseASTWhile(
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTWhile(ASTWhile const *node);
-ASTTravRes astWhileTrav(
-		ASTWhile *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astWhileChildCount(ASTWhile const *node);
 ASTNode *astWhileGetChild(ASTWhile *node, int index);
 
@@ -49,11 +44,6 @@ int parseASTDoWhile(
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTDoWhile(ASTDoWhile const *node);
-ASTTravRes astDoWhileTrav(
-		ASTDoWhile *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astDoWhileChildCount(ASTDoWhile const *node);
 ASTNode *astDoWhileGetChild(ASTDoWhile *node, int index);
 
@@ -76,10 +66,5 @@ int parseASTFor(
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTFor(ASTFor const *node);
-ASTTravRes astForTrav(
-		ASTFor *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astForChildCount(ASTFor const *node);
 ASTNode *astForGetChild(ASTFor *node, int index);

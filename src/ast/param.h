@@ -15,10 +15,5 @@ void initASTParam(ASTParam *param);
 void freeASTParam(ASTParam *param);
 int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope);
 int printASTParam(ASTParam const *param);
-ASTTravRes astParamTrav(
-		ASTParam *param,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astParamChildCount(ASTParam const *node);
 ASTNode *astParamGetChild(ASTParam *node, int index);

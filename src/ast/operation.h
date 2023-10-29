@@ -29,11 +29,6 @@ int parseASTFuncOperation(
 		ASTNode *func,
 		struct ASTScope *scope);
 int printASTFuncOperation(ASTFuncOperation const *node);
-ASTTravRes astFuncOperationTrav(
-		ASTFuncOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astFuncOperationChildCount(ASTFuncOperation const *node);
 ASTNode *astFuncOperationGetChild(ASTFuncOperation *node, int index);
 
@@ -56,11 +51,6 @@ int parseASTCondOperation(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTCondOperation(ASTCondOperation const *node);
-ASTTravRes astCondOperationTrav(
-		ASTCondOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astCondOperationChildCount(ASTCondOperation const *node);
 ASTNode *astCondOperationGetChild(ASTCondOperation *node, int index);
 
@@ -143,10 +133,5 @@ int parseASTOperation1(
 		struct ASTNode *lhs);
 int printASTOperation(ASTOperation const *node);
 
-ASTTravRes astOperationTrav(
-		ASTOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astOperationChildCount(ASTOperation const *node);
 ASTNode *astOperationGetChild(ASTOperation *node, int index);

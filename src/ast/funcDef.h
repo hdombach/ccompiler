@@ -24,10 +24,5 @@ int parseASTFuncDef(
 		Token const * tok,
 		struct ASTScope *scope);
 int printASTFuncDef(ASTFuncDef const *def);
-ASTTravRes astFuncDefTrav(
-		ASTFuncDef *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astFuncDefChildCount(ASTFuncDef const *node);
 ASTNode *astFuncDefGetChild(ASTFuncDef *node, int index);

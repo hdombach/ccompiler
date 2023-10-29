@@ -122,23 +122,6 @@ ASTNode *astWhileGetChild(ASTWhile *node, int index) {
 	}[index];
 }
 
-ASTTravRes astWhileTrav(
-		ASTWhile *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav((ASTNode *) node->statement, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	return ASTT_SUCCESS;
-}
-
 /************************************************************
  * Do While
  ************************************************************/
@@ -268,22 +251,6 @@ ASTNode *astDoWhileGetChild(ASTDoWhile *node, int index) {
 		(ASTNode *) node->statement,
 		(ASTNode *) node->expression,
 	}[index];
-}
-
-ASTTravRes astDoWhileTrav(ASTDoWhile *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav((ASTNode *) node->statement, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	return ASTT_SUCCESS;
 }
 
 /************************************************************
@@ -446,29 +413,6 @@ int printASTFor(ASTFor const *node) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astForTrav(
-		ASTFor *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav(node->initClause, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav(node->condExp, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav(node->iterExp, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav(node->loopStm, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	return ASTT_SUCCESS;
 }
 
 int astForChildCount(const ASTFor *node) {

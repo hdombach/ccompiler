@@ -144,20 +144,6 @@ int printASTLblCase(const ASTLblCase *node) {
 	return n;
 }
 
-ASTTravRes astLblCaseTrav(
-		ASTLblCase *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	return ASTT_SUCCESS;
-}
-
 int astLblCaseChildCount(ASTLblCase const *node) {
 	return 1;
 }

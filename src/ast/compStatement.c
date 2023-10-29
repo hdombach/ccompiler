@@ -88,24 +88,7 @@ int printASTCompStm(const ASTCompStm *node) {
 	return n;
 }
 
-ASTTravRes astCompStmTrav(
-		ASTCompStm *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-	
-	for (int i = 0; i < node->items.size; i++) {
-		ASTNode *item = dlistGetm(&node->items, i);
-		result = astNodeTrav(item, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
-int astCompStmChildCount(ASTCompStm *node) {
+int astCompStmChildCount(ASTCompStm const *node) {
 	return node->items.size;
 }
 

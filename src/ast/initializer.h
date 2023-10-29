@@ -25,11 +25,6 @@ int parseASTInitializerList(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTInitializerList(ASTInitializerList const *list);
-ASTTravRes astInitializerListTrav(
-		ASTInitializerList *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astInitializerListChildCount(ASTInitializerList const *node);
 ASTNode *astInitializerListGetChild(ASTInitializerList *node, int index);
 

@@ -29,11 +29,6 @@ int parseASTArrayDecl(
 		struct ASTNode *encl,
 		struct ASTScope *scope);
 int printASTArrayDecl(ASTArrayDecl const *decl);
-ASTTravRes astArrayDeclTrav(
-		ASTArrayDecl *node,
-		ASTTravFunc beforefunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astArrayDeclChildCount(ASTArrayDecl const *node);
 ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index);
 
@@ -60,11 +55,6 @@ int parseASTEnumeratorDecl(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
-ASTTravRes astEnumeratorDeclTrav(
-		ASTEnumeratorDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node);
 ASTNode *astEnumeratorDeclGetChild(ASTEnumeratorDecl *node, int index);
 
@@ -75,11 +65,6 @@ int parseASTEnumDecl(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTEnumDecl(ASTEnumDecl const *decl);
-ASTTravRes astEnumDeclTrav(
-		ASTEnumDecl *decl,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astEnumDeclChildCount(ASTEnumDecl const *node);
 ASTNode *astEnumDeclGetChild(ASTEnumDecl *node, int index);
 
@@ -102,11 +87,6 @@ int parseASTStructDecl(
 		Token const *tok,
 		struct ASTScope *scope);
 int printASTStructDecl(ASTStructDecl const *decl);
-ASTTravRes astStructDeclTrav(
-		ASTStructDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astStructDeclChildCount(ASTStructDecl const *node);
 ASTNode *astStructDeclGetChild(ASTStructDecl *node, int index);
 
@@ -134,10 +114,5 @@ int parseASTFuncDecl(
 		ASTNode *encl,
 		struct ASTScope *scope);
 int printASTFuncDecl(ASTFuncDecl const *decl);
-ASTTravRes astFuncDeclTrav(
-		ASTFuncDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astFuncDeclChildCount(ASTFuncDecl const *node);
 ASTNode *astFuncDeclGetChild(ASTFuncDecl *node, int index);

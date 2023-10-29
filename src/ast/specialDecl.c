@@ -97,27 +97,6 @@ int printASTArrayDecl(const ASTArrayDecl *decl) {
 	return n;
 }
 
-ASTTravRes astArrayDeclTrav(
-		ASTArrayDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->encl) {
-		result = astNodeTrav(node->encl, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->exp) {
-		result = astNodeTrav(node->exp, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astArrayDeclChildCount(const ASTArrayDecl *node) {
 	return 2;
 }
@@ -211,22 +190,6 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astEnumeratorDeclTrav(
-		ASTEnumeratorDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->exp) {
-		result = astNodeTrav(node->exp, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node) {
@@ -331,22 +294,6 @@ int printASTEnumDecl(const ASTEnumDecl *decl) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astEnumDeclTrav(ASTEnumDecl *decl,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	for (int i = 0; i < decl->enumerators.size; i++) {
-		ASTNode *node = dlistGetm(&decl->enumerators, i);
-		result = astNodeTrav(node, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astEnumDeclChildCount(ASTEnumDecl const *node) {
@@ -467,24 +414,6 @@ int printASTStructDecl(const ASTStructDecl *decl) {
 	return n;
 }
 
-ASTTravRes astStructDeclTrav(
-		ASTStructDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	for (int i = 0; i < node->items.size; i++) {
-		ASTNode *item = dlistGetm(&node->items, i);
-		result = astNodeTrav(item, beforeFunc, afterFunc,
-				ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astStructDeclChildCount(ASTStructDecl const *node) {
 	return node->items.size;
 }
@@ -597,27 +526,6 @@ int printASTFuncDecl(const ASTFuncDecl *decl) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astFuncDeclTrav(ASTFuncDecl *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	for (int i = 0; i < node->params.size; i++) {
-		ASTNode *param = dlistGetm(&node->params, i);
-		result = astNodeTrav(param, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->encl) {
-		result = astNodeTrav((ASTNode *) node->encl, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astFuncDeclChildCount(const ASTFuncDecl *node) {

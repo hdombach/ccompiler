@@ -32,11 +32,6 @@ int parseASTLblCase(
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTLblCase(ASTLblCase const *node);
-ASTTravRes astLblCaseTrav(
-		ASTLblCase *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astLblCaseChildCount(ASTLblCase const *node);
 ASTNode *astLblCaseGetChild(ASTLblCase *node, int index);
 

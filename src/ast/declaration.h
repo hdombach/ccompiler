@@ -12,11 +12,23 @@
 
 typedef struct ASTScope ASTScope;
 
+/* =========================================================================
+ * ASTTypeQualifier
+ * ========================================================================= */
+
 typedef enum  {
 	AST_TQ_NONE = 0b0,
 	AST_TQ_CONST = 0b1,
 	AST_TQ_VOLATILE = 0b10,
 } ASTTypeQualifier;
+
+void initASTTypeQualifier(ASTTypeQualifier *qualifiers);
+int parseASTTypeQualifier(ASTTypeQualifier *qualifiers, Token const *tok);
+int printASTTypeQualifier(ASTTypeQualifier const *qualifiers);
+
+/* =========================================================================
+ * ASTStorageClassSpec 
+ * ========================================================================= */
 
 typedef enum {
 	AST_SC_NONE = 0b0,
@@ -26,6 +38,14 @@ typedef enum {
 	AST_SC_STATIC = 0b1000,
 	AST_SC_EXTERN = 0b10000,
 } ASTStorageClassSpec;
+
+void initASTStorageClassSpec(ASTStorageClassSpec *specs);
+int parseASTStorageClassSpec(ASTStorageClassSpec *specs, Token const *tok);
+int printASTStorageClassSpec(ASTStorageClassSpec const *specs);
+
+/* =========================================================================
+ * ASTArithType
+ * ========================================================================= */
 
 //TODO: add float
 typedef enum {
@@ -39,6 +59,15 @@ typedef enum {
 	AST_AT_FLOAT = 0b1000000,
 	AST_AT_DOUBLE = 0b10000000,
 } ASTArithType;
+
+void initASTArithType(ASTArithType *type);
+int parseASTArithType(ASTArithType *type, Token const *tok);
+int printASTArithType(ASTArithType const *type);
+int astArithTypeNormalize(ASTArithType const *type);
+
+/* =========================================================================
+ * ASTTypeSpec
+ * ========================================================================= */
 
 typedef enum {
 	AST_TST_UNKNOWN,
@@ -70,6 +99,20 @@ typedef struct {
 	Token const *tok;
 } ASTTypeSpec;
 
+void initASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok);
+void freeASTTypeSpec(ASTTypeSpec *typeSpec);
+int parseASTTypeSpec(
+		ASTTypeSpec *typeSpec,
+		Token const *tok,
+		ASTScope *scope);
+int printASTTypeSpec(ASTTypeSpec const * typeSpec);
+int astTypeSpecChildCount(ASTTypeSpec const *typeSpec);
+ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index);
+
+/* =========================================================================
+ * ASTDeclarator
+ * ========================================================================= */
+
 /*
  * Note:
  * For declarators, the nesting of the decleration is reverse of the 
@@ -89,40 +132,6 @@ typedef struct ASTDeclarator {
 	ASTNode *bitField;
 } ASTDeclarator;
 
-typedef struct ASTDeclaration {
-	ASTNode node;
-	ASTTypeSpec *typeSpec;
-	DList declarators;
-} ASTDeclaration;
-
-void initASTTypeQualifier(ASTTypeQualifier *qualifiers);
-int parseASTTypeQualifier(ASTTypeQualifier *qualifiers, Token const *tok);
-int printASTTypeQualifier(ASTTypeQualifier const *qualifiers);
-
-void initASTStorageClassSpec(ASTStorageClassSpec *specs);
-int parseASTStorageClassSpec(ASTStorageClassSpec *specs, Token const *tok);
-int printASTStorageClassSpec(ASTStorageClassSpec const *specs);
-
-void initASTArithType(ASTArithType *type);
-int parseASTArithType(ASTArithType *type, Token const *tok);
-int printASTArithType(ASTArithType const *type);
-int astArithTypeNormalize(ASTArithType const *type);
-
-void initASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok);
-void freeASTTypeSpec(ASTTypeSpec *typeSpec);
-int parseASTTypeSpec(
-		ASTTypeSpec *typeSpec,
-		Token const *tok,
-		ASTScope *scope);
-int printASTTypeSpec(ASTTypeSpec const * typeSpec);
-ASTTravRes astTypeSpecTrav(
-		ASTTypeSpec *typeSpec,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
-int astTypeSpecChildCount(ASTTypeSpec const *typeSpec);
-ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index);
-
 void initASTDeclarator(ASTDeclarator *declarator, Token const *tok);
 void freeASTDeclarator(ASTDeclarator *declarator);
 int parseASTDeclarator(
@@ -130,13 +139,18 @@ int parseASTDeclarator(
 		Token const *tok,
 		ASTScope *scope);
 int printASTDeclarator(ASTDeclarator const *declarator);
-ASTTravRes astDeclaratorTrav(
-		ASTDeclarator *declarator,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astDeclaratorChildCount(ASTDeclarator const *node);
 ASTNode *astDeclaratorGetChild(ASTDeclarator *node, int index);
+
+/* =========================================================================
+ * ASTDeclaration
+ * ========================================================================= */
+
+typedef struct ASTDeclaration {
+	ASTNode node;
+	ASTTypeSpec *typeSpec;
+	DList declarators;
+} ASTDeclaration;
 
 void initASTDeclaration(ASTDeclaration *declaration, Token const *tok);
 void freeASTDeclaration(ASTDeclaration *declaration);
@@ -145,11 +159,6 @@ int parseASTDeclaration(
 		Token const *tok,
 		ASTScope *scope);
 int printASTDeclaration(ASTDeclaration const *declaration);
-ASTTravRes astDeclarationTrav(
-		ASTDeclaration *declaration,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx);
 int astDeclarationChildCount(ASTDeclaration const *node);
 ASTNode *astDeclarationGetChild(ASTDeclaration *node, int index);
 

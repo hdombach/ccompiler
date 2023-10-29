@@ -104,28 +104,6 @@ int printASTFuncOperation(ASTFuncOperation const *node) {
 	return n;
 }
 
-ASTTravRes astFuncOperationTrav(
-		ASTFuncOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->func) {
-		result = astNodeTrav(node->func, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	for (int i = 0; i < node->params.size; i++) {
-		ASTNode *param = dlistGetm(&node->params, i);
-		result = astNodeTrav(param, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astFuncOperationChildCount(const ASTFuncOperation *node) {
 	return node->params.size + 1;
 }
@@ -299,32 +277,6 @@ int printASTCondOperation(ASTCondOperation const *node) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astCondOperationTrav(
-		ASTCondOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->condition) {
-		result = astNodeTrav(node->condition, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->trueExp) {
-		result = astNodeTrav(node->trueExp, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->falseExp) {
-		result = astNodeTrav(node->falseExp, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astCondOperationChildCount(ASTCondOperation const *node) {
@@ -970,27 +922,6 @@ int printASTOperation(ASTOperation const *node) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astOperationTrav(
-		ASTOperation *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->lhs) {
-		result = astNodeTrav(node->lhs, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->rhs) {
-		result = astNodeTrav(node->rhs, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astOperationChildCount(ASTOperation const *node) {

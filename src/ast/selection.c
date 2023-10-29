@@ -133,32 +133,6 @@ int printASTIf(ASTIf const *node) {
 	return n;
 }
 
-ASTTravRes astIfTrav(
-		ASTIf *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (node->expression) {
-		result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->trueStatement) {
-		result = astNodeTrav((ASTNode *) node->trueStatement, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (node->falseStatement) {
-		result = astNodeTrav((ASTNode *) node->falseStatement, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astIfChildCount(const ASTIf *node) {
 	return 3;
 }
@@ -270,23 +244,6 @@ int printASTSwitch(const ASTSwitch *node) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astSwitchTrav(
-		ASTSwitch *node,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	result = astNodeTrav(node->expression, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	result = astNodeTrav((ASTNode *) node->statement, beforeFunc, afterFunc, ctx);
-	if (result == ASTT_FAILED) return ASTT_FAILED;
-
-	return ASTT_SUCCESS;
 }
 
 int astSwitchChildCount(ASTSwitch *node) {

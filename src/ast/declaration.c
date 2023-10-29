@@ -520,19 +520,12 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 	return n;
 }
 
-ASTTravRes astTypeSpecTrav(
-		ASTTypeSpec *typeSpec,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-	if (typeSpec->content) {
-		result = astNodeTrav(typeSpec->content, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
+int astTypeSpecChildCount(const ASTTypeSpec *typeSpec) {
+	return 1;
+}
 
-	return ASTT_SUCCESS;
+ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index) {
+	return typeSpec->content;
 }
 
 /* =========================================================================
@@ -717,32 +710,6 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 	return n;
 }
 
-ASTTravRes astDeclaratorTrav(
-		ASTDeclarator *declarator,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (declarator->encl) {	
-		result = astNodeTrav(declarator->encl, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (declarator->bitField) {
-		result = astNodeTrav(declarator->bitField, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	if (declarator->initializer) {
-		result = astNodeTrav(declarator->initializer, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
-}
-
 int astDeclaratorChildCount(const ASTDeclarator *node) {
 	return 3;
 }
@@ -860,28 +827,6 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	n += printf("}");
 
 	return n;
-}
-
-ASTTravRes astDeclarationTrav(
-		ASTDeclaration *declaration,
-		ASTTravFunc beforeFunc,
-		ASTTravFunc afterFunc,
-		ASTTravCtx *ctx)
-{
-	ASTTravRes result;
-
-	if (declaration->typeSpec) {
-		result = astNodeTrav((ASTNode *) declaration->typeSpec, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	for (int i = 0; i < declaration->declarators.size; i++) {
-		ASTNode *declarator = dlistGetm(&declaration->declarators, i);
-		result = astNodeTrav(declarator, beforeFunc, afterFunc, ctx);
-		if (result == ASTT_FAILED) return ASTT_FAILED;
-	}
-
-	return ASTT_SUCCESS;
 }
 
 int astDeclarationChildCount(const ASTDeclaration *node) {

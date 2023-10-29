@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
 
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
-			printASTFile(&astFile);
-			//astNodeTrav((ASTNode *) &astFile, travTest, NULL, NULL);
-			//printf("\n");
+			//printASTFile(&astFile);
+			astNodeTrav((ASTNode *) &astFile, travTest, NULL, NULL);
+			printf("\n");
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");
