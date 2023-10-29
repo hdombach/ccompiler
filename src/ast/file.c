@@ -98,3 +98,11 @@ ASTTravRes astFileTrav(
 
 	return ASTT_SUCCESS;
 }
+
+int astFileChildCount(const ASTFile *node) {
+	return node->items.size;
+}
+
+ASTNode *astFileGetChild(ASTFile *node, int index) {
+	return dlistGetm(&node->items, index);
+}

@@ -40,3 +40,5 @@ ASTTravRes astCompStmTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astCompStmChildCount(ASTCompStm const *node);
+ASTNode *astCompStmGetChild(ASTCompStm *node, int index);

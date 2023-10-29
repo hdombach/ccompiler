@@ -120,6 +120,8 @@ ASTTravRes astTypeSpecTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astTypeSpecChildCount(ASTTypeSpec const *typeSpec);
+ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index);
 
 void initASTDeclarator(ASTDeclarator *declarator, Token const *tok);
 void freeASTDeclarator(ASTDeclarator *declarator);
@@ -133,6 +135,8 @@ ASTTravRes astDeclaratorTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astDeclaratorChildCount(ASTDeclarator const *node);
+ASTNode *astDeclaratorGetChild(ASTDeclarator *node, int index);
 
 void initASTDeclaration(ASTDeclaration *declaration, Token const *tok);
 void freeASTDeclaration(ASTDeclaration *declaration);
@@ -146,6 +150,8 @@ ASTTravRes astDeclarationTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astDeclarationChildCount(ASTDeclaration const *node);
+ASTNode *astDeclarationGetChild(ASTDeclaration *node, int index);
 
 
 DList astDeclarationTypedefNames(ASTDeclaration const *declaration);

@@ -65,6 +65,14 @@ int printASTLblIdentifier(const ASTLblIdentifier *node) {
 	return n;
 }
 
+int astLblIdentifierChildCount(const ASTLblIdentifier *node) {
+	return 0;
+}
+
+ASTNode *astLblIdentifierGetChild(ASTLblIdentifier *node, int index) {
+	return NULL;
+}
+
 void initASTLblCase(ASTLblCase *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
@@ -150,6 +158,14 @@ ASTTravRes astLblCaseTrav(
 	return ASTT_SUCCESS;
 }
 
+int astLblCaseChildCount(ASTLblCase const *node) {
+	return 1;
+}
+
+ASTNode *astLblCaseGetChild(ASTLblCase *node, int index) {
+	return node->expression;
+}
+
 int parseASTLblDefault(
 		ASTNode *node,
 		const struct Token *tok,
@@ -201,4 +217,12 @@ int parseASTLabel(
 		return res;
 	}
 	return 0;
+}
+
+int astLblDefaultChildCount(ASTNode const *node) {
+	return 0;
+}
+
+ASTNode *astLblDefaultGetChild(ASTNode *node, int index) {
+	return NULL;
 }

@@ -30,6 +30,8 @@ ASTTravRes astInitializerListTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astInitializerListChildCount(ASTInitializerList const *node);
+ASTNode *astInitializerListGetChild(ASTInitializerList *node, int index);
 
 int parseASTInitializer(
 		ASTNode *node,

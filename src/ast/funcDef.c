@@ -154,3 +154,15 @@ ASTTravRes astFuncDefTrav(
 
 	return ASTT_SUCCESS;
 }
+
+int astFuncDefChildCount(ASTFuncDef const *node) {
+	return 3;
+}
+
+ASTNode *astFuncDefGetChild(ASTFuncDef *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->typeSpec,
+		(ASTNode *) node->funcDecl,
+		(ASTNode *) node->compoundStm,
+	}[index];
+}

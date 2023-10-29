@@ -29,6 +29,8 @@ ASTTravRes astWhileTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astWhileChildCount(ASTWhile const *node);
+ASTNode *astWhileGetChild(ASTWhile *node, int index);
 
 typedef struct ASTDoWhile {
 	ASTNode node;
@@ -52,6 +54,8 @@ ASTTravRes astDoWhileTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astDoWhileChildCount(ASTDoWhile const *node);
+ASTNode *astDoWhileGetChild(ASTDoWhile *node, int index);
 
 typedef struct ASTFor {
 	ASTNode node;
@@ -77,3 +81,5 @@ ASTTravRes astForTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astForChildCount(ASTFor const *node);
+ASTNode *astForGetChild(ASTFor *node, int index);

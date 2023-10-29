@@ -159,6 +159,21 @@ ASTTravRes astIfTrav(
 	return ASTT_SUCCESS;
 }
 
+int astIfChildCount(const ASTIf *node) {
+	return 3;
+}
+
+ASTNode *astIfGetChild(ASTIf *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->expression,
+		(ASTNode *) node->trueStatement,
+		(ASTNode *) node->falseStatement,
+	}[index];
+}
+
+/************************************************************
+ * Switch 
+ ************************************************************/
 
 void initASTSwitch(ASTSwitch *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
@@ -272,4 +287,15 @@ ASTTravRes astSwitchTrav(
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
 	return ASTT_SUCCESS;
+}
+
+int astSwitchChildCount(ASTSwitch *node) {
+	return 2;
+}
+
+ASTNode *astSwitchGetChild(ASTSwitch *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->expression,
+		(ASTNode *) node->statement,
+	}[index];
 }

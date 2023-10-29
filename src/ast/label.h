@@ -17,6 +17,8 @@ int parseASTLblIdentifier(
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTLblIdentifier(ASTLblIdentifier const *node);
+int astLblIdentifierChildCount(const ASTLblIdentifier *node);
+ASTNode *astLblIdentifierGetChild(ASTLblIdentifier *node, int index);
 
 typedef struct ASTLblCase {
 	ASTNode node;
@@ -35,14 +37,17 @@ ASTTravRes astLblCaseTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astLblCaseChildCount(ASTLblCase const *node);
+ASTNode *astLblCaseGetChild(ASTLblCase *node, int index);
 
 int parseASTLblDefault(
 		ASTNode *node,
 		struct Token const *tok,
 		struct ASTScope *scope);
 int printASTLblDefault(ASTNode const *node);
-
 int parseASTLabel(
 		struct ASTNode *label,
 		struct Token const *tok,
 		struct ASTScope *scope);
+int astLblDefaultChildCount(ASTNode const *node);
+ASTNode *astLblDefaultGetChild(ASTNode *node, int index);

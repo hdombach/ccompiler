@@ -118,6 +118,17 @@ ASTTravRes astArrayDeclTrav(
 	return ASTT_SUCCESS;
 }
 
+int astArrayDeclChildCount(const ASTArrayDecl *node) {
+	return 2;
+}
+
+ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index) {
+	return (ASTNode *[]) {
+		node->exp,
+		node->encl,
+	}[index];
+}
+
 /************************************************************
  * Enum Decl
  ************************************************************/
@@ -216,6 +227,16 @@ ASTTravRes astEnumeratorDeclTrav(
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node) {
+	return 1;
+}
+
+ASTNode *astEnumeratorDeclGetChild(ASTEnumeratorDecl *node, int index) {
+	return (ASTNode *[]) {
+		node->exp,
+	}[index];
 }
 
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
@@ -326,6 +347,14 @@ ASTTravRes astEnumDeclTrav(ASTEnumDecl *decl,
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astEnumDeclChildCount(ASTEnumDecl const *node) {
+	return node->enumerators.size;
+}
+
+ASTNode *astEnumDeclGetChild(ASTEnumDecl *node, int index) {
+	return dlistGetm(&node->enumerators, index);
 }
 
 /************************************************************
@@ -456,6 +485,14 @@ ASTTravRes astStructDeclTrav(
 	return ASTT_SUCCESS;
 }
 
+int astStructDeclChildCount(ASTStructDecl const *node) {
+	return node->items.size;
+}
+
+ASTNode *astStructDeclGetChild(ASTStructDecl *node, int index) {
+	return dlistGetm(&node->items, index);
+}
+
 /************************************************************
  * Func Decl
  ************************************************************/
@@ -581,4 +618,16 @@ ASTTravRes astFuncDeclTrav(ASTFuncDecl *node,
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astFuncDeclChildCount(const ASTFuncDecl *node) {
+	return node->params.size + 1;
+}
+
+ASTNode *astFuncDeclGetChild(ASTFuncDecl *node, int index) {
+	if (index < node->params.size) {
+		return dlistGetm(&node->params, index);
+	} else {
+		return node->encl;
+	}
 }

@@ -47,3 +47,11 @@ static int printASTIdentifier(ASTIdentifier const *node) {
 	
 	return n;
 }
+
+static int astIdentifierChildCount(ASTIdentifier const *node) {
+	return 0;
+}
+
+static ASTNode *astIdentifierGetChild(ASTIdentifier *node, int index) {
+	return NULL;
+}

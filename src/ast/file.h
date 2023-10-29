@@ -23,3 +23,5 @@ ASTTravRes astFileTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astFileChildCount(ASTFile const *node);
+ASTNode *astFileGetChild(ASTFile *node, int index);

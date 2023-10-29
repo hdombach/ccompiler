@@ -20,3 +20,5 @@ ASTTravRes astParamTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astParamChildCount(ASTParam const *node);
+ASTNode *astParamGetChild(ASTParam *node, int index);

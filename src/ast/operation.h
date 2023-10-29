@@ -8,31 +8,17 @@ struct ASTDeclaration;
 struct ASTParam;
 struct ASTScope;
 
+
+/*************************************************************
+ * Func Operation
+ *************************************************************/
+
 typedef struct ASTFuncOperation {
 	ASTNode node;
 	/* expression */
 	ASTNode *func;
 	DList params;
 } ASTFuncOperation;
-
-/* or ternerary */
-typedef struct ASTCondOperation {
-	ASTNode node;
-	ASTNode *condition;
-	ASTNode *trueExp;
-	ASTNode *falseExp;
-} ASTCondOperation;
-
-/*
- * Is used for Subscript, cast, sizeof, binary, prefix, postfix
- */
-typedef struct ASTOperation {
-	ASTNode node;
-	TokenType tokType;
-	ASTNode *lhs;
-	ASTNode *rhs;
-} ASTOperation;
-
 
 void initASTFuncOperation(ASTFuncOperation *node, Token const *tok);
 void freeASTFuncOperation(ASTFuncOperation *node);
@@ -48,6 +34,20 @@ ASTTravRes astFuncOperationTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astFuncOperationChildCount(ASTFuncOperation const *node);
+ASTNode *astFuncOperationGetChild(ASTFuncOperation *node, int index);
+
+/*************************************************************
+ * Cond Operation
+ *************************************************************/
+
+/* or ternerary */
+typedef struct ASTCondOperation {
+	ASTNode node;
+	ASTNode *condition;
+	ASTNode *trueExp;
+	ASTNode *falseExp;
+} ASTCondOperation;
 
 void initASTCondOperation(ASTCondOperation *node, Token const *tok);
 void freeASTCondOperation(ASTCondOperation *node);
@@ -61,6 +61,22 @@ ASTTravRes astCondOperationTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astCondOperationChildCount(ASTCondOperation const *node);
+ASTNode *astCondOperationGetChild(ASTCondOperation *node, int index);
+
+/*************************************************************
+ * Operation
+ *************************************************************/
+
+/*
+ * Is used for Subscript, cast, sizeof, binary, prefix, postfix
+ */
+typedef struct ASTOperation {
+	ASTNode node;
+	TokenType tokType;
+	ASTNode *lhs;
+	ASTNode *rhs;
+} ASTOperation;
 
 void initASTOperation(ASTOperation *node, Token const *tok);
 void freeASTOperation(ASTOperation *node);
@@ -132,3 +148,5 @@ ASTTravRes astOperationTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astOperationChildCount(ASTOperation const *node);
+ASTNode *astOperationGetChild(ASTOperation *node, int index);

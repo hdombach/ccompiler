@@ -27,6 +27,8 @@ ASTTravRes astIfTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astIfChildCount(ASTIf const *node);
+ASTNode *astIfGetChild(ASTIf *node, int index);
 
 /************************************************************
  * Switch 
@@ -50,4 +52,5 @@ ASTTravRes astSwitchTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
-
+int astSwitchChildCount(ASTSwitch *node);
+ASTNode *astSwitchGetChild(ASTSwitch *node, int index);

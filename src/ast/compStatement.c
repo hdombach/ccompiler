@@ -104,3 +104,11 @@ ASTTravRes astCompStmTrav(
 
 	return ASTT_SUCCESS;
 }
+
+int astCompStmChildCount(ASTCompStm *node) {
+	return node->items.size;
+}
+
+ASTNode *astCompStmGetChild(ASTCompStm *node, int index) {
+	return dlistGetm(&node->items, index);
+}

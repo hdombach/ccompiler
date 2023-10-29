@@ -45,6 +45,14 @@ int printASTEmptyStm(const ASTEmptyStm *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
+int astEmptyStmChildCount(const ASTEmptyStm *node) {
+	return 0;
+}
+
+ASTNode *astEmptyStmGetChild(ASTEmptyStm *node, int index) {
+	return NULL;
+}
+
 /***********************************************************************
  * Break Statement
  ***********************************************************************/
@@ -86,6 +94,18 @@ int printASTBreak(const ASTBreak *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
+int astBreakChildCount(const ASTBreak *node) {
+	return 0;
+}
+
+ASTNode *astBreakGetChild(ASTBreak *node, int index) {
+	return NULL;
+}
+
+/***********************************************************************
+ * Continue Statement
+ ***********************************************************************/
+
 void initASTContinue(ASTContinue *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 }
@@ -121,6 +141,14 @@ int parseASTContinue(
 
 int printASTContinue(const ASTContinue *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
+}
+
+int astContinueChildCount(const ASTContinue *node) {
+	return 0;
+}
+
+ASTNode *astContinueGetChild(ASTContinue *node, int index) {
+	return NULL;
 }
 
 void initASTStm(ASTStm *node, Token const *tok) {
@@ -238,4 +266,15 @@ ASTTravRes astStmTrav(
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astStmChildCount(const ASTStm *node) {
+	return 2;
+}
+
+ASTNode *astStmGetChild(ASTStm *node, int index) {
+	return (ASTNode *[]) {
+		node->content,
+		node->label,
+	}[index];
 }

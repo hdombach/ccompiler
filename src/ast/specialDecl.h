@@ -34,6 +34,8 @@ ASTTravRes astArrayDeclTrav(
 		ASTTravFunc beforefunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astArrayDeclChildCount(ASTArrayDecl const *node);
+ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index);
 
 /************************************************************
  * Enum Decl
@@ -63,6 +65,8 @@ ASTTravRes astEnumeratorDeclTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node);
+ASTNode *astEnumeratorDeclGetChild(ASTEnumeratorDecl *node, int index);
 
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok);
 void freeASTEnumDecl(ASTEnumDecl *decl);
@@ -76,6 +80,8 @@ ASTTravRes astEnumDeclTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astEnumDeclChildCount(ASTEnumDecl const *node);
+ASTNode *astEnumDeclGetChild(ASTEnumDecl *node, int index);
 
 /************************************************************
  * Struct Decl
@@ -101,6 +107,8 @@ ASTTravRes astStructDeclTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astStructDeclChildCount(ASTStructDecl const *node);
+ASTNode *astStructDeclGetChild(ASTStructDecl *node, int index);
 
 /************************************************************
  * Func Decl
@@ -131,3 +139,5 @@ ASTTravRes astFuncDeclTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astFuncDeclChildCount(ASTFuncDecl const *node);
+ASTNode *astFuncDeclGetChild(ASTFuncDecl *node, int index);

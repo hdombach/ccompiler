@@ -29,3 +29,5 @@ ASTTravRes astFuncDefTrav(
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
 		ASTTravCtx *ctx);
+int astFuncDefChildCount(ASTFuncDef const *node);
+ASTNode *astFuncDefGetChild(ASTFuncDef *node, int index);

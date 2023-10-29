@@ -64,6 +64,8 @@ void mvASTNode(ASTNode *dest, ASTNode *src);
 ASTNode *dupASTNode(ASTNode *node);
 char *astNodeTypeStr(ASTNodeType type);
 int printASTNode(ASTNode const *node);
+int astNodeChildCount(ASTNode const *node);
+ASTNode *astNodeGetChild(ASTNode *node, int index);
 
 
 /* The result of node traversal */

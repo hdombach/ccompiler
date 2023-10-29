@@ -82,6 +82,14 @@ ASTTravRes astInitializerListTrav(
 	return ASTT_SUCCESS;
 }
 
+int astInitializerListChildCount(const ASTInitializerList *node) {
+	return node->list.size;
+}
+
+ASTNode *astInitializerListGetChild(ASTInitializerList *node, int index) {
+	return dlistGetm(&node->list, index);
+}
+
 int parseASTInitializer(
 		ASTNode *node,
 		const Token *tok,

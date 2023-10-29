@@ -111,6 +111,17 @@ int printASTWhile(const ASTWhile *node) {
 	return n;
 }
 
+int astWhileChildCount(const ASTWhile *node) {
+	return 2;
+}
+
+ASTNode *astWhileGetChild(ASTWhile *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->expression,
+		(ASTNode *) node->statement,
+	}[index];
+}
+
 ASTTravRes astWhileTrav(
 		ASTWhile *node,
 		ASTTravFunc beforeFunc,
@@ -246,6 +257,17 @@ int printASTDoWhile(const ASTDoWhile *node) {
 	n += printf("}");
 
 	return n;
+}
+
+int astDoWhileChildCount(const ASTDoWhile *node) {
+	return 2;
+}
+
+ASTNode *astDoWhileGetChild(ASTDoWhile *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->statement,
+		(ASTNode *) node->expression,
+	}[index];
 }
 
 ASTTravRes astDoWhileTrav(ASTDoWhile *node,
@@ -447,4 +469,17 @@ ASTTravRes astForTrav(
 	if (result == ASTT_FAILED) return ASTT_FAILED;
 
 	return ASTT_SUCCESS;
+}
+
+int astForChildCount(const ASTFor *node) {
+	return 4;
+}
+
+ASTNode *astForGetChild(ASTFor *node, int index) {
+	return (ASTNode *[]) {
+		node->initClause,
+		node->condExp,
+		node->iterExp,
+		node->loopStm,
+	}[index];
 }

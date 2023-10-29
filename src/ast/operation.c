@@ -126,6 +126,18 @@ ASTTravRes astFuncOperationTrav(
 	return ASTT_SUCCESS;
 }
 
+int astFuncOperationChildCount(const ASTFuncOperation *node) {
+	return node->params.size + 1;
+}
+
+ASTNode *astFuncOperationGetChild(ASTFuncOperation *node, int index) {
+	if (index < 1) {
+		return node->func;
+	} else {
+		return dlistGetm(&node->params, index - 1);
+	}
+}
+
 /*************************************************************
  * Subscript Operation
  *************************************************************/
@@ -313,6 +325,18 @@ ASTTravRes astCondOperationTrav(
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astCondOperationChildCount(ASTCondOperation const *node) {
+	return 3;
+}
+
+ASTNode *astCondOperationGetChild(ASTCondOperation *node, int index) {
+	return (ASTNode *[]) {
+		node->condition,
+		node->trueExp,
+		node->falseExp,
+	}[index];
 }
 
 /*************************************************************
@@ -967,4 +991,15 @@ ASTTravRes astOperationTrav(
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astOperationChildCount(ASTOperation const *node) {
+	return 2;
+}
+
+ASTNode *astOperationGetChild(ASTOperation *node, int index) {
+	return (ASTNode *[]) {
+		node->lhs,
+		node->rhs,
+	}[index];
 }

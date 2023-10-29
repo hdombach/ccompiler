@@ -743,6 +743,18 @@ ASTTravRes astDeclaratorTrav(
 	return ASTT_SUCCESS;
 }
 
+int astDeclaratorChildCount(const ASTDeclarator *node) {
+	return 3;
+}
+
+ASTNode *astDeclaratorGetChild(ASTDeclarator *node, int index) {
+	return (ASTNode *[]) {
+		node->encl,
+		node->bitField,
+		node->initializer,
+	}[index];
+}
+
 /* =========================================================================
  * ASTDeclaration
  * ========================================================================= */
@@ -870,6 +882,18 @@ ASTTravRes astDeclarationTrav(
 	}
 
 	return ASTT_SUCCESS;
+}
+
+int astDeclarationChildCount(const ASTDeclaration *node) {
+	return node->declarators.size + 1;
+}
+
+ASTNode *astDeclarationGetChild(ASTDeclaration *node, int index) {
+	if (index < 1) {
+		return (ASTNode *) node->typeSpec;
+	} else {
+		return dlistGetm(&node->declarators, index - 1);
+	}
 }
 
 DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {

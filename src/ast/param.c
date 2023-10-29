@@ -116,3 +116,14 @@ ASTTravRes astParamTrav(
 
 	return ASTT_SUCCESS;
 }
+
+int astParamChildCount(ASTParam const *node) {
+	return 2;
+}
+
+ASTNode *astParamGetChild(ASTParam *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->typeSpec,
+		(ASTNode *) node->declarator,
+	}[index];
+}

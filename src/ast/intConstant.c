@@ -101,3 +101,11 @@ int printASTIntContant(const ASTIntConstant *node) {
 
 	return n;
 }
+
+int astIntConstantChildCount(const ASTIntConstant *node) {
+	return 0;
+}
+
+ASTNode *astIntConstantGetChild(ASTIntConstant *node, int index) {
+	return NULL;
+}
