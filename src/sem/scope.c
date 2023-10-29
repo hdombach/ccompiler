@@ -14,6 +14,8 @@ void initASTScope(ASTScope *scope) {
 
 void freeASTScope(ASTScope *scope) {
 	freeWordDict(&scope->typedefNames);
+	freeWordDict(&scope->labelDict);
+	freeDList(&scope->labels, NULL);
 }
 
 int astScopeIsTypedef(ASTScope *scope, const char *name) {
