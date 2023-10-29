@@ -8,7 +8,7 @@
 typedef struct {
 	ASTNode node;
 	DList items;
-	ASTScope scope;
+	ASTScope *scope;
 } ASTFile;
 
 /* parses declaration or func def */

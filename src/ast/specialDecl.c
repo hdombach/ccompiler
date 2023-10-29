@@ -429,14 +429,16 @@ ASTNode *astStructDeclGetChild(ASTStructDecl *node, int index) {
 void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok) {
 	initASTNode((ASTNode *) decl, tok);
 	initDListEmpty(&decl->params, AST_NODE_S);
-	initASTScope(&decl->scope);
+	decl->scope = malloc(sizeof(ASTScope));
+	initASTScope(decl->scope);
 	decl->encl = NULL;
 	decl->hasEllipses = 0;
 }
 
 void freeASTFuncDecl(ASTFuncDecl *decl) {
 	freeDList(&decl->params, (FreeFunc) freeASTParam);
-	freeASTScope(&decl->scope);
+	freeASTScope(decl->scope);
+	free(decl->scope);
 	if (decl->encl) {
 		freeASTNode(decl->encl);
 		free(decl->encl);

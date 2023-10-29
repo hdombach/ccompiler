@@ -283,7 +283,21 @@ ASTTravRes astNodeTrav(
 	curCtx.parent = ctx;
 	curCtx.node = node;
 	curCtx.parent = ctx;
-	if (ctx) {
+
+	if (node->type == AST_COMP_STM) {
+		ASTCompStm *stm = (ASTCompStm *) node;
+		curCtx.scope = stm->scope;
+	} else if (node->type == AST_FILE) {
+		ASTFile *file = (ASTFile *) node;
+		curCtx.scope = file->scope;
+	} else if (node->type == AST_FUNC_DECL) {
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
+		curCtx.scope = funcDecl->scope;
+	} else if (node->type == AST_FUNC_DEF) {
+		ASTFuncDef *funcDef = (ASTFuncDef *) node;
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) funcDef->funcDecl;
+		curCtx.scope = funcDecl->scope;
+	} else if (ctx) {
 		curCtx.scope = ctx->scope;
 	} else {
 		curCtx.scope = NULL;

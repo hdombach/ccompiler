@@ -100,7 +100,7 @@ typedef struct ASTFuncDecl {
 	ASTNode *encl;
 	int hasEllipses;
 	/* used for params */
-	ASTScope scope;
+	ASTScope *scope;
 } ASTFuncDecl;
 
 void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok);

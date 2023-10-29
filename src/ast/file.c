@@ -33,12 +33,14 @@ int parseASTFileItem(
 void initASTFile(ASTFile *file, Token const *tok) {
 	initASTNode((ASTNode *) file, tok);
 	initDListEmpty(&file->items, AST_NODE_S);
-	initASTScope(&file->scope);
+	file->scope = malloc(sizeof(ASTScope));
+	initASTScope(file->scope);
 }
 
 void freeASTFile(ASTFile *file) {
 	freeDList(&file->items, (FreeFunc) freeASTNode);
-	freeASTScope(&file->scope);
+	freeASTScope(file->scope);
+	free(file->scope);
 }
 
 int parseASTFile(ASTFile *file, const Token *tok) {
@@ -49,7 +51,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 	initASTFile(file, tok);
 
 	while (1) {
-		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, &file->scope))) {
+		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, file->scope))) {
 			n += res;
 			dlistApp(&file->items, &tempBuf);
 

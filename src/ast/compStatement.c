@@ -33,12 +33,14 @@ int parseASTCompItem(
 void initASTCompStm(ASTCompStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	initDListEmpty(&node->items, AST_NODE_S);
-	initASTScope(&node->scope);
+	node->scope = malloc(sizeof(ASTScope));
+	initASTScope(node->scope);
 }
 
 void freeASTCompStm(ASTCompStm *node) {
 	freeDList(&node->items, (FreeFunc) freeASTNode);
-	freeASTScope(&node->scope);
+	freeASTScope(node->scope);
+	free(node->scope);
 }
 
 int parseASTCompStm(

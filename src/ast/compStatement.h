@@ -20,7 +20,7 @@ typedef enum {
 typedef struct ASTCompStm {
 	ASTNode node;
 	DList items;
-	ASTScope scope;
+	ASTScope *scope;
 } ASTCompStm;
 
 int parseASTCompItem(

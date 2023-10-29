@@ -3,10 +3,13 @@
 
 #include "../ast/astUtil.h"
 #include "scope.h"
+#include "../ast/statement.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);
 	scope->parent = NULL;
+	initWordDict(&scope->labelDict);
+	initDList(&scope->labels, sizeof(ASTStm *));
 }
 
 void freeASTScope(ASTScope *scope) {
@@ -35,4 +38,32 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names) {
 	if (names.data) {
 		free(names.data);
 	}
+}
+
+ASTScopeErr astScopeAddLabel(ASTScope *scope, struct ASTStm *stm) {
+	if (!stm->label || stm->label->type != AST_LBL_IDENTIFIER) {
+		return SCOPE_INVALID_ARG;
+	}
+
+	ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm->label;
+	if (astScopeGetLabel(scope, lbl->name)) {
+		return SCOPE_EXISTS;
+	}
+
+	int index = scope->labels.size;
+	dlistApp(&scope->labels, stm);
+	wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
+	return SCOPE_SUCCESS;
+}
+
+struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName) {
+	int const *index = wordDictGet(&scope->labelDict, labelName);
+	if (!index) {
+		if (scope->parent) {
+			return astScopeGetLabel(scope->parent, labelName);
+		} else {
+			return NULL;
+		}
+	}
+	return dlistGetm(&scope->labels, *index);
 }
