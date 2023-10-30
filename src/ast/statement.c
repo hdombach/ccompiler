@@ -151,6 +151,81 @@ ASTNode *astContinueGetChild(ASTContinue *node, int index) {
 	return NULL;
 }
 
+void initASTGoto(ASTGoto *node, const struct Token *tok) {
+	initASTNode((ASTNode *) node, tok);
+	node->name = NULL;
+}
+
+void freeASTGoto(ASTGoto *node) {
+	if (node->name) {
+		free(node->name);
+	}
+}
+
+int parseASTGoto(
+		ASTGoto *node,
+		const struct Token *tok,
+		struct ASTScope *scope)
+{
+	AST_VALID(ASTGoto);
+	int n = 0;
+
+	initASTGoto(node, tok);
+	if (astHasErr()) {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_GOTO) {
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_IDENTIFIER) {
+		node->name = strdup(tok[n].contents);
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	node->node.type = AST_GOTO;
+	return n;
+}
+
+int printASTGoto(const ASTGoto *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": ");
+	n += printJsonStr(astNodeTypeStr(node->node.type));
+
+	n += printf(", \"label\": ");
+	n += printJsonStr(node->name);
+
+	n += printf("}");
+
+	return n;
+}
+
+int astGotoChildCount(ASTGoto *node) {
+	return 0;
+}
+
+ASTNode *astGotoGetChild(ASTGoto *node, int index) {
+	return NULL;
+}
+
 void initASTStm(ASTStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	node->label = NULL;
@@ -207,6 +282,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {
+		node->content = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
+	} else if ((res = parseASTGoto((ASTGoto *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {

@@ -45,6 +45,7 @@ typedef enum ASTNodeType {
 	AST_LBL_CASE,
 	AST_LBL_DEFAULT,
 	AST_FOR,
+	AST_GOTO,
 } ASTNodeType;
 
 struct ASTScope;

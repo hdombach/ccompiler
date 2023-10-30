@@ -43,6 +43,25 @@ int astContinueChildCount(ASTContinue const *node);
 ASTNode *astContinueGetChild(ASTContinue *node, int index);
 
 /***********************************************************************
+ * Goto Statement
+ ***********************************************************************/
+typedef struct ASTGoto {
+	ASTNode node;
+	char *name;
+} ASTGoto;
+
+void initASTGoto(ASTGoto *node, struct Token const *tok);
+void freeASTGoto(ASTGoto *node);
+int parseASTGoto(
+		ASTGoto *node,
+		struct Token const *tok,
+		struct ASTScope *scope);
+int printASTGoto(ASTGoto const *node);
+int astGotoChildCount(ASTGoto *node);
+ASTNode *astGotoGetChild(ASTGoto *node, int index);
+
+
+/***********************************************************************
  * Statement
  ***********************************************************************/
 

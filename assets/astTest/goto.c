@@ -1,5 +1,6 @@
 void gotoMain() {
-	int value;
-label: value = 2;
+	//int value;
+	goto label2;
+//label: value = 2;
 label2:;
 }

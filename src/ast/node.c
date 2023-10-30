@@ -67,6 +67,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_LBL_CASE: freeASTLblCase((ASTLblCase *) node); break;
 		case AST_LBL_DEFAULT: break;
 		case AST_FOR: freeASTFor((ASTFor *) node); break;
+		case AST_GOTO: freeASTGoto((ASTGoto *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -129,6 +130,7 @@ char *_astNodeTypes[] = {
 	"case label",
 	"default label",
 	"for statement",
+	"goto statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -178,7 +180,8 @@ int printASTNode(ASTNode const *node) {
 		case AST_LBL_CASE: return printASTLblCase((ASTLblCase *) node);
 		case AST_LBL_DEFAULT: return printASTLblDefault(node);
 		case AST_FOR: return printASTFor((ASTFor *) node);
-		default: return printf("\"(unknown node)\"");
+		case AST_GOTO: return printASTGoto((ASTGoto *) node);
+		case AST_UNKNOWN: return printf("\"(unknown node)\"");
 	}
 }
 
@@ -223,6 +226,7 @@ int astNodeChildCount(const ASTNode *node) {
 		case AST_LBL_CASE: return astLblCaseChildCount((ASTLblCase *) node);
 		case AST_LBL_DEFAULT: return astLblDefaultChildCount(node);
 		case AST_FOR: return astForChildCount((ASTFor *) node);
+		case AST_GOTO: return astGotoChildCount((ASTGoto *) node);
 		case AST_UNKNOWN: return 0;
 	}
 }
@@ -268,6 +272,7 @@ ASTNode *astNodeGetChild(ASTNode *node, int index) {
 		case AST_LBL_CASE: return astLblCaseGetChild((ASTLblCase *) node, index);
 		case AST_LBL_DEFAULT: return astLblDefaultGetChild(node, index);
 		case AST_FOR: return astForGetChild((ASTFor *) node, index);
+		case AST_GOTO: return astGotoGetChild((ASTGoto *) node, index);
 		case AST_UNKNOWN: return 0;
 	}
 }
