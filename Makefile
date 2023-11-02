@@ -3,6 +3,7 @@
 CFLAGS = -Werror
 ifdef DEBUG
 	CFLAGS += -g
+	CFLAGS += -D DEBUG=1
 endif
 
 DEPFLAGS = -MMD -MP

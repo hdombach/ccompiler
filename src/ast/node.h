@@ -67,6 +67,7 @@ char *astNodeTypeStr(ASTNodeType type);
 int printASTNode(ASTNode const *node);
 int astNodeChildCount(ASTNode const *node);
 ASTNode *astNodeGetChild(ASTNode *node, int index);
+struct ASTScope *astNodeScope(ASTNode *node, struct ASTScope *defaultScope);
 
 
 /* The result of node traversal */

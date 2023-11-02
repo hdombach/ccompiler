@@ -277,6 +277,25 @@ ASTNode *astNodeGetChild(ASTNode *node, int index) {
 	}
 }
 
+ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
+	if (node->type == AST_COMP_STM) {
+		ASTCompStm *stm = (ASTCompStm *) node;
+		return stm->scope;
+	} else if (node->type == AST_FILE) {
+		ASTFile *file = (ASTFile *) node;
+		return file->scope;
+	} else if (node->type == AST_FUNC_DECL) {
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
+		return funcDecl->scope;
+	} else if (node->type == AST_FUNC_DEF) {
+		ASTFuncDef *funcDef = (ASTFuncDef *) node;
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) funcDef->funcDecl;
+		return funcDecl->scope;
+	} else {
+		return defaultScope;
+	}
+}
+
 
 ASTTravRes astNodeTrav(
 		ASTNode *node,
@@ -289,24 +308,7 @@ ASTTravRes astNodeTrav(
 	curCtx.node = node;
 	curCtx.parent = ctx;
 
-	if (node->type == AST_COMP_STM) {
-		ASTCompStm *stm = (ASTCompStm *) node;
-		curCtx.scope = stm->scope;
-	} else if (node->type == AST_FILE) {
-		ASTFile *file = (ASTFile *) node;
-		curCtx.scope = file->scope;
-	} else if (node->type == AST_FUNC_DECL) {
-		ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
-		curCtx.scope = funcDecl->scope;
-	} else if (node->type == AST_FUNC_DEF) {
-		ASTFuncDef *funcDef = (ASTFuncDef *) node;
-		ASTFuncDecl *funcDecl = (ASTFuncDecl *) funcDef->funcDecl;
-		curCtx.scope = funcDecl->scope;
-	} else if (ctx) {
-		curCtx.scope = ctx->scope;
-	} else {
-		curCtx.scope = NULL;
-	}
+	curCtx.scope = astNodeScope(node, (ctx ? ctx->scope : NULL));
 
 	ASTTravRes result = ASTT_SUCCESS;;
 	if (beforeFunc) {

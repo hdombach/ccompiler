@@ -8,11 +8,11 @@
 typedef struct {
 	ASTNode node;
 	DList items;
-	ASTScope *scope;
+	struct ASTScope *scope;
 } ASTFile;
 
 /* parses declaration or func def */
-int parseASTFileItem(ASTNode *item, Token const *tok, ASTScope *scope);
+int parseASTFileItem(ASTNode *item, Token const *tok, struct ASTScope *scope);
 
 void initASTFile(ASTFile *file, Token const *tok);
 void freeASTFile(ASTFile *file);

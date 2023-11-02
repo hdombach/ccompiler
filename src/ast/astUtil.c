@@ -10,6 +10,9 @@ char *_astErrMsg = NULL;
 Token const *_astErrTok;
 
 void astErr(char *msg, const Token *tok) {
+	if (_astErrMsg) {
+		fprintASTErr(stderr);
+	}
 	_astErrMsg = msg;
 	_astErrTok = tok;
 }
