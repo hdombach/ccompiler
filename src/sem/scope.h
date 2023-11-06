@@ -5,6 +5,8 @@
 #include "../util/dlist.h"
 
 struct ASTStm;
+struct SCompound;
+struct SType;
 
 typedef struct ASTScope {
 	/**
@@ -20,6 +22,12 @@ typedef struct ASTScope {
 	 * @brief Pointers to statements which contain the lables
 	 */
 	DList labels;
+
+	WordDict structDict;
+	DList structs;
+
+	WordDict identifierDict;
+	DList identifiers;
 	struct ASTScope *parent;
 } ASTScope;
 
@@ -53,3 +61,13 @@ ASTScopeErr astScopeAddLabel(ASTScope *scope, struct ASTStm *stm);
  * @return Statement containing the label. NULL if not found
  */
 struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName);
+
+int astScopeHasCompound(ASTScope *scope, const char *name);
+
+int astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name);
+
+struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name);
+
+struct SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
+
+struct SCompoundRef astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);

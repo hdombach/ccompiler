@@ -75,6 +75,9 @@ ASTNode *astEnumDeclGetChild(ASTEnumDecl *node, int index);
 typedef struct {
 	ASTNode node;
 	char *name;
+	/**
+	 * @brief Is a list of ASTDeclarations
+	 */
 	DList items;
 	struct ASTScope *scope;
 	int isUnion;

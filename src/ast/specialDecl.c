@@ -322,8 +322,11 @@ void freeASTStructDecl(ASTStructDecl *decl) {
 		free(decl->name);
 	}
 	freeDList(&decl->items, (FreeFunc) freeASTNode);
-	freeASTScope(decl->scope);
-	free(decl->scope);
+	if (decl->scope) {
+		freeASTScope(decl->scope);
+		free(decl->scope);
+		decl->scope = NULL;
+	}
 }
 
 int parseASTStructDecl(

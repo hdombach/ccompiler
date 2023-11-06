@@ -4,18 +4,27 @@
 #include "../ast/astUtil.h"
 #include "scope.h"
 #include "../ast/statement.h"
+#include "type.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);
 	scope->parent = NULL;
 	initWordDict(&scope->labelDict);
 	initDList(&scope->labels, sizeof(ASTStm *));
+	initWordDict(&scope->structDict);
+	initDList(&scope->structs, sizeof(SCompound));
+	initWordDict(&scope->identifierDict);
+	initDList(&scope->identifiers, sizeof(STypeBuf));
 }
 
 void freeASTScope(ASTScope *scope) {
 	freeWordDict(&scope->typedefNames);
 	freeWordDict(&scope->labelDict);
 	freeDList(&scope->labels, NULL);
+	freeWordDict(&scope->structDict);
+	freeDList(&scope->structs, NULL);
+	freeWordDict(&scope->identifierDict);
+	freeDList(&scope->identifiers, (FreeFunc) destroySType);
 }
 
 int astScopeIsTypedef(ASTScope *scope, const char *name) {
@@ -68,4 +77,40 @@ struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName) {
 		}
 	}
 	return dlistGetm(&scope->labels, *index);
+}
+
+int astScopeHasCompound(ASTScope *scope, const char *name) {
+	return wordDictPresent(&scope->structDict, name);
+}
+
+int astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name) {
+	if (!wordDictInsert(&scope->structDict, name, scope->structs.size)) return 0;
+	dlistApp(&scope->structs, compound);
+	return 1;
+}
+
+struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name) {
+	SCompoundRef result;
+	result.index = *wordDictGet(&scope->structDict, name);
+	result.parentScope = scope;
+	return result;
+}
+
+SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
+	SCompoundRef result;
+	result.index = scope->structs.size;
+	result.parentScope = scope;
+	dlistApp(&scope->structs, new);
+	return result;
+}
+
+struct SCompoundRef astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name) {
+	SCompoundRef result;
+	result.parentScope = scope;
+	result.index = scope->structs.size;
+
+	dlistApp(&scope->structs, type);
+	wordDictInsert(&scope->structDict, name, result.index);
+
+	return result;
 }

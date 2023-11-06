@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "type.h"
 #include "typeGen.h"
 #include "scope.h"
 #include "../util/wordList.h"
@@ -35,7 +36,17 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 	return ASTT_SUCCESS;
 }
 
+static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
+	if (node->type == AST_DECLARATION) {
+		ASTDeclaration *declaration = (ASTDeclaration *) node;
+		loadSTypes(ctx->scope, declaration);
+	}
+
+	return ASTT_SUCCESS;
+}
+
 void typeGen(ASTFile *file) {
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
+	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
 }
