@@ -40,8 +40,17 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_DECLARATION) {
 		ASTDeclaration *declaration = (ASTDeclaration *) node;
 		loadSTypes(ctx->scope, declaration);
+		printASTScope(ctx->scope);
 	}
 
+	return ASTT_SUCCESS;
+}
+
+static ASTTravRes printScopes(ASTNode *node, ASTTravCtx *ctx) {
+	ASTScope *scope = astNodeScope(node, NULL);
+	if (scope) {
+		printASTScope(scope);
+	}
 	return ASTT_SUCCESS;
 }
 
@@ -49,4 +58,6 @@ void typeGen(ASTFile *file) {
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
+
+	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
 }

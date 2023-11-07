@@ -27,6 +27,61 @@ void freeASTScope(ASTScope *scope) {
 	freeDList(&scope->identifiers, (FreeFunc) destroySType);
 }
 
+
+typedef struct ScopePrintCxt {
+	int isFirst;
+	int n;
+	DList *list;
+	int *completed;
+} ScopePrintCxt;
+
+void static _printScopeLabels(const char **key, int *value, ScopePrintCxt *ctx) {
+	if (ctx->isFirst) {
+		ctx->isFirst = 0;
+	} else {
+		ctx->n += printf(", ");
+	}
+	ctx->n += printf("\"%s\"", *key);
+}
+
+void static _printScopeStructs(const char **key, int *value, ScopePrintCxt *ctx) {
+	ctx->completed[*value] = 1;
+	ctx->n += printf(", \"%s\": ", *key);
+	ctx->n += printSType((const SType *) dlistGetm(ctx->list, *value));
+}
+
+int printASTScope(ASTScope const *scope) {
+	ScopePrintCxt ctx = {1, 0, NULL};
+
+	ctx.n += printf("{");
+
+	ctx.n += printf("\"type\": \"scope\"");
+
+	if (scope->labelDict.elementCount) {
+		ctx.n += printf(", \"labels\": [");
+		wordDictIter((WordDict *) &scope->labelDict, (WordDictIterFunc) _printScopeLabels, &ctx);
+		ctx.n += printf("]");
+	}
+
+	if (scope->structs.size) {
+		ctx.isFirst = 1;
+		ctx.list = (DList *) &scope->structs;
+		ctx.completed = calloc(1, sizeof(int) * scope->structs.size);
+
+		wordDictIter((WordDict *) &scope->structDict, (WordDictIterFunc) _printScopeStructs, &ctx);
+
+		for (int i = 0; i < scope->structs.size; i++) {
+			if (ctx.completed[i]) continue;
+			ctx.n += printf(", \"anonymous\": ");
+			ctx.n += printSType(dlistGet(&scope->structs, i));
+		}
+	}
+
+	ctx.n += printf("}");
+
+	return ctx.n;
+}
+
 int astScopeIsTypedef(ASTScope *scope, const char *name) {
 	if (wordDictPresent(&scope->typedefNames, name)) {
 		return 1;

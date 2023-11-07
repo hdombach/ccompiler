@@ -125,6 +125,7 @@ int dictInsert(
 	}
 	*curNode = malloc(sizeof(DictNode));
 	initDictNode(*curNode, key, value, keySize, valueSize);
+	dict->elementCount++;
 	return 1;
 }
 
@@ -198,6 +199,7 @@ void dictDelete(
 			*curNode = temp->next;
 			freeDictNode(temp, freeKeyFunc, freeValueFunc);
 			free(temp);
+			dict->elementCount--;
 			return;
 		} else {
 			curNode = &(*curNode)->next;
@@ -231,6 +233,7 @@ void *dictRemove(
 			}
 			tempValue = temp->value;
 			free(temp);
+			dict->elementCount--;
 			return tempValue;
 		} else {
 			curNode = &(*curNode)->next;
@@ -296,4 +299,15 @@ int printDict(
 	n += printf("}");
 
 	return n;
+}
+
+void dictIter(Dict *dict, DictIterFunc func, void *context) {
+	for (int i = 0; i < dict->allocatedSize; i++) {
+		DictNode *curNode;
+		curNode = dict->nodes[i];
+		while (curNode) {
+			func(curNode->key, curNode->value, context);
+			curNode = curNode->next;
+		}
+	}
 }

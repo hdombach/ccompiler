@@ -39,6 +39,7 @@ typedef enum ASTScopeErr {
 
 void initASTScope(ASTScope *scope);
 void freeASTScope(ASTScope *scope);
+int printASTScope(ASTScope const *scope);
 
 int astScopeIsTypedef(ASTScope *scope, char const *name);
 void astScopeAddTypedefName(ASTScope *scope, char *name);
