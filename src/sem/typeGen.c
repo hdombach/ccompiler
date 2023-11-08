@@ -47,7 +47,8 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 }
 
 static ASTTravRes printScopes(ASTNode *node, ASTTravCtx *ctx) {
-	ASTScope *scope = astNodeScope(node, NULL);
+	ASTScope *scope = NULL;
+	scope = astNodeScope(node, NULL);
 	if (scope) {
 		printASTScope(scope);
 	}

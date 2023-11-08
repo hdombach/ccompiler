@@ -75,6 +75,8 @@ int printASTScope(ASTScope const *scope) {
 			ctx.n += printf(", \"anonymous\": ");
 			ctx.n += printSType(dlistGet(&scope->structs, i));
 		}
+
+		free(ctx.completed);
 	}
 
 	ctx.n += printf("}");
