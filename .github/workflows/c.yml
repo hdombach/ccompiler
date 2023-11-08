@@ -23,4 +23,4 @@ jobs:
     - name: run tests
       run: build/allTests
     - name: memory leak check
-      run: valgrind --error-exitcode=1 --leak-check=full build/ccompiler assets/astTest.c
+      run: valgrind --error-exitcode=1 --leak-check=full --track-origins=yes build/ccompiler assets/astTest.c
