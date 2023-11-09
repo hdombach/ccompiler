@@ -29,6 +29,7 @@ void destroySType(SType *type) {
 }
 
 static int loadDecl(SType *type, SType *internal, ASTNode *node) {
+	if (!node) return 0;
 	switch (node->type) {
 		case AST_DECLARATOR: return loadDecl(type, internal, ((ASTDeclarator *) node)->encl);
 		case AST_POINTER_DECL: return loadSPointer((SPointer *) type, internal, (ASTDeclarator *) node);
@@ -39,7 +40,6 @@ static int loadDecl(SType *type, SType *internal, ASTNode *node) {
 				return 1;
 		default: return 0;
 	};
-	return 0;
 };
 
 static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
@@ -77,17 +77,12 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		/*technically, loadDecl takes ownership of internal. However
 		 * since typespec types are trivially copiable, tis fine */
 
-		if (isLogDebug()) {
-			LOG_DEBUG_HEAD;
-			printf("adding declarator of name %s\n", astDeclaratorName(declarator));
-		}
 
 		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) return 0;
 
-		printf("about to add type ");
-		printSType((SType *) &tempType);
-		printf("\n");
-		astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)));
+		if (!astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)))) {
+			logTokIntError(declaration->node.tok, "Couldn't add identifier %s", astDeclaratorName(declarator));
+		}
 	}
 
 	return 1;

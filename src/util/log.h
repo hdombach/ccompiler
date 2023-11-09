@@ -13,6 +13,7 @@ void logTokErr(const struct Token *tok, const char *fmt, ...);
 void logTokIntError(const struct Token *tok, const char *fmt, ...);
 void logTokDebug(const struct Token *tok, const char *fmt, ...);
 
+void logIntHead(const char *fmt, ...);
 void logIntError(const char *fmt, ...);
 
 int logAssert(int exp, char *file, int line, char *expStr);
@@ -30,7 +31,6 @@ int isLogDebug();
 #define LOG_DEBUG(msg) \
 	logDebugHead(__FILE__, __LINE__); \
 	printf("%s\n", msg);
-
 
 #define TODO(msg) \
 	logIntError("%s:%d Unfinished todo: %s", __FILE__, __LINE__, msg)

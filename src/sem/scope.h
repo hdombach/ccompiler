@@ -71,4 +71,13 @@ struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name);
 
 struct SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
 
-struct SCompoundRef astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);
+/**
+ * @brief Adds an identifier
+ *
+ * @param[in] scope Scope to add the type into
+ * @param[in] type Type to add
+ * @param[in] name (takes ownership)
+ *
+ * @return 1 on success, 0 on error
+ */
+int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);

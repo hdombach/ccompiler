@@ -14,8 +14,16 @@ void logTokErr(const struct Token *tok, const char *fmt, ...) {
 	va_end(args);
 }
 
+void logTokIntError(const struct Token *tok, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	logIntHead("%s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
+	vfprintf(stderr, fmt, args);
+	fprintf(stderr, "\n");
+	va_end(args);
+}
+
 void logTokDebug(const struct Token *tok, const char *fmt, ...) {
-#ifdef DEBUG
 	if (isLogDebug()) {
 		va_list args;
 		va_start(args, fmt);
@@ -24,13 +32,22 @@ void logTokDebug(const struct Token *tok, const char *fmt, ...) {
 		fprintf(stdout, "\n");
 		va_end(args);
 	}
-#endif
+}
+
+void logIntHead(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	fprintf(stderr, "[\033[1;31mINTERNAL ERROR ");
+	vfprintf(stderr, fmt, args);
+	fprintf(stderr, "\033[0m] ");
+	va_end(args);
+
 }
 
 void logIntError(const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	fprintf(stderr, "[\033[1;31mINTERNAL ERROR\033[0m] ");
+	logIntHead("");
 	vfprintf(stderr, fmt, args);
 	fprintf(stderr, "\n");
 	va_end(args);

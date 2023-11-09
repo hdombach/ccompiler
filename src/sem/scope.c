@@ -50,6 +50,11 @@ void static _printScopeStructs(const char **key, int *value, ScopePrintCxt *ctx)
 	ctx->n += printSType((const SType *) dlistGetm(ctx->list, *value));
 }
 
+void static _printScopeIdentifiers(const char **key, int *value, ScopePrintCxt *ctx) {
+	ctx->n += printf(", \"%s\": ", *key);
+	ctx->n += printSType((const SType *) dlistGetm(ctx->list, *value));
+}
+
 int printASTScope(ASTScope const *scope) {
 	ScopePrintCxt ctx = {1, 0, NULL};
 
@@ -77,6 +82,11 @@ int printASTScope(ASTScope const *scope) {
 		}
 
 		free(ctx.completed);
+	}
+
+	if (scope->identifiers.size) {
+		ctx.list = (DList *) &scope->identifiers;
+		wordDictIter((WordDict *) &scope->identifierDict, (WordDictIterFunc) _printScopeIdentifiers, &ctx);
 	}
 
 	ctx.n += printf("}");
@@ -150,6 +160,14 @@ struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name) {
 	SCompoundRef result;
 	result.index = *wordDictGet(&scope->structDict, name);
 	result.parentScope = scope;
+
+	
+	SCompound *comp = dlistGetm(&scope->structs, result.index);
+	if (comp->isUnion) {
+		result.type.type = STT_UNION;
+	} else {
+		result.type.type = STT_STRUCT;
+	}
 	return result;
 }
 
@@ -158,16 +176,20 @@ SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 	result.index = scope->structs.size;
 	result.parentScope = scope;
 	dlistApp(&scope->structs, new);
+
+	if (new->isUnion) {
+		result.type.type = STT_UNION;
+	} else {
+		result.type.type = STT_STRUCT;
+	}
+
 	return result;
 }
 
-struct SCompoundRef astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name) {
-	SCompoundRef result;
-	result.parentScope = scope;
-	result.index = scope->structs.size;
+int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name) {
+	int index;
+	index = scope->identifiers.size;
 
-	dlistApp(&scope->structs, type);
-	wordDictInsert(&scope->structDict, name, result.index);
-
-	return result;
+	dlistApp(&scope->identifiers, type);
+	return wordDictInsert(&scope->identifierDict, name, index);
 }
