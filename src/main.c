@@ -21,28 +21,27 @@ ASTTravRes travTest(ASTNode *node, ASTTravCtx *_) {
 }
 
 int main(int argc, char **argv) {
-	Args args;
 	TokList tokens;
 
-	initArgs(&args);
+	initArgs(&g_args);
 
-	if (!parseArgs(argc, argv, &args)) {
-		freeArgs(&args);
+	if (!parseArgs(argc, argv, &g_args)) {
+		freeArgs(&g_args);
 		return 1;
 	}
 
-	if (args.help) {
+	if (g_args.help) {
 		printf("%s\n", ARGS_HELP_MSG);
-		freeArgs(&args);
+		freeArgs(&g_args);
 		return 0;
 	}
 
-	for (int i = 0; i < args.files.size; i++) {
+	for (int i = 0; i < g_args.files.size; i++) {
 		char *file;
 		FILE *fp;
 		int n;
 
-		file = *(char **) dlistGet(&args.files, i);
+		file = *(char **) dlistGet(&g_args.files, i);
 		fp = fopen(file, "r");
 		if (!fp) {
 			perror("ree");
@@ -72,6 +71,6 @@ int main(int argc, char **argv) {
 		freeTokList(&tokens);
 	}
 
-	freeArgs(&args);
+	freeArgs(&g_args);
 	return 0;
 }

@@ -11,10 +11,7 @@ const int DICT_INIT_SIZE = 16;
 void initDict(Dict *dict) {
 	dict->allocatedSize = DICT_INIT_SIZE;
 	dict->elementCount = 0;
-	dict->nodes = malloc(sizeof(DictNode*) * dict->allocatedSize);
-	for (int i = 0; i < dict->allocatedSize; i++) {
-		dict->nodes[i] = NULL;
-	}
+	dict->nodes = calloc(dict->allocatedSize, sizeof(DictNode*));
 }
 
 void freeDict(Dict *dict, FreeFunc freeKeyFunc, FreeFunc freeValueFunc) {

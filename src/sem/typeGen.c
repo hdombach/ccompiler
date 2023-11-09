@@ -40,7 +40,7 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_DECLARATION) {
 		ASTDeclaration *declaration = (ASTDeclaration *) node;
 		loadSTypes(ctx->scope, declaration);
-		printASTScope(ctx->scope);
+		//printASTScope(ctx->scope);
 	}
 
 	return ASTT_SUCCESS;

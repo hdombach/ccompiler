@@ -27,10 +27,18 @@ typedef struct SType {
 	char isVolatile: 1;
 } SType;
 
+#define STYPE_S 64
 typedef struct STypeBuf {
 	SType type;
-	char buf[64 - sizeof(SType)];
+	char buf[STYPE_S - sizeof(SType)];
 } STypeBuf;
+
+#if __STDC_VERSION__ >= 201112L
+#define STYPE_VALID(Type)\
+	static_assert(sizeof(STypeBuf) >= sizeof(Type), "SType is too small")
+#else
+#define STYPE_VALID(Type)
+#endif
 
 void initSType(SType *type);
 void destroySType(SType *type);
@@ -87,7 +95,7 @@ typedef struct SArray {
 
 void initSArray(SArray *type);
 void destroySArray(SArray *type);
-int loadSArray(SArray *type, SType *internal, ASTDeclarator *declarator);
+int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl);
 int printSArray(SArray const *type);
 
 /*************************************************************
@@ -150,5 +158,5 @@ typedef struct SFunction {
 
 void initSFunction(SFunction *type);
 void destroySFunction(SFunction *type);
-int loadSFunction(SFunction *type, SType *internal, ASTDeclarator *declarator);
+int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator);
 int printSFunction(SFunction const *func);

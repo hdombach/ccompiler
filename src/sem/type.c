@@ -28,12 +28,13 @@ void destroySType(SType *type) {
 	type->type = STT_UNKNOWN;
 }
 
-static int loadDecl(SType *type, SType *internal, ASTDeclarator *declarator) {
-	switch (declarator->node.type) {
-		case AST_POINTER_DECL: return loadSPointer((SPointer *) type, internal, declarator);
-		case AST_ARRAY_DECL: return loadSArray((SArray *) type, internal, declarator);
-		case AST_FUNC_DECL: return loadSFunction((SFunction *) type, internal, declarator);
-		case AST_IDENTIFIER_DECL: 
+static int loadDecl(SType *type, SType *internal, ASTNode *node) {
+	switch (node->type) {
+		case AST_DECLARATOR: return loadDecl(type, internal, ((ASTDeclarator *) node)->encl);
+		case AST_POINTER_DECL: return loadSPointer((SPointer *) type, internal, (ASTDeclarator *) node);
+		case AST_ARRAY_DECL: return loadSArray((SArray *) type, internal, (ASTArrayDecl *) node);
+		case AST_FUNC_DECL: return loadSFunction((SFunction *) type, internal, (ASTFuncDecl *) node);
+		case AST_IDENTIFIER_DECL:
 				mvSType(type, internal);
 				return 1;
 		default: return 0;
@@ -65,6 +66,8 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 }
 
 int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
+	if (!LOG_ASSERT(declaration->node.type == AST_DECLARATION)) return 0;
+
 	STypeBuf tempInternal, tempType;
 
 	if (!loadTypespec((SType *) &tempInternal, declaration->typeSpec, scope)) return 0;
@@ -73,8 +76,17 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		ASTDeclarator *declarator = dlistGetm(&declaration->declarators, i);
 		/*technically, loadDecl takes ownership of internal. However
 		 * since typespec types are trivially copiable, tis fine */
-		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, declarator)) return 0;
 
+		if (isLogDebug()) {
+			LOG_DEBUG_HEAD;
+			printf("adding declarator of name %s\n", astDeclaratorName(declarator));
+		}
+
+		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) return 0;
+
+		printf("about to add type ");
+		printSType((SType *) &tempType);
+		printf("\n");
 		astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)));
 	}
 
@@ -129,6 +141,7 @@ void initSPrim(SPrim *type) {
 #pragma clang diagnostic ignored "-Wswitch"
 
 int loadSPrim(SPrim *type, ASTTypeSpec *typeSpec) {
+	STYPE_VALID(SPrim);
 	if (!LOG_ASSERT(typeSpec->node.type == AST_TYPE_SPEC)) return 0;
 	initSPrim(type);
 	switch (typeSpec->arith) {
@@ -228,20 +241,24 @@ void destroySArray(SArray *type) {
 	}
 }
 
-int loadSArray(SArray *type, SType *internal, ASTDeclarator *declarator) {
+int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl) {
+	STYPE_VALID(SArray);
+	if (!LOG_ASSERT(arrayDecl->node.type == AST_ARRAY_DECL)) return 0;
+
 	STypeBuf tempBuf;
 	initSArray(type);
 
-	if (declarator->node.type != AST_ARRAY_DECL) {
+	if (arrayDecl->node.type != AST_ARRAY_DECL) {
 		return 0;
 	}
 
-	if (!loadDecl((SType *) &tempBuf, internal, (ASTDeclarator *) declarator->encl)) {
+	if (!loadDecl((SType *) &tempBuf, internal, arrayDecl->encl)) {
 		return 0;
 	}
 
 	type->elType = movaSType((SType *) &tempBuf);
 	type->type.type = STT_ARRAY;
+	type->size = 0;
 	//TODO: set size
 	return 1;
 }
@@ -294,6 +311,9 @@ int loadSCompoundRef(
 		ASTStructDecl *structDecl,
 		ASTScope *scope)
 {
+	STYPE_VALID(SCompoundRef);
+	if (!LOG_ASSERT(structDecl->node.type == AST_STRUCT_DECL)) return 0;
+
 	SCompound tempComp;
 
 	initSCompoundRef(type);
@@ -379,7 +399,7 @@ void destroySFunction(SFunction *type) {
 	freeDList(&type->paramTypes, (FreeFunc) destroySType);
 }
 
-int loadSFunction(SFunction *type, SType *internal, ASTDeclarator *declarator) {
+int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator) {
 	initSFunction(type);
 	TODO("Impliment loadSFunction");
 	return 0;
