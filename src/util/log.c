@@ -4,6 +4,7 @@
 #include "log.h"
 #include "../token.h"
 #include "../argParser.h"
+#include "../util/color.h"
 
 void logTokErr(const struct Token *tok, const char *fmt, ...) {
 	va_list args;
@@ -17,7 +18,7 @@ void logTokErr(const struct Token *tok, const char *fmt, ...) {
 void logTokIntError(const struct Token *tok, const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	logIntHead("%s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
+	logIntHead(" %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
 	vfprintf(stderr, fmt, args);
 	fprintf(stderr, "\n");
 	va_end(args);
@@ -37,9 +38,9 @@ void logTokDebug(const struct Token *tok, const char *fmt, ...) {
 void logIntHead(const char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	fprintf(stderr, "[\033[1;31mINTERNAL ERROR ");
+	fprintf(stderr, "[" COLOR_RED "INTERNAL ERROR");
 	vfprintf(stderr, fmt, args);
-	fprintf(stderr, "\033[0m] ");
+	fprintf(stderr, COLOR_RESET "] ");
 	va_end(args);
 
 }
@@ -61,8 +62,13 @@ int logAssert(int exp, char *file, int line, char *expStr) {
 	return exp;
 }
 
-void logDebugHead(char *file, int line) {
-	printf("[DEBUG %s:%d]", file, line);
+void logDebugHead(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	printf("[DEBUG");
+	vprintf(fmt, args);
+	printf("]");
+	va_end(args);
 }
 
 int isLogDebug() {
