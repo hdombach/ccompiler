@@ -299,6 +299,9 @@ ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
 		if (!LOG_ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
 
 		return funcDecl->scope;
+	} else if (node->type == AST_STRUCT_DECL) {
+		ASTStructDecl *structDecl = (ASTStructDecl *) node;
+		return structDecl->scope;
 	} else {
 		return defaultScope;
 	}
