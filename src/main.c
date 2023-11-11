@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 			typeGen(&astFile);
-			//printASTFile(&astFile);
+			printASTFile(&astFile);
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");

@@ -32,13 +32,33 @@ void destroySType(SType *type) {
 	type->type = STT_UNKNOWN;
 }
 
-static int loadDecl(SType *type, SType *internal, ASTNode *node) {
+static int loadDecl(
+		SType *type,
+		SType *internal,
+		ASTNode *node,
+		ASTScope *scope)
+{
 	if (!node) return 0;
 	switch (node->type) {
-		case AST_DECLARATOR: return loadDecl(type, internal, ((ASTDeclarator *) node)->encl);
-		case AST_POINTER_DECL: return loadSPointer((SPointer *) type, internal, (ASTDeclarator *) node);
-		case AST_ARRAY_DECL: return loadSArray((SArray *) type, internal, (ASTArrayDecl *) node);
-		case AST_FUNC_DECL: return loadSFunction((SFunction *) type, internal, (ASTFuncDecl *) node);
+		case AST_DECLARATOR: return loadDecl(
+			 type,
+			 internal,
+			 ((ASTDeclarator *) node)->encl,
+			 scope);
+		case AST_POINTER_DECL: return loadSPointer(
+			type,
+			internal,
+			(ASTDeclarator *) node,
+			scope);
+		case AST_ARRAY_DECL: return loadSArray(
+			(SArray *) type,
+			internal,
+			(ASTArrayDecl *) node,
+			scope);
+		case AST_FUNC_DECL: return loadSFunction(
+			(SFunction *) type,
+			internal,
+			(ASTFuncDecl *) node);
 		case AST_IDENTIFIER_DECL:
 				mvSType(type, internal);
 				return 1;
@@ -52,7 +72,10 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 	switch (spec->typeSpecType) {
 		case AST_TST_UNION:
 		case AST_TST_STRUCT:
-			return loadSCompoundRef((SCompoundRef *) type, (ASTStructDecl *) spec->content, scope);
+			return loadSCompoundRef(
+				(SCompoundRef *) type,
+				(ASTStructDecl *) spec->content,
+				scope);
 		case AST_TST_ENUM:
 			TODO("add enum type spec");
 			return 0;
@@ -62,7 +85,10 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 		case AST_TST_ARITH:
 			return loadSPrim((SPrim *) type, spec);
 		case AST_TST_TYPEDEF:
-			return loadSTypedefRef((STypedefRef *) type, (ASTIdentifier *) spec->content, scope);
+			return loadSTypedefRef(
+				(STypedefRef *) type,
+				(ASTIdentifier *) spec->content,
+				scope);
 		case AST_TST_UNKNOWN:
 			return 0;
 	}
@@ -85,13 +111,28 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 
 		logDebug("DEBUG", "About to load %s", astDeclaratorName(declarator));
 
-		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) {
-			logErrTok(declaration->node.tok, "Problem loading identifier %s", astDeclaratorName(declarator));
+		if (!loadDecl(
+				(SType *) &tempType,
+				(SType *) &tempInternal,
+				(ASTNode *) declarator,
+				scope))
+		{
+			logErrTok(
+				declaration->node.tok,
+				"Problem loading identifier %s",
+				astDeclaratorName(declarator));
 			return 0;
 		}
 
-		if (!astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)))) {
-			logErrTok(declaration->node.tok, "Couldn't add identifier %s", astDeclaratorName(declarator));
+		if (!astScopeAddIdentifier(
+				scope,
+				(SType *) &tempType,
+				strdup(astDeclaratorName(declarator))))
+		{
+			logErrTok(
+				declaration->node.tok,
+				"Couldn't add identifier %s",
+				astDeclaratorName(declarator));
 			return 0;
 		}
 	}
@@ -255,7 +296,7 @@ void destroySArray(SArray *type) {
 	}
 }
 
-int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl) {
+int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope *scope) {
 	STYPE_VALID(SArray);
 	if (!LOG_ASSERT(arrayDecl->node.type == AST_ARRAY_DECL)) return 0;
 
@@ -266,14 +307,14 @@ int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl) {
 		return 0;
 	}
 
-	if (!loadDecl((SType *) &tempBuf, internal, arrayDecl->encl)) {
+	if (!loadDecl((SType *) &tempBuf, internal, arrayDecl->encl, scope)) {
 		return 0;
 	}
 
 	type->elType = movaSType((SType *) &tempBuf);
 	type->type.type = STT_ARRAY;
 	type->size = 0;
-	//TODO: set size
+	TODO("Set size");
 	return 1;
 }
 
@@ -363,26 +404,51 @@ int printSCompoundRef(const SCompoundRef *ref) {
  * Semantic Pointer Type
  *************************************************************/
 
+SPointer *newSPointer() {
+	SPointer *result = malloc(STYPE_S);
+	initSPointer(result);
+	return result;
+}
+
 void initSPointer(SPointer *type) {
 	initSType((SType *) type);
 	type->internal = NULL;
 }
 
 void destroySPointer(SPointer *type) {
-	destroySType(type->internal);
-	free(type->internal);
+	if (type->internal) {
+		destroySType(type->internal);
+		free(type->internal);
+	}
 }
 
-int loadSPointer(SPointer *type, SType *internal, ASTDeclarator *declarator) {
-	initSPointer(type);
-	TODO("Impliment loadSPointer");
+int loadSPointer(
+		SType *type,
+		SType *internal,
+		ASTDeclarator *declarator,
+		ASTScope *scope)
+{
+	SPointer *pointer = newSPointer();
+	pointer->type.type = STT_POINTER;
+	pointer->internal = movaSType(internal);
+
+	if (!loadDecl(type, (SType *) pointer, declarator->encl, scope)) goto failure;
+	return 1;
+
+failure:
 	return 0;
+
+	if (pointer) {
+	return 1;
+		destroySPointer(pointer);
+		free(pointer);
+	}
 }
 
 int printSPointer(const SPointer *type) {
 	int n = 0;
 
-	n += printf("}");
+	n += printf("{");
 
 	n += printf("\"type\": \"%s\"", sttStr(type->type.type));
 
@@ -391,6 +457,8 @@ int printSPointer(const SPointer *type) {
 		n += printSType(type->internal);
 	}
 
+	n += printf("}");
+	
 	return n;
 }
 

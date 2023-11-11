@@ -97,7 +97,7 @@ typedef struct SArray {
 
 void initSArray(SArray *type);
 void destroySArray(SArray *type);
-int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl);
+int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope *scope);
 int printSArray(SArray const *type);
 
 /*************************************************************
@@ -143,9 +143,14 @@ typedef struct SPointer {
 	SType *internal;
 } SPointer;
 
+SPointer *newSPointer();
 void initSPointer(SPointer *type);
 void destroySPointer(SPointer *type);
-int loadSPointer(SPointer *type, SType *internal, ASTDeclarator *declarator);
+int loadSPointer(
+		SType *type,
+		SType *internal,
+		ASTDeclarator *declarator,
+		ASTScope *scope);
 int printSPointer(SPointer const *type);
 
 /*************************************************************

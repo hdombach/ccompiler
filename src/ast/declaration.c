@@ -681,7 +681,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	n += printf("{");
 
-	n += printf("\"Node type\": \"Declarator\"");
+	n += printf("\"Node type\": \"%s\"", astNodeTypeStr(declarator->node.type));
 
 	n += printf(", \"enclosed\": ");
 	if (declarator->encl) {
