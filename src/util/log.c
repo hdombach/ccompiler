@@ -46,14 +46,14 @@ void logErr(const char *head, const char *fmt, ...) {
 }
 
 void logDebugHead(const char *fmt, ...) {
-	fprintf(stderr, "[");
+	fprintf(stderr, "[" COLOR_BLUE);
 
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 
-	fprintf(stderr, "] ");
+	fprintf(stderr, COLOR_RESET "] ");
 }
 
 void logDebugTok(const struct Token *tok, const char *fmt, ...) {

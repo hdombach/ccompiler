@@ -7,6 +7,7 @@
 struct ASTStm;
 struct SCompound;
 struct SType;
+typedef struct STypedefRef STypedefRef;
 
 typedef struct ASTScope {
 	/**
@@ -81,3 +82,14 @@ struct SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
  * @return 1 on success, 0 on error
  */
 int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);
+
+/**
+ * @brief Gets an identifier
+ *
+ * @param[out] ref
+ * @param[in] scope
+ * @param[in] name
+ *
+ * @returns 1 on success, 0 on failure
+ */
+int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name);

@@ -12,6 +12,9 @@
 
 void initSType(SType *type) {
 	type->type = STT_UNKNOWN;
+	type->isConst = 0;
+	type->isVolatile = 0;
+	type->isTypedef = 0;
 }
 
 void destroySType(SType *type) {
@@ -23,6 +26,7 @@ void destroySType(SType *type) {
 		case STT_UNION: break;
 		case STT_FUNC: destroySFunction((SFunction *) type); break;
 		case STT_POINTER: destroySPointer((SPointer *) type); break;
+		case STT_TYPEDEF_REF: break;
 		case STT_UNKNOWN: break;
 	}
 	type->type = STT_UNKNOWN;
@@ -58,8 +62,7 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 		case AST_TST_ARITH:
 			return loadSPrim((SPrim *) type, spec);
 		case AST_TST_TYPEDEF:
-			TODO("Add typedef type spec");
-			return 0;
+			return loadSTypedefRef((STypedefRef *) type, (ASTIdentifier *) spec->content, scope);
 		case AST_TST_UNKNOWN:
 			return 0;
 	}
@@ -115,6 +118,7 @@ const char *sttStr(STypeT t) {
 		case STT_UNION: return "union";
 		case STT_FUNC: return "function";
 		case STT_POINTER: return "pointer";
+		case STT_TYPEDEF_REF: return "typedef ref";
 		default: return "(unknown)";
 	}
 }
@@ -127,6 +131,7 @@ int printSType(SType const *type) {
 		case STT_UNION: return printSCompoundRef((SCompoundRef *) type);
 		case STT_FUNC: return printSFunction((SFunction *) type);
 		case STT_POINTER: return printSPointer((SPointer *) type);
+		case STT_TYPEDEF_REF: return printSTypedefRef((STypedefRef *) type);
 		default: return printf("{\"type\": \"%s\"}", sttStr(type->type)); 
 	}
 }
@@ -189,6 +194,9 @@ int loadSPrim(SPrim *type, ASTTypeSpec *typeSpec) {
 			break;
 		default:
 			return 0;
+	}
+	if (typeSpec->storage & AST_TST_TYPEDEF) {
+		type->type.isTypedef = 1;
 	}
 	//lovely line of code here
 	type->type.type = STT_PRIM;
@@ -424,6 +432,42 @@ int printSFunction(const SFunction *func) {
 	}
 
 	n += printDList(&func->paramTypes, (PrintFunc) printSType);
+
+	n += printf("}");
+
+	return n;
+}
+
+void initSTypedefRef(STypedefRef *type) {
+	initSType((SType *) type);
+	type->index = -1;
+	type->parentScope = NULL;
+}
+
+int loadSTypedefRef(STypedefRef *type, ASTIdentifier *identifier, ASTScope *scope) {
+	STYPE_VALID(STypedefRef);
+
+	if (!LOG_ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
+
+	if (!astScopeGetIdentifier(type, scope, identifier->name)) return 0;
+
+	type->type.type = STT_TYPEDEF_REF;
+	return 1;
+}
+
+SType *stypdefDeref(STypedefRef *ref) {
+	return dlistGetm(&ref->parentScope->identifiers, ref->index);
+}
+
+int printSTypedefRef(const STypedefRef *type) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"type\": \"%s\"", sttStr(type->type.type));
+
+	n += printf(", \"content\": ");
+	n += printSType(stypdefDeref((STypedefRef *) type));
 
 	n += printf("}");
 

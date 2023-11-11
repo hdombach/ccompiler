@@ -19,12 +19,14 @@ typedef enum STypeT {
 	STT_UNION,
 	STT_FUNC,
 	STT_POINTER,
+	STT_TYPEDEF_REF,
 } STypeT;
 
 typedef struct SType {
 	STypeT type;
-	char isConst: 1;
-	char isVolatile: 1;
+	unsigned char isConst: 1;
+	unsigned char isVolatile: 1;
+	unsigned char isTypedef: 1;
 } SType;
 
 #define STYPE_S 64
@@ -160,3 +162,19 @@ void initSFunction(SFunction *type);
 void destroySFunction(SFunction *type);
 int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator);
 int printSFunction(SFunction const *func);
+
+/*************************************************************
+ * Semantic Typedef Ref
+ *************************************************************/
+
+typedef struct STypedefRef {
+	SType type;
+	/* Does not own this */
+	ASTScope *parentScope;
+	int index;
+} STypedefRef;
+
+void initSTypedefRef(STypedefRef *type);
+int loadSTypedefRef(STypedefRef *type, ASTIdentifier *typeSpec, ASTScope *scope);
+SType *stypdefDeref(STypedefRef *ref);
+int printSTypedefRef(STypedefRef const *type);

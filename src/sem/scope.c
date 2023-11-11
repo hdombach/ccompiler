@@ -193,3 +193,12 @@ int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name) {
 	dlistApp(&scope->identifiers, type);
 	return wordDictInsert(&scope->identifierDict, name, index);
 }
+
+int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name) {
+	const int *index = wordDictGet(&scope->identifierDict, name);
+	if (!index) return 0;
+	ref->index = *index;
+	ref->parentScope = scope;
+	return 1;
+}
+
