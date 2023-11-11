@@ -20,7 +20,7 @@ static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
 		if (stm->label && stm->label->type == AST_LBL_IDENTIFIER) {
 			ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm->label;
 			astScopeAddLabel(ctx->scope, stm);
-			logTokDebug(node->tok, "Added label \"%s\"", lbl->name);
+			logDebugTok(node->tok, "Added label \"%s\"", lbl->name);
 		}
 	}
 	return ASTT_SUCCESS;
@@ -30,7 +30,7 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_GOTO) {
 		ASTGoto *stm = (ASTGoto *) node;
 		if (!astScopeGetLabel(ctx->scope, stm->name)) {
-			logTokErr(node->tok, "No corresponding label \"%s\"", stm->name);
+			logErrTok(node->tok, "No corresponding label \"%s\"", stm->name);
 		}
 	}
 	return ASTT_SUCCESS;

@@ -81,8 +81,9 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) return 0;
 
 		if (!astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)))) {
-			logTokIntError(declaration->node.tok, "Couldn't add identifier %s", astDeclaratorName(declarator));
+			logErrTok(declaration->node.tok, "Couldn't add identifier %s", astDeclaratorName(declarator));
 		}
+		logDebug("DEBUG", "added identifier %s", astDeclaratorName(declarator));
 	}
 
 	return 1;
