@@ -63,7 +63,7 @@ typedef enum {
 void initASTArithType(ASTArithType *type);
 int parseASTArithType(ASTArithType *type, Token const *tok);
 int printASTArithType(ASTArithType const *type);
-int astArithTypeNormalize(ASTArithType const *type);
+ASTArithType astArithTypeNormalize(ASTArithType type);
 
 /* =========================================================================
  * ASTTypeSpec

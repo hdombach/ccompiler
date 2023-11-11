@@ -301,8 +301,8 @@ int printASTArithType(const ASTArithType *type) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
 
-int astArithTypeNormalize(const ASTArithType *type) {
-	switch (*type) {
+ASTArithType astArithTypeNormalize(ASTArithType type) {
+	switch (type) {
 		case AST_AT_CHAR:
 			return AST_AT_CHAR;
 

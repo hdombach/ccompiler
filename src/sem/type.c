@@ -70,20 +70,27 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 
 	STypeBuf tempInternal, tempType;
 
-	if (!loadTypespec((SType *) &tempInternal, declaration->typeSpec, scope)) return 0;
+	if (!loadTypespec((SType *) &tempInternal, declaration->typeSpec, scope)) {
+		logErrTok(declaration->node.tok, "Problem loading typespecs");
+		return 0;
+	}
 
 	for (int i = 0; i < declaration->declarators.size; i++) {
 		ASTDeclarator *declarator = dlistGetm(&declaration->declarators, i);
 		/*technically, loadDecl takes ownership of internal. However
 		 * since typespec types are trivially copiable, tis fine */
 
+		logDebug("DEBUG", "About to load %s", astDeclaratorName(declarator));
 
-		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) return 0;
+		if (!loadDecl((SType *) &tempType, (SType *) &tempInternal, (ASTNode *) declarator)) {
+			logErrTok(declaration->node.tok, "Problem loading identifier %s", astDeclaratorName(declarator));
+			return 0;
+		}
 
 		if (!astScopeAddIdentifier(scope, (SType *) &tempType, strdup(astDeclaratorName(declarator)))) {
 			logErrTok(declaration->node.tok, "Couldn't add identifier %s", astDeclaratorName(declarator));
+			return 0;
 		}
-		logDebug("DEBUG", "added identifier %s", astDeclaratorName(declarator));
 	}
 
 	return 1;
@@ -139,8 +146,11 @@ void initSPrim(SPrim *type) {
 int loadSPrim(SPrim *type, ASTTypeSpec *typeSpec) {
 	STYPE_VALID(SPrim);
 	if (!LOG_ASSERT(typeSpec->node.type == AST_TYPE_SPEC)) return 0;
+
+	ASTArithType arith = astArithTypeNormalize(typeSpec->arith);
+
 	initSPrim(type);
-	switch (typeSpec->arith) {
+	switch (arith) {
 		case AST_AT_CHAR:
 			type->primType = SPT_CHAR;
 			break;

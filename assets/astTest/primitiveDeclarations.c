@@ -2,7 +2,6 @@ typedef char char_t, char2_t;
 typedef int int_t;
 
 char_t testChar, testChar2;
-char testChar;
 extern const long unsigned intCompl;
 
 int_t testInt1 = 4, testInt2, testInt3 = 500;
