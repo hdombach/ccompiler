@@ -428,21 +428,17 @@ int loadSPointer(
 		ASTDeclarator *declarator,
 		ASTScope *scope)
 {
-	SPointer *pointer = newSPointer();
-	pointer->type.type = STT_POINTER;
-	pointer->internal = movaSType(internal);
+	STypeBuf pointer;
+	pointer.type.type = STT_POINTER;
+	((SPointer *) &pointer)->internal = movaSType(internal);
 
-	if (!loadDecl(type, (SType *) pointer, declarator->encl, scope)) goto failure;
+	if (!loadDecl(type, (SType *) &pointer, declarator->encl, scope)) goto failure;
 	return 1;
 
 failure:
 	return 0;
 
-	if (pointer) {
-	return 1;
-		destroySPointer(pointer);
-		free(pointer);
-	}
+	destroySPointer((SPointer *) &pointer);
 }
 
 int printSPointer(const SPointer *type) {
