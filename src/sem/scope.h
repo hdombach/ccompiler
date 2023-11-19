@@ -7,6 +7,7 @@
 struct ASTStm;
 struct SCompound;
 struct SType;
+struct SEnum;
 typedef struct STypedefRef STypedefRef;
 
 typedef struct ASTScope {
@@ -24,8 +25,11 @@ typedef struct ASTScope {
 	 */
 	DList labels;
 
-	WordDict structDict;
-	DList structs;
+	/**
+	 * @brief used for structs, unions, and enums
+	 */
+	WordDict tagDict;
+	DList tags;
 
 	WordDict identifierDict;
 	DList identifiers;
@@ -93,3 +97,11 @@ int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);
  * @returns 1 on success, 0 on failure
  */
 int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name);
+
+int astScopeHasEnum(ASTScope *scope, const char *name);
+
+int astScopeAddEnum(ASTScope *scope, struct SEnum *type, char *name);
+
+struct SEnumRef astScopeGetEnum(ASTScope *scope, const char *name);
+
+struct SEnumRef astScopeAddAnonEnum(ASTScope *scope, struct SEnum*);

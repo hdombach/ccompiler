@@ -1,7 +1,7 @@
 struct TestStruct {
-	int value1;
-	int value2;
-	int value3;
+	int testValue1;
+	int testValue2;
+	int testValue3;
 } inlineTestStruct1, inlineTestStruct2 = {5, 2, 100};
 
 struct TestStruct testStruct1, *testStruct2;
@@ -11,14 +11,14 @@ typedef struct StructTypedef {
 	int value1, value2, *value3;
 } StructTypedef, StructTypedef1, StructTypedef2;
 
-StructTypedef2 stypedef1, *stypedef2;
+//StructTypedef2 stypedef1, *stypedef2;
 StructTypedef stypedef1, *stypedef2;
-struct StructTypedef stypedef1, *stypedef2;
+//struct StructTypedef stypedef1, *stypedef2;
 
 struct TestBitField {
 	int value : 5;
 	/* this makes me very unhappy */
-	int : 0, :3;
+	//int : 0, :3;
 	unsigned value2 : 2;
 } testBitField1;
 

@@ -23,10 +23,15 @@ void destroySType(SType *type) {
 		case STT_PRIM: break;
 		case STT_ARRAY: destroySArray((SArray *) type); break;
 		case STT_STRUCT: break;
+		case STT_STRUCT_REF: break;
 		case STT_UNION: break;
+		case STT_UNION_REF: break;
 		case STT_FUNC: destroySFunction((SFunction *) type); break;
 		case STT_POINTER: destroySPointer((SPointer *) type); break;
 		case STT_TYPEDEF_REF: break;
+		case STT_ENUM: break;
+		case STT_ENUM_REF: break;
+		case STT_ENUM_CONST: break;
 		case STT_UNKNOWN: break;
 	}
 	type->type = STT_UNKNOWN;
@@ -77,8 +82,10 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 				(ASTStructDecl *) spec->content,
 				scope);
 		case AST_TST_ENUM:
-			TODO("add enum type spec");
-			return 0;
+			return loadSEnumRef(
+					(SEnumRef *) type, 
+					(ASTEnumDecl *) spec->content, 
+					scope);
 		case AST_TST_VOID:
 			type->type = STT_VOID;
 			return 1;
@@ -156,10 +163,15 @@ const char *sttStr(STypeT t) {
 		case STT_PRIM: return "primitive";
 		case STT_ARRAY: return "array";
 		case STT_STRUCT: return "structure";
+		case STT_STRUCT_REF: return "structure ref";
 		case STT_UNION: return "union";
+		case STT_UNION_REF: return "union ref";
 		case STT_FUNC: return "function";
 		case STT_POINTER: return "pointer";
 		case STT_TYPEDEF_REF: return "typedef ref";
+		case STT_ENUM: return "enum";
+		case STT_ENUM_REF: return "enum ref";
+		case STT_ENUM_CONST: return "enumerator constant";
 		default: return "(unknown)";
 	}
 }
@@ -169,10 +181,13 @@ int printSType(SType const *type) {
 		case STT_PRIM: return printSPrim((SPrim *) type);
 		case STT_ARRAY: return printSArray((SArray *) type);
 		case STT_STRUCT:
-		case STT_UNION: return printSCompoundRef((SCompoundRef *) type);
+		case STT_UNION: return printSCompound((SCompound *) type);
+		case STT_STRUCT_REF:
+		case STT_UNION_REF: return printSCompoundRef((SCompoundRef *) type);
 		case STT_FUNC: return printSFunction((SFunction *) type);
 		case STT_POINTER: return printSPointer((SPointer *) type);
 		case STT_TYPEDEF_REF: return printSTypedefRef((STypedefRef *) type);
+		case STT_ENUM_CONST: return printSPrim((SPrim *) type);
 		default: return printf("{\"type\": \"%s\"}", sttStr(type->type)); 
 	}
 }
@@ -265,6 +280,7 @@ const char *sptStr(SPrimType t) {
 }
 
 int printSPrim(const SPrim *type) {
+	if (!LOG_ASSERT(type->type.type == STT_PRIM || type->type.type == STT_ENUM_CONST)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -319,6 +335,7 @@ int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope 
 }
 
 int printSArray(const SArray *type) {
+	if (!LOG_ASSERT(type->type.type == STT_ARRAY)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -345,13 +362,23 @@ int printSArray(const SArray *type) {
  *************************************************************/
 
 void initSCompound(SCompound *type) {
+	initSType((SType *) type);
 	type->scope = NULL;
 	type->isUnion = 0;
 }
 
+int printSCompound(const SCompound *ref) {
+	if (!LOG_ASSERT(ref->type.type == STT_STRUCT || ref->type.type == STT_UNION))
+		return 0;
+	return printASTScope(ref->scope);
+}
+
 int loadSCompound(SCompound *type, ASTStructDecl *decl) {
+	if (!LOG_ASSERT(decl->node.type == AST_STRUCT_DECL)) return 0;
 	type->isUnion = decl->isUnion;
 	type->scope = decl->scope;
+	TODO("differentiate between struct and union");
+	type->type.type = STT_STRUCT;
 	return 1;
 }
 
@@ -387,17 +414,24 @@ int loadSCompoundRef(
 }
 
 int printSCompoundRef(const SCompoundRef *ref) {
+	if (!LOG_ASSERT(ref->type.type == STT_STRUCT_REF || ref->type.type == STT_UNION_REF))
+		return 0;
 	int n = 0;
 
 	n += printf("{");
 
 	n += printf("\"type\": \"%s\"", sttStr(ref->type.type));
 
-	TODO("finish");
+	n += printf(", \"content\": ");
+	n += printSCompound(scompoundDeref((SCompoundRef*) ref));
 
 	n += printf("}");
 
 	return n;
+}
+
+SCompound *scompoundDeref(struct SCompoundRef *ref) {
+	return dlistGetm(&ref->parentScope->tags, ref->index);
 }
 
 /*************************************************************
@@ -442,6 +476,7 @@ failure:
 }
 
 int printSPointer(const SPointer *type) {
+	if (!LOG_ASSERT(type->type.type == STT_POINTER)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -484,6 +519,7 @@ int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator) {
 }
 
 int printSFunction(const SFunction *func) {
+	if (!LOG_ASSERT(func->type.type == STT_FUNC)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -524,6 +560,7 @@ SType *stypdefDeref(STypedefRef *ref) {
 }
 
 int printSTypedefRef(const STypedefRef *type) {
+	if (!LOG_ASSERT(type->type.type == STT_TYPEDEF_REF)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -536,4 +573,81 @@ int printSTypedefRef(const STypedefRef *type) {
 	n += printf("}");
 
 	return n;
+}
+
+void initSEnum(SEnum *type) {
+	initSType((SType *) type);
+	type->scope = NULL;
+}
+
+int printSEnum(SEnum *type) {
+	if (!LOG_ASSERT(type->type.type == STT_ENUM)) return 0;
+	if (type->scope) {
+		return printASTScope(type->scope);
+	} else {
+		return 0;
+	}
+}
+
+int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
+	if (!LOG_ASSERT(decl->node.type == AST_ENUM_DECL)) return 0;
+	STYPE_VALID(SEnum);
+	type->type.type = STT_ENUM;
+	return 1;
+}
+
+void initSEnumRef(SEnumRef *type) {
+	initSType((SType *) type);
+	type->index = -1;
+	type->parentScope = NULL;
+}
+
+int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
+	STYPE_VALID(SEnumRef);
+	if (!LOG_ASSERT(declaration->node.type == AST_ENUM_DECL)) return 0;
+
+	SEnum tempEnum;
+
+	initSEnumRef(type);
+	if (declaration->name) {
+		if (!astScopeHasEnum(scope, declaration->name)) {
+			if (!loadSEnum(&tempEnum, declaration)) return 0;
+			if (!astScopeAddEnum(scope, &tempEnum, strdup(declaration->name))) return 0;
+		}
+		*type = astScopeGetEnum(scope, declaration->name);
+		return 1;
+	}
+
+	if (!loadSEnum(&tempEnum, declaration)) return 0;
+	*type = astScopeAddAnonEnum(scope, &tempEnum);
+	return 1;
+}
+
+int printSEnumRef(const SEnumRef *ref) {
+	if (!LOG_ASSERT(ref->type.type == STT_ENUM_REF)) return 0;
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"type\": \"%s\"", sttStr(ref->type.type));
+
+	n += printASTScope(senumDeref(ref)->scope);
+
+	n += printf("}");
+
+	return n;
+}
+
+SEnum *senumDeref(SEnumRef const *ref) {
+	return dlistGetm(&ref->parentScope->tags, ref->index);
+}
+
+int loadSEnumConst(SPrim *type, ASTEnumConst *decl, ASTScope *scope) {
+	STYPE_VALID(SPrim);
+	if (!LOG_ASSERT(decl->node.type == AST_ENUM_CONST)) return 0;
+
+	type->type.type = STT_ENUM_CONST;
+	type->primType = SPT_INT;
+
+	return 1;
 }

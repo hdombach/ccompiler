@@ -36,11 +36,11 @@ ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index);
  * Enum Decl
  ************************************************************/
 
-typedef struct ASTEnumeratorDecl {
+typedef struct ASTEnumConst {
 	ASTNode node;
 	char *name;
 	struct ASTNode *exp;
-} ASTEnumeratorDecl;
+} ASTEnumConst;
 
 typedef struct ASTEnumDecl {
 	ASTNode node;
@@ -48,15 +48,15 @@ typedef struct ASTEnumDecl {
 	DList enumerators;
 } ASTEnumDecl;
 
-void initASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok);
-void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl);
-int parseASTEnumeratorDecl(
-		ASTEnumeratorDecl *decl,
+void initASTEnumConst(ASTEnumConst *decl, Token const *tok);
+void freeASTEnumConst(ASTEnumConst *decl);
+int parseASTEnumConst(
+		ASTEnumConst *decl,
 		Token const *tok,
 		struct ASTScope *scope);
-int printASTEnumeratorDecl(ASTEnumeratorDecl const *decl);
-int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node);
-ASTNode *astEnumeratorDeclGetChild(ASTEnumeratorDecl *node, int index);
+int printASTEnumConst(ASTEnumConst const *decl);
+int astEnumConstChildCount(ASTEnumConst const *node);
+ASTNode *astEnumConstGetChild(ASTEnumConst *node, int index);
 
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok);
 void freeASTEnumDecl(ASTEnumDecl *decl);

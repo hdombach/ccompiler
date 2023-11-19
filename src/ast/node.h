@@ -28,7 +28,7 @@ typedef enum ASTNodeType {
 	AST_IDENTIFIER_TS, /* typedef reference used in type spec */
 	AST_STRUCT_DECL,
 	AST_ENUM_DECL,
-	AST_ENUMERATOR_DECL,
+	AST_ENUM_CONST,
 	AST_STM,
 	AST_COMP_STM,
 	AST_IF,

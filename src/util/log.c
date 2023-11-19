@@ -80,7 +80,7 @@ void logDebug(const char *head, const char *fmt, ...) {
 
 int logAssert(int exp, char *file, int line, char *expStr) {
 	if (!exp) {
-		logErr("ASSERT FAILED %s:%d (%s)", file, line, expStr);
+		logErr("ASSERT FAILED", "%s:%d (%s)", file, line, expStr);
 	}
 	return exp;
 }

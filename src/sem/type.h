@@ -16,10 +16,15 @@ typedef enum STypeT {
 	STT_PRIM,
 	STT_ARRAY,
 	STT_STRUCT,
+	STT_STRUCT_REF,
 	STT_UNION,
+	STT_UNION_REF,
 	STT_FUNC,
 	STT_POINTER,
 	STT_TYPEDEF_REF,
+	STT_ENUM,
+	STT_ENUM_REF,
+	STT_ENUM_CONST,
 } STypeT;
 
 typedef struct SType {
@@ -74,6 +79,7 @@ typedef enum SPrimType {
 
 } SPrimType;
 
+/* Used for primitive types, and enumeration constants */
 typedef struct SPrim {
 	SType type;
 	SPrimType primType;
@@ -107,12 +113,14 @@ int printSArray(SArray const *type);
 
 /* The underlying struct or union type that other variable types reference */
 typedef struct SCompound {
+	SType type;
 	/* reference to the scope containing members (doesn't own) */
 	ASTScope *scope;
 	char isUnion;
 } SCompound;
 
 void initSCompound(SCompound *type);
+int printSCompound(SCompound const *ref);
 int loadSCompound(SCompound *type, ASTStructDecl *decl);
 
 /* Reference to the struct type */
@@ -133,6 +141,7 @@ int loadSCompoundRef(
 		ASTStructDecl *declaration,
 		ASTScope *scope);
 int printSCompoundRef(SCompoundRef const *ref);
+SCompound *scompoundDeref(struct SCompoundRef *ref);
 
 /*************************************************************
  * Semantic Pointer Type
@@ -183,3 +192,32 @@ void initSTypedefRef(STypedefRef *type);
 int loadSTypedefRef(STypedefRef *type, ASTIdentifier *typeSpec, ASTScope *scope);
 SType *stypdefDeref(STypedefRef *ref);
 int printSTypedefRef(STypedefRef const *type);
+
+/*************************************************************
+ * Semantic Enum
+ *************************************************************/
+
+typedef struct SEnum {
+	SType type;
+	ASTScope *scope;
+} SEnum;
+
+void initSEnum(SEnum *type);
+int printSEnum(SEnum *type);
+int loadSEnum(SEnum *type, ASTEnumDecl *decl);
+
+typedef struct SEnumRef {
+	SType type;
+	int index;
+	ASTScope *parentScope;
+} SEnumRef;
+
+void initSEnumRef(SEnumRef *type);
+int loadSEnumRef(
+		SEnumRef *type,
+		ASTEnumDecl *declaration,
+		ASTScope *scope);
+int printSEnumRef(SEnumRef const *ref);
+SEnum *senumDeref(SEnumRef const *ref);
+
+int loadSEnumConst(SPrim *type, ASTEnumConst *decl, ASTScope *scope);

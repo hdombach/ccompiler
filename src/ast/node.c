@@ -51,7 +51,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_TYPE_SPEC: freeASTTypeSpec((ASTTypeSpec *) node); break;
 		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
 		case AST_ENUM_DECL: freeASTEnumDecl((ASTEnumDecl *) node); break;
-		case AST_ENUMERATOR_DECL: freeASTEnumeratorDecl((ASTEnumeratorDecl *) node); break;
+		case AST_ENUM_CONST: freeASTEnumConst((ASTEnumConst *) node); break;
 		case AST_STM: freeASTStm((ASTStm *) node); break;
 		case AST_COMP_STM: freeASTCompStm((ASTCompStm *) node); break;
 		case AST_IF: freeASTIf((ASTIf *) node); break;
@@ -114,7 +114,7 @@ char *_astNodeTypes[] = {
 	"typedef name type specifier",
 	"struct declaration",
 	"enum declaration",
-	"enumerator declaration",
+	"enumerator declaration const",
 	"statement",
 	"compound statement",
 	"if statement",
@@ -164,7 +164,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
 		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
 		case AST_ENUM_DECL: return printASTEnumDecl((ASTEnumDecl *) node);
-		case AST_ENUMERATOR_DECL: return printASTEnumeratorDecl((ASTEnumeratorDecl *) node);
+		case AST_ENUM_CONST: return printASTEnumConst((ASTEnumConst *) node);
 		case AST_STM: return printASTStm((ASTStm *) node);
 		case AST_COMP_STM: return printASTCompStm((ASTCompStm *) node);
 		case AST_IF: return printASTIf((ASTIf *) node);
@@ -210,7 +210,7 @@ int astNodeChildCount(const ASTNode *node) {
 		case AST_IDENTIFIER_TS: return astIdentifierChildCount((ASTIdentifier *) node);
 		case AST_STRUCT_DECL: return astStructDeclChildCount((ASTStructDecl *) node);
 		case AST_ENUM_DECL: return astEnumDeclChildCount((ASTEnumDecl *) node);
-		case AST_ENUMERATOR_DECL: return astEnumeratorDeclChildCount((ASTEnumeratorDecl *) node);
+		case AST_ENUM_CONST: return astEnumConstChildCount((ASTEnumConst *) node);
 		case AST_STM: return astStmChildCount((ASTStm *) node);
 		case AST_COMP_STM: return astCompStmChildCount((ASTCompStm *) node);
 		case AST_IF: return astIfChildCount((ASTIf *) node);
@@ -256,7 +256,7 @@ ASTNode *astNodeGetChild(ASTNode *node, int index) {
 		case AST_IDENTIFIER_TS: return astIdentifierGetChild((ASTIdentifier *) node, index);
 		case AST_STRUCT_DECL: return astStructDeclGetChild((ASTStructDecl *) node, index);
 		case AST_ENUM_DECL: return astEnumDeclGetChild((ASTEnumDecl *) node, index);
-		case AST_ENUMERATOR_DECL: return astEnumeratorDeclGetChild((ASTEnumeratorDecl *) node, index);
+		case AST_ENUM_CONST: return astEnumConstGetChild((ASTEnumConst *) node, index);
 		case AST_STM: return astStmGetChild((ASTStm *) node, index);
 		case AST_COMP_STM: return astCompStmGetChild((ASTCompStm *) node, index);
 		case AST_IF: return astIfGetChild((ASTIf *) node, index);

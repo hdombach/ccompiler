@@ -112,13 +112,13 @@ ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index) {
  * Enum Decl
  ************************************************************/
 
-void initASTEnumeratorDecl(ASTEnumeratorDecl *decl, Token const *tok) {
+void initASTEnumConst(ASTEnumConst *decl, Token const *tok) {
 	initASTNode((ASTNode *) decl, tok);
 	decl->name = NULL;
 	decl->exp = NULL;
 }
 
-void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
+void freeASTEnumConst(ASTEnumConst *decl) {
 	if (decl->name) {
 		free(decl->name);
 	}
@@ -128,51 +128,51 @@ void freeASTEnumeratorDecl(ASTEnumeratorDecl *decl) {
 	}
 }
 
-int parseASTEnumeratorDecl(
-		ASTEnumeratorDecl *decl,
+int parseASTEnumConst(
+		ASTEnumConst *decl,
 		Token const *tok,
 		struct ASTScope *scope)
 {
-	AST_VALID(ASTEnumeratorDecl);
+	AST_VALID(ASTEnumConst);
 	int res, n = 0;
 
 	if (astHasErr()) {
 		return 0;
 	}
 
-	initASTEnumeratorDecl(decl, tok);
+	initASTEnumConst(decl, tok);
 
 	if (tok[n].type == TT_IDENTIFIER) {
 		decl->name = strdup(tok[n].contents);
 		n++;
 	} else {
-		freeASTEnumeratorDecl(decl);
+		freeASTEnumConst(decl);
 		return 0;
 	}
 
 	if (tok[n].type == TT_EQL) {
 		n++;
 	} else {
-		decl->node.type = AST_ENUMERATOR_DECL;
+		decl->node.type = AST_ENUM_CONST;
 		return n;
 	}
 
 	decl->exp = malloc(AST_NODE_S);
-	if ((res = parseASTExp(decl->exp, tok + n, scope))) {
+	if ((res = parseASTExp14(decl->exp, tok + n, scope))) {
 		n += res;
 	} else {
 		astErr("Expected expression after enumerator", tok + n);
 		free(decl->exp);
 		decl->exp = NULL;
-		freeASTEnumeratorDecl(decl);
+		freeASTEnumConst(decl);
 		return 0;
 	}
 
-	decl->node.type = AST_ENUMERATOR_DECL;
+	decl->node.type = AST_ENUM_CONST;
 	return n;
 }
 
-int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
+int printASTEnumConst(const ASTEnumConst *decl) {
 	int n = 0;
 
 	n += printf("{");
@@ -192,11 +192,19 @@ int printASTEnumeratorDecl(const ASTEnumeratorDecl *decl) {
 	return n;
 }
 
-int astEnumeratorDeclChildCount(ASTEnumeratorDecl const *node) {
+int astEnumConstChildCount(const ASTEnumConst *node) {
+	return 0;
+}
+
+ASTNode *astEnumConstGetChild(ASTEnumConst *node, int index) {
+	return NULL;
+}
+
+int astEnumeratorDeclChildCount(ASTEnumConst const *node) {
 	return 1;
 }
 
-ASTNode *astEnumeratorDeclGetChild(ASTEnumeratorDecl *node, int index) {
+ASTNode *astEnumeratorDeclGetChild(ASTEnumConst *node, int index) {
 	return (ASTNode *[]) {
 		node->exp,
 	}[index];
@@ -250,7 +258,7 @@ int parseASTEnumDecl(
 
 	while (1) {
 		ASTNodeBuf tempBuf;
-		if ((res = parseASTEnumeratorDecl((ASTEnumeratorDecl *) &tempBuf, tok + n, scope))) {
+		if ((res = parseASTEnumConst((ASTEnumConst *) &tempBuf, tok + n, scope))) {
 			n += res;
 			dlistApp(&decl->enumerators, &tempBuf);
 		} else {
@@ -289,7 +297,7 @@ int printASTEnumDecl(const ASTEnumDecl *decl) {
 	}
 
 	n += printf(", \"Enumerators\": ");
-	n += printDList(&decl->enumerators, (PrintFunc) printASTEnumeratorDecl);
+	n += printDList(&decl->enumerators, (PrintFunc) printASTEnumConst);
 
 	n += printf("}");
 

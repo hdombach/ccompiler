@@ -11,8 +11,8 @@ void initASTScope(ASTScope *scope) {
 	scope->parent = NULL;
 	initWordDict(&scope->labelDict);
 	initDList(&scope->labels, sizeof(ASTStm *));
-	initWordDict(&scope->structDict);
-	initDList(&scope->structs, sizeof(SCompound));
+	initWordDict(&scope->tagDict);
+	initDList(&scope->tags, sizeof(STypeBuf));
 	initWordDict(&scope->identifierDict);
 	initDList(&scope->identifiers, sizeof(STypeBuf));
 }
@@ -21,8 +21,8 @@ void freeASTScope(ASTScope *scope) {
 	freeWordDict(&scope->typedefNames);
 	freeWordDict(&scope->labelDict);
 	freeDList(&scope->labels, NULL);
-	freeWordDict(&scope->structDict);
-	freeDList(&scope->structs, NULL);
+	freeWordDict(&scope->tagDict);
+	freeDList(&scope->tags, NULL);
 	freeWordDict(&scope->identifierDict);
 	freeDList(&scope->identifiers, (FreeFunc) destroySType);
 }
@@ -68,17 +68,17 @@ int printASTScope(ASTScope const *scope) {
 		ctx.n += printf("]");
 	}
 
-	if (scope->structs.size) {
+	if (scope->tags.size) {
 		ctx.isFirst = 1;
-		ctx.list = (DList *) &scope->structs;
-		ctx.completed = calloc(1, sizeof(int) * scope->structs.size);
+		ctx.list = (DList *) &scope->tags;
+		ctx.completed = calloc(1, sizeof(int) * scope->tags.size);
 
-		wordDictIter((WordDict *) &scope->structDict, (WordDictIterFunc) _printScopeStructs, &ctx);
+		wordDictIter((WordDict *) &scope->tagDict, (WordDictIterFunc) _printScopeStructs, &ctx);
 
-		for (int i = 0; i < scope->structs.size; i++) {
+		for (int i = 0; i < scope->tags.size; i++) {
 			if (ctx.completed[i]) continue;
 			ctx.n += printf(", \"anonymous\": ");
-			ctx.n += printSType(dlistGet(&scope->structs, i));
+			ctx.n += printSType(dlistGet(&scope->tags, i));
 		}
 
 		free(ctx.completed);
@@ -147,40 +147,40 @@ struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName) {
 }
 
 int astScopeHasCompound(ASTScope *scope, const char *name) {
-	return wordDictPresent(&scope->structDict, name);
+	return wordDictPresent(&scope->tagDict, name);
 }
 
 int astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name) {
-	if (!wordDictInsert(&scope->structDict, name, scope->structs.size)) return 0;
-	dlistApp(&scope->structs, compound);
+	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) return 0;
+	dlistApp(&scope->tags, compound);
 	return 1;
 }
 
 struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name) {
 	SCompoundRef result;
-	result.index = *wordDictGet(&scope->structDict, name);
+	result.index = *wordDictGet(&scope->tagDict, name);
 	result.parentScope = scope;
 
 	
-	SCompound *comp = dlistGetm(&scope->structs, result.index);
+	SCompound *comp = dlistGetm(&scope->tags, result.index);
 	if (comp->isUnion) {
-		result.type.type = STT_UNION;
+		result.type.type = STT_UNION_REF;
 	} else {
-		result.type.type = STT_STRUCT;
+		result.type.type = STT_STRUCT_REF;
 	}
 	return result;
 }
 
 SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 	SCompoundRef result;
-	result.index = scope->structs.size;
+	result.index = scope->tags.size;
 	result.parentScope = scope;
-	dlistApp(&scope->structs, new);
+	dlistApp(&scope->tags, new);
 
 	if (new->isUnion) {
-		result.type.type = STT_UNION;
+		result.type.type = STT_UNION_REF;
 	} else {
-		result.type.type = STT_STRUCT;
+		result.type.type = STT_STRUCT_REF;
 	}
 
 	return result;
@@ -202,3 +202,31 @@ int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name) {
 	return 1;
 }
 
+int astScopeHasEnum(ASTScope *scope, const char *name) {
+	return wordDictPresent(&scope->tagDict, name);
+}
+
+int astScopeAddEnum(ASTScope *scope, struct SEnum *type, char *name) {
+	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) return 0;
+	dlistApp(&scope->tags, type);
+	return 1;
+}
+
+struct SEnumRef astScopeGetEnum(ASTScope *scope, const char *name) {
+	SEnumRef result;
+	result.index = *wordDictGet(&scope->tagDict, name);
+	result.parentScope = scope;
+	result.type.type = STT_ENUM_REF;
+
+	return result;
+}
+
+struct SEnumRef astScopeAddAnonEnum(ASTScope *scope, struct SEnum *new) {
+	SEnumRef result;
+	result.index = scope->tags.size;
+	result.parentScope = scope;
+	dlistApp(&scope->tags, new);
+	result.type.type = STT_ENUM_REF;
+
+	return result;
+}
