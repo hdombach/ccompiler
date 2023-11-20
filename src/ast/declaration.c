@@ -847,7 +847,7 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 		initDListCap(&result, sizeof(char *), declaration->declarators.size);
 		for (int i = 0; i < declaration->declarators.size; i++) {
 			ASTDeclarator const *declarator = dlistGet(&declaration->declarators, i);
-			char *newName = strdup(astDeclaratorName(declarator));
+			char *newName = strdup(astDeclaratorName((ASTNode *) declarator));
 			if (newName) {
 				dlistApp(&result, &newName);
 			}
@@ -858,7 +858,7 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 	return result;
 }
 
-const char *astDeclaratorName(const ASTDeclarator *declarator) {
+const char *astDeclaratorName(const ASTNode *declarator) {
 	ASTNode *curDecl = (ASTNode *) declarator;
 	while (curDecl) {
 		switch (curDecl->type) {

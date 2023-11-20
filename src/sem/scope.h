@@ -85,7 +85,12 @@ struct SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
  *
  * @return 1 on success, 0 on error
  */
-int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name);
+int astScopeAddIdent(ASTScope *scope, struct SType *type, char *name);
+
+/**
+ * @brief Adds an anonymous identifier
+ */
+int astScopeAddAnonIdent(ASTScope *scope, struct SType *type);
 
 /**
  * @brief Gets an identifier

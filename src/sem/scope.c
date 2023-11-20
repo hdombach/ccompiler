@@ -57,6 +57,7 @@ void static _printScopeIdentifiers(const char **key, int *value, ScopePrintCxt *
 
 int printASTScope(ASTScope const *scope) {
 	ScopePrintCxt ctx = {1, 0, NULL};
+	if (!scope) return printf("\"(null)\"");
 
 	ctx.n += printf("{");
 
@@ -186,12 +187,19 @@ SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 	return result;
 }
 
-int astScopeAddIdentifier(ASTScope *scope, struct SType *type, char *name) {
+int astScopeAddIdent(ASTScope *scope, struct SType *type, char *name) {
 	int index;
 	index = scope->identifiers.size;
 
 	dlistApp(&scope->identifiers, type);
 	return wordDictInsert(&scope->identifierDict, name, index);
+}
+
+int astScopeAddAnonIdent(ASTScope *scope, struct SType *type) {
+	int index;
+	index = scope->identifiers.size;
+	dlistApp(&scope->identifiers, type);
+	return index;
 }
 
 int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name) {

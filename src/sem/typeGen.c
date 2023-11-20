@@ -45,7 +45,7 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 		ASTEnumConst *decl = (ASTEnumConst *) node;
 		SPrim primType;
 		loadSEnumConst(&primType, decl, ctx->scope);
-		astScopeAddIdentifier(ctx->scope, (SType *) &primType, strdup(decl->name));
+		astScopeAddIdent(ctx->scope, (SType *) &primType, strdup(decl->name));
 	}
 
 	return ASTT_SUCCESS;

@@ -165,4 +165,4 @@ ASTNode *astDeclarationGetChild(ASTDeclaration *node, int index);
 
 DList astDeclarationTypedefNames(ASTDeclaration const *declaration);
 /* Caller needs to free result */
-const char * astDeclaratorName(ASTDeclarator const *declarator);
+const char * astDeclaratorName(ASTNode const *declarator);

@@ -520,7 +520,7 @@ int printASTFuncDecl(const ASTFuncDecl *decl) {
 
 	n += printf("{");
 
-	n += printf("\"node type\": \"func decl\"");
+	n += printf("\"node type\": \"%s\"", astNodeTypeStr(decl->node.type));
 
 	if (decl->params.size) {
 		n += printf(", \"params\": ");

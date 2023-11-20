@@ -43,7 +43,15 @@ static int loadDecl(
 		ASTNode *node,
 		ASTScope *scope)
 {
-	if (!node) return 0;
+	// Anonymous type 
+	if (!node) {
+		mvSType(type, internal);
+		return 1;
+	}
+	logDebug(
+			"DEBUG DECL", "loadDecl %s (%s)",
+			astNodeTypeStr(node->type),
+			astDeclaratorName(node));
 	switch (node->type) {
 		case AST_DECLARATOR: return loadDecl(
 			 type,
@@ -63,7 +71,8 @@ static int loadDecl(
 		case AST_FUNC_DECL: return loadSFunction(
 			(SFunction *) type,
 			internal,
-			(ASTFuncDecl *) node);
+			(ASTFuncDecl *) node,
+			scope);
 		case AST_IDENTIFIER_DECL:
 				mvSType(type, internal);
 				return 1;
@@ -116,8 +125,6 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		/*technically, loadDecl takes ownership of internal. However
 		 * since typespec types are trivially copiable, tis fine */
 
-		logDebug("DEBUG", "About to load %s", astDeclaratorName(declarator));
-
 		if (!loadDecl(
 				(SType *) &tempType,
 				(SType *) &tempInternal,
@@ -126,22 +133,65 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		{
 			logErrTok(
 				declaration->node.tok,
-				"Problem loading identifier %s",
-				astDeclaratorName(declarator));
+				"Problem loading type identifier %s",
+				astDeclaratorName((ASTNode *) declarator));
 			return 0;
 		}
 
-		if (!astScopeAddIdentifier(
+		if (!astScopeAddIdent(
 				scope,
 				(SType *) &tempType,
-				strdup(astDeclaratorName(declarator))))
+				strdup(astDeclaratorName((ASTNode *) declarator))))
 		{
 			logErrTok(
 				declaration->node.tok,
 				"Couldn't add identifier %s",
-				astDeclaratorName(declarator));
+				astDeclaratorName((ASTNode *) declarator));
 			return 0;
 		}
+	}
+
+	return 1;
+}
+
+int loadParamSType(ASTScope *scope, struct ASTParam *param) {
+	if (!LOG_ASSERT(param->node.type == AST_PARAM)) return 0;
+
+	STypeBuf tempInternal, tempType;
+
+	if (!loadTypespec((SType *) &tempInternal, param->typeSpec, scope)) {
+		logErrTok(param->node.tok, "Problem loading param typespec");
+		return 0;
+	}
+
+	if (!loadDecl(
+			(SType *) &tempType,
+			(SType *) &tempInternal,
+			(ASTNode *) param->declarator,
+			scope))
+	{
+		logErrTok(
+			param->node.tok, 
+			"Problem loading param identifier %s",
+			astDeclaratorName((ASTNode *) param->declarator));
+		return 0;
+	}
+
+	const char *name = astDeclaratorName((ASTNode *) param->declarator);
+	if (name) {
+		if (!astScopeAddIdent(
+				scope, 
+				(SType *) &tempType, 
+				strdup(astDeclaratorName((ASTNode *) param->declarator))))
+		{
+			logErrTok(
+					param->declarator->node.tok, 
+					"Couldn't add param identifier %s",
+					astDeclaratorName((ASTNode *) param->declarator));
+			return 0;
+		}
+	} else {
+		astScopeAddAnonIdent(scope, (SType *) &tempType);
 	}
 
 	return 1;
@@ -377,8 +427,11 @@ int loadSCompound(SCompound *type, ASTStructDecl *decl) {
 	if (!LOG_ASSERT(decl->node.type == AST_STRUCT_DECL)) return 0;
 	type->isUnion = decl->isUnion;
 	type->scope = decl->scope;
-	TODO("differentiate between struct and union");
-	type->type.type = STT_STRUCT;
+	if (type->isUnion) {
+		type->type.type = STT_UNION;
+	} else {
+		type->type.type = STT_STRUCT;
+	}
 	return 1;
 }
 
@@ -500,7 +553,7 @@ int printSPointer(const SPointer *type) {
 void initSFunction(SFunction *type) {
 	initSType((SType *) type);
 	type->returnType = NULL;
-	initDListEmpty(&type->paramTypes, sizeof(STypeBuf));
+	type->paramScope = NULL;
 }
 
 void destroySFunction(SFunction *type) {
@@ -509,13 +562,26 @@ void destroySFunction(SFunction *type) {
 		free(type->returnType);
 	}
 
-	freeDList(&type->paramTypes, (FreeFunc) destroySType);
+	type->paramScope = NULL; //owned by the AST
 }
 
-int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator) {
+int loadSFunction(
+		SFunction *type,
+		SType *internal,
+		ASTFuncDecl *declarator,
+		ASTScope *scope)
+{
+	if (!LOG_ASSERT(declarator->node.type == AST_FUNC_DECL)) return 0;
 	initSFunction(type);
-	TODO("Impliment loadSFunction");
-	return 0;
+	type->returnType = movaSType(internal);
+	for (int i = 0; i < declarator->params.size; i++) {
+		ASTParam *param = dlistGetm(&declarator->params, i);
+		STypeBuf tempBuf;
+		if (!loadParamSType(declarator->scope, param)) return 0;
+	}
+	type->paramScope = declarator->scope;
+	type->type.type = STT_FUNC;
+	return 1;
 }
 
 int printSFunction(const SFunction *func) {
@@ -531,7 +597,8 @@ int printSFunction(const SFunction *func) {
 		n += printSType(func->returnType);
 	}
 
-	n += printDList(&func->paramTypes, (PrintFunc) printSType);
+	n += printf(", \"params\": ");
+	n += printASTScope(func->paramScope);
 
 	n += printf("}");
 

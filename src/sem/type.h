@@ -5,6 +5,7 @@
 #include "../util/dlist.h"
 #include "../ast/declaration.h"
 #include "../sem/scope.h"
+#include "../ast/param.h"
 
 /*************************************************************
  * Semantic Type
@@ -53,6 +54,7 @@ void destroySType(SType *type);
  * @brief loads the types in the declaration into the scope
  */
 int loadSTypes(ASTScope *scope, ASTDeclaration *declaration);
+int loadParamSType(ASTScope *scope, ASTParam *param);
 void mvSType(SType *dest, SType const *src);
 SType *movaSType(SType const *src);
 const char *sttStr(STypeT t);
@@ -169,12 +171,16 @@ int printSPointer(SPointer const *type);
 typedef struct SFunction {
 	SType type;
 	SType *returnType;
-	DList paramTypes;
+	ASTScope *paramScope;
 } SFunction;
 
 void initSFunction(SFunction *type);
 void destroySFunction(SFunction *type);
-int loadSFunction(SFunction *type, SType *internal, ASTFuncDecl *declarator);
+int loadSFunction(
+		SFunction *type,
+		SType *internal,
+		ASTFuncDecl *declarator,
+		ASTScope *scope);
 int printSFunction(SFunction const *func);
 
 /*************************************************************
