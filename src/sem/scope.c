@@ -33,6 +33,7 @@ typedef struct ScopePrintCxt {
 	int n;
 	DList *list;
 	int *completed;
+	const char **identifierNames;
 } ScopePrintCxt;
 
 void static _printScopeLabels(const char **key, int *value, ScopePrintCxt *ctx) {
@@ -51,8 +52,7 @@ void static _printScopeStructs(const char **key, int *value, ScopePrintCxt *ctx)
 }
 
 void static _printScopeIdentifiers(const char **key, int *value, ScopePrintCxt *ctx) {
-	ctx->n += printf(", \"%s\": ", *key);
-	ctx->n += printSType((const SType *) dlistGetm(ctx->list, *value));
+	ctx->identifierNames[*value] = strdup(*key);
 }
 
 int printASTScope(ASTScope const *scope) {
@@ -63,6 +63,8 @@ int printASTScope(ASTScope const *scope) {
 
 	ctx.n += printf("\"type\": \"scope\"");
 
+	ctx.n += printf(", \"identifier size\": %d", scope->identifiers.size);
+
 	if (scope->labelDict.elementCount) {
 		ctx.n += printf(", \"labels\": [");
 		wordDictIter((WordDict *) &scope->labelDict, (WordDictIterFunc) _printScopeLabels, &ctx);
@@ -70,7 +72,6 @@ int printASTScope(ASTScope const *scope) {
 	}
 
 	if (scope->tags.size) {
-		ctx.isFirst = 1;
 		ctx.list = (DList *) &scope->tags;
 		ctx.completed = calloc(1, sizeof(int) * scope->tags.size);
 
@@ -86,8 +87,23 @@ int printASTScope(ASTScope const *scope) {
 	}
 
 	if (scope->identifiers.size) {
+		ctx.identifierNames = calloc(0, sizeof(char *) * scope->identifiers.size);
 		ctx.list = (DList *) &scope->identifiers;
+		ctx.completed = calloc(1, sizeof(int) * scope->identifiers.size);
+
 		wordDictIter((WordDict *) &scope->identifierDict, (WordDictIterFunc) _printScopeIdentifiers, &ctx);
+
+		//printf("identifer size is %d\n", scope->identifiers.size);
+		for (int i = 0; i < scope->identifiers.size; i++) {
+			if (ctx.identifierNames[i]) {
+				ctx.n += printf(", \"%s\": ", ctx.identifierNames[i]);
+				free((void *) ctx.identifierNames[i]);
+			} else {
+				ctx.n += printf(", \"anonymous\": ");
+			}
+			ctx.n += printSType(dlistGet(&scope->identifiers, i));
+		}
+		free(ctx.identifierNames);
 	}
 
 	ctx.n += printf("}");

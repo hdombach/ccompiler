@@ -574,11 +574,6 @@ int loadSFunction(
 	if (!LOG_ASSERT(declarator->node.type == AST_FUNC_DECL)) return 0;
 	initSFunction(type);
 	type->returnType = movaSType(internal);
-	for (int i = 0; i < declarator->params.size; i++) {
-		ASTParam *param = dlistGetm(&declarator->params, i);
-		STypeBuf tempBuf;
-		if (!loadParamSType(declarator->scope, param)) return 0;
-	}
 	type->paramScope = declarator->scope;
 	type->type.type = STT_FUNC;
 	return 1;

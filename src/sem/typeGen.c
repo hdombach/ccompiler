@@ -46,6 +46,9 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 		SPrim primType;
 		loadSEnumConst(&primType, decl, ctx->scope);
 		astScopeAddIdent(ctx->scope, (SType *) &primType, strdup(decl->name));
+	} else if (node->type == AST_PARAM) {
+		ASTParam *param = (ASTParam *) node;
+		loadParamSType(ctx->scope, param);
 	}
 
 	return ASTT_SUCCESS;
