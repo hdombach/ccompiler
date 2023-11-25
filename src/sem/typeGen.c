@@ -66,6 +66,4 @@ void typeGen(ASTFile *file) {
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
-
-	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
 }

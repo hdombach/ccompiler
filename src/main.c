@@ -8,6 +8,7 @@
 #include "ast/tokenParser.h"
 #include "ast/file.h"
 #include "preprocessor.h"
+#include "sem/scope.h"
 #include "token.h"
 #include "tokenizer.h"
 #include "util/tokList.h"
@@ -59,7 +60,8 @@ int main(int argc, char **argv) {
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 			typeGen(&astFile);
-			printASTFile(&astFile);
+			//printASTFile(&astFile);
+			printASTScope(astFile.scope);
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");
