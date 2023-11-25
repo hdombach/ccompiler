@@ -1,11 +1,14 @@
 #pragma once
 
-#include "util/dlist.h"
+#include "util/wordList.h"
 
 typedef struct {
-	DList files;
+	WordList files;
 	int help;
+	int verbose;
 } Args;
+
+extern Args g_args;
 
 extern const char *ARGS_HELP_MSG;
 

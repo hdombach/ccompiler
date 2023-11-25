@@ -9,7 +9,7 @@
 int parseASTCompItem(
 		ASTNode *node,
 		const Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res, n = 0;
 	initASTNode(node, tok);
@@ -33,16 +33,20 @@ int parseASTCompItem(
 void initASTCompStm(ASTCompStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	initDListEmpty(&node->items, AST_NODE_S);
+	node->scope = malloc(sizeof(ASTScope));
+	initASTScope(node->scope);
 }
 
 void freeASTCompStm(ASTCompStm *node) {
 	freeDList(&node->items, (FreeFunc) freeASTNode);
+	freeASTScope(node->scope);
+	free(node->scope);
 }
 
 int parseASTCompStm(
 		ASTCompStm *node,
 		const Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTCompStm);
 	int res, n = 0;
@@ -84,4 +88,12 @@ int printASTCompStm(const ASTCompStm *node) {
 	n += printDList(&node->items, (PrintFunc) printASTNode);
 
 	return n;
+}
+
+int astCompStmChildCount(ASTCompStm const *node) {
+	return node->items.size;
+}
+
+ASTNode *astCompStmGetChild(ASTCompStm *node, int index) {
+	return dlistGetm(&node->items, index);
 }

@@ -22,7 +22,7 @@ void freeASTLblIdentifier(ASTLblIdentifier *node) {
 int parseASTLblIdentifier(
 		ASTLblIdentifier *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	char *tempIdentifier;
@@ -65,6 +65,14 @@ int printASTLblIdentifier(const ASTLblIdentifier *node) {
 	return n;
 }
 
+int astLblIdentifierChildCount(const ASTLblIdentifier *node) {
+	return 0;
+}
+
+ASTNode *astLblIdentifierGetChild(ASTLblIdentifier *node, int index) {
+	return NULL;
+}
+
 void initASTLblCase(ASTLblCase *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	node->expression = NULL;
@@ -80,7 +88,7 @@ void freeASTLblCase(ASTLblCase *node) {
 int parseASTLblCase(
 		ASTLblCase *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
@@ -136,10 +144,18 @@ int printASTLblCase(const ASTLblCase *node) {
 	return n;
 }
 
+int astLblCaseChildCount(ASTLblCase const *node) {
+	return 1;
+}
+
+ASTNode *astLblCaseGetChild(ASTLblCase *node, int index) {
+	return node->expression;
+}
+
 int parseASTLblDefault(
 		ASTNode *node,
 		const struct Token *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
@@ -175,7 +191,7 @@ int printASTLblDefault(const ASTNode *node) {
 int parseASTLabel(
 		ASTNode *node,
 		struct Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	int res;
 
@@ -187,4 +203,12 @@ int parseASTLabel(
 		return res;
 	}
 	return 0;
+}
+
+int astLblDefaultChildCount(ASTNode const *node) {
+	return 0;
+}
+
+ASTNode *astLblDefaultGetChild(ASTNode *node, int index) {
+	return NULL;
 }

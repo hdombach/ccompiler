@@ -4,7 +4,7 @@
 #include "../util/dlist.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "funcDecl.h"
+#include "specialDecl.h"
 #include "node.h"
 
 struct ASTDeclarator;
@@ -14,7 +14,7 @@ typedef struct ASTFuncDef {
 	ASTNode node;
 	ASTTypeSpec *typeSpec;
 	ASTNode *funcDecl;
-	ASTCompStm compoundStm;
+	ASTCompStm *compoundStm;
 } ASTFuncDef;
 
 void initASTFuncDef(ASTFuncDef *def, Token const *tok);
@@ -22,5 +22,7 @@ void freeASTFuncDef(ASTFuncDef *def);
 int parseASTFuncDef(
 		ASTFuncDef *def,
 		Token const * tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTFuncDef(ASTFuncDef const *def);
+int astFuncDefChildCount(ASTFuncDef const *node);
+ASTNode *astFuncDefGetChild(ASTFuncDef *node, int index);

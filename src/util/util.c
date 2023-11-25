@@ -4,6 +4,10 @@
 
 #include "util.h"
 
+int printStr(const char *str) {
+	return printf("%s", str);
+}
+
 void freeStr(char **str) {
 	if (*str) {
 		free(*str);

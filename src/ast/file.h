@@ -3,20 +3,20 @@
 #include "declaration.h"
 #include "funcDef.h"
 #include "node.h"
-#include "scope.h"
+#include "../sem/scope.h"
 
 typedef struct {
 	ASTNode node;
 	DList items;
-	ASTScope scope;
+	struct ASTScope *scope;
 } ASTFile;
 
 /* parses declaration or func def */
-int parseASTFileItem(ASTNode *item, Token const *tok, ASTScope const *scope);
-
-DList astFileItemTypes(ASTNode const *item);
+int parseASTFileItem(ASTNode *item, Token const *tok, struct ASTScope *scope);
 
 void initASTFile(ASTFile *file, Token const *tok);
 void freeASTFile(ASTFile *file);
 int parseASTFile(ASTFile *file, Token const *tok);
 int printASTFile(ASTFile const *file);
+int astFileChildCount(ASTFile const *node);
+ASTNode *astFileGetChild(ASTFile *node, int index);

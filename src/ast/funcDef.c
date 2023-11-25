@@ -3,7 +3,6 @@
 #include "astUtil.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "funcDecl.h"
 #include "node.h"
 #include "param.h"
 #include <stdio.h>
@@ -13,7 +12,7 @@ void initASTFuncDef(ASTFuncDef *def, Token const *tok) {
 	initASTNode((ASTNode *) def, tok);
 	def->typeSpec = NULL;
 	def->funcDecl = NULL;
-	initASTCompStm(&def->compoundStm, tok);
+	def->compoundStm = NULL;
 }
 
 void freeASTFuncDef(ASTFuncDef *def) {
@@ -27,13 +26,16 @@ void freeASTFuncDef(ASTFuncDef *def) {
 		free(def->funcDecl);
 		def->funcDecl = NULL;
 	}
-	freeASTCompStm(&def->compoundStm);
+	if (def->compoundStm) {
+		freeASTNode((ASTNode *) def->compoundStm);
+		free(def->compoundStm);
+	}
 }
 
 int parseASTFuncDef(
 		ASTFuncDef *def,
 		Token const * tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTFuncDef);
 	int n = 0, res;
@@ -93,8 +95,8 @@ int parseASTFuncDef(
 		return 0;
 	}
 
-	if ((res = parseASTCompStm(&def->compoundStm, tok + n, scope))) {
-		//printf("parsing func def\n");
+	if ((res = parseASTCompStm((ASTCompStm *) &tempBuf, tok + n, scope))) {
+		def->compoundStm = (ASTCompStm *) dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
 		//Don't throw error
@@ -113,16 +115,34 @@ int printASTFuncDef(ASTFuncDef const *def) {
 
 	n += printf("\"node type\": \"func def\"");
 
-	n += printf(", \"Type Spec\": ");
-	n += printASTTypeSpec(def->typeSpec);
+	if (def->typeSpec) {
+		n += printf(", \"Type Spec\": ");
+		n += printASTTypeSpec(def->typeSpec);
+	}
 
-	n += printf(", \"Declarator\": ");
-	n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
+	if (def->funcDecl) {
+		n += printf(", \"Declarator\": ");
+		n += printASTDeclarator((ASTDeclarator *) def->funcDecl);
+	}
 
-	n += printf(", \"Compound Statement\": ");
-	n += printASTCompStm(&def->compoundStm);
+	if (def->compoundStm) {
+		n += printf(", \"Compound Statement\": ");
+		n += printASTCompStm(def->compoundStm);
+	}
 
 	n += printf("}");
 
 	return n;
+}
+
+int astFuncDefChildCount(ASTFuncDef const *node) {
+	return 3;
+}
+
+ASTNode *astFuncDefGetChild(ASTFuncDef *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->typeSpec,
+		(ASTNode *) node->funcDecl,
+		(ASTNode *) node->compoundStm,
+	}[index];
 }

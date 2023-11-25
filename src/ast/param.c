@@ -5,7 +5,7 @@
 #include "astUtil.h"
 #include "declaration.h"
 #include "../token.h"
-#include "structDecl.h"
+#include "specialDecl.h"
 
 void initASTParam(ASTParam *param) {
 	param->typeSpec = NULL;
@@ -24,7 +24,7 @@ void freeASTParam(ASTParam *param) {
 	}
 }
 
-int parseASTParam(ASTParam *param, Token const *tok, ASTScope const *scope) {
+int parseASTParam(ASTParam *param, Token const *tok, ASTScope *scope) {
 	AST_VALID(ASTParam);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
@@ -96,4 +96,15 @@ int printASTParam(const ASTParam *param) {
 
 	return n;
 
+}
+
+int astParamChildCount(ASTParam const *node) {
+	return 2;
+}
+
+ASTNode *astParamGetChild(ASTParam *node, int index) {
+	return (ASTNode *[]) {
+		(ASTNode *) node->typeSpec,
+		(ASTNode *) node->declarator,
+	}[index];
 }

@@ -1,6 +1,11 @@
 #template from https://gist.github.com/tomdaley92/190c68e8a84038cc91a5459409e007df
 
-CFLAGS = -g -Werror
+CFLAGS = -Werror
+ifdef DEBUG
+	CFLAGS += -g
+	CFLAGS += -D DEBUG=1
+endif
+
 DEPFLAGS = -MMD -MP
 SRC = src
 OBJECTS := $(patsubst $(SRC)/%.c, build/%.o, $(wildcard $(SRC)/*.c))
@@ -13,6 +18,8 @@ COMPILE_EXE = $(CC) $(CFLAGS) $(filter %.o,$^) -lm
 DEPS_GEN = build/argParser.o build/token.o build/tokenizer.o build/preprocessor.o\
 					 $(patsubst $(SRC)/ast/%.c, build/ast/%.o, $(wildcard $(SRC)/ast/*.c))\
 					 $(patsubst $(SRC)/util/%.c, build/util/%.o, $(wildcard $(SRC)/util/*.c))\
+					 $(patsubst $(SRC)/sem/%.c, build/sem/%.o, $(wildcard $(SRC)/sem/*.c))\
+
 
 DEPS_CCOMPILER = build/main.o $(DEPS_GEN)
 
@@ -22,7 +29,7 @@ DEPS_ALL_TESTS = $(DEPS_GEN)\
 DEPS_MACRO_DICT_TEST = $(DEPS_GEN) build/tests/macroDictTest.o build/tests/test.o
 
 
-all: build/ccompiler
+all: build/ccompiler build/allTests
 
 build/ccompiler: build $(DEPS_CCOMPILER)
 	$(COMPILE_EXE) -o build/ccompiler
@@ -38,6 +45,7 @@ build:
 	mkdir -p build/util
 	mkdir -p build/tests
 	mkdir -p build/ast
+	mkdir -p build/sem
 
 clean:
 	rm -r build

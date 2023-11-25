@@ -23,10 +23,12 @@ void freeASTInitializerList(ASTInitializerList *list);
 int parseASTInitializerList(
 		ASTInitializerList *list,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);
 int printASTInitializerList(ASTInitializerList const *list);
+int astInitializerListChildCount(ASTInitializerList const *node);
+ASTNode *astInitializerListGetChild(ASTInitializerList *node, int index);
 
 int parseASTInitializer(
 		ASTNode *node,
 		Token const *tok,
-		struct ASTScope const *scope);
+		struct ASTScope *scope);

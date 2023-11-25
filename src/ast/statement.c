@@ -1,16 +1,14 @@
 #include <stdlib.h>
 
-#include "doWhile.h"
 #include "node.h"
 #include "statement.h"
 #include "compStatement.h"
 #include "expression.h"
 #include "astUtil.h"
 #include "label.h"
-#include "scope.h"
-#include "if.h"
-#include "switch.h"
-#include "while.h"
+#include "../sem/scope.h"
+#include "selection.h"
+#include "iteration.h"
 
 /***********************************************************************
  * Empty Statement
@@ -23,7 +21,7 @@ void initASTEmptyStm(ASTEmptyStm *node, Token const *tok) {
 int parseASTEmptyStm(
 		ASTEmptyStm *node,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTEmptyStm);
 	int n = 0;
@@ -47,6 +45,14 @@ int printASTEmptyStm(const ASTEmptyStm *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
+int astEmptyStmChildCount(const ASTEmptyStm *node) {
+	return 0;
+}
+
+ASTNode *astEmptyStmGetChild(ASTEmptyStm *node, int index) {
+	return NULL;
+}
+
 /***********************************************************************
  * Break Statement
  ***********************************************************************/
@@ -58,7 +64,7 @@ void initASTBreak(ASTBreak *node, Token const *tok) {
 int parseASTBreak(
 		ASTBreak *node,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTBreak);
 	int n = 0;
@@ -88,6 +94,18 @@ int printASTBreak(const ASTBreak *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
+int astBreakChildCount(const ASTBreak *node) {
+	return 0;
+}
+
+ASTNode *astBreakGetChild(ASTBreak *node, int index) {
+	return NULL;
+}
+
+/***********************************************************************
+ * Continue Statement
+ ***********************************************************************/
+
 void initASTContinue(ASTContinue *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 }
@@ -95,7 +113,7 @@ void initASTContinue(ASTContinue *node, Token const *tok) {
 int parseASTContinue(
 		ASTContinue *node,
 		Token const *tok,
-		struct ASTScope const *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTContinue);
 	int n = 0;
@@ -125,6 +143,89 @@ int printASTContinue(const ASTContinue *node) {
 	return printf("{\"node type\": \"%s\"}", astNodeTypeStr(node->type));
 }
 
+int astContinueChildCount(const ASTContinue *node) {
+	return 0;
+}
+
+ASTNode *astContinueGetChild(ASTContinue *node, int index) {
+	return NULL;
+}
+
+void initASTGoto(ASTGoto *node, const struct Token *tok) {
+	initASTNode((ASTNode *) node, tok);
+	node->name = NULL;
+}
+
+void freeASTGoto(ASTGoto *node) {
+	if (node->name) {
+		free(node->name);
+	}
+}
+
+int parseASTGoto(
+		ASTGoto *node,
+		const struct Token *tok,
+		struct ASTScope *scope)
+{
+	AST_VALID(ASTGoto);
+	int n = 0;
+
+	initASTGoto(node, tok);
+	if (astHasErr()) {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_GOTO) {
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_IDENTIFIER) {
+		node->name = strdup(tok[n].contents);
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		freeASTGoto(node);
+		return 0;
+	}
+
+	node->node.type = AST_GOTO;
+	return n;
+}
+
+int printASTGoto(const ASTGoto *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": ");
+	n += printJsonStr(astNodeTypeStr(node->node.type));
+
+	n += printf(", \"label\": ");
+	n += printJsonStr(node->name);
+
+	n += printf("}");
+
+	return n;
+}
+
+int astGotoChildCount(ASTGoto *node) {
+	return 0;
+}
+
+ASTNode *astGotoGetChild(ASTGoto *node, int index) {
+	return NULL;
+}
+
 void initASTStm(ASTStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);
 	node->label = NULL;
@@ -143,7 +244,7 @@ void freeASTStm(ASTStm *node) {
 	}
 }
 
-int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
+int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	AST_VALID(ASTStm);
 	int res, n = 0;
 	ASTNodeBuf tempBuf;
@@ -181,6 +282,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope const *scope) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {
+		node->content = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
+	} else if ((res = parseASTGoto((ASTGoto *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
@@ -221,4 +325,15 @@ int printASTStm(ASTStm const *node) {
 	}
 
 	return n;
+}
+
+int astStmChildCount(const ASTStm *node) {
+	return 2;
+}
+
+ASTNode *astStmGetChild(ASTStm *node, int index) {
+	return (ASTNode *[]) {
+		node->content,
+		node->label,
+	}[index];
 }

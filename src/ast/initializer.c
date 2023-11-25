@@ -1,7 +1,7 @@
 #include "initializer.h"
 #include "astUtil.h"
 #include "expression.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "node.h"
 
 void initASTInitializerList(ASTInitializerList *list, Token const *tok) {
@@ -16,7 +16,7 @@ void freeASTInitializerList(ASTInitializerList *list) {
 int parseASTInitializerList(
 		ASTInitializerList *list,
 		const Token *tok,
-		const struct ASTScope *scope)
+		struct ASTScope *scope)
 {
 	AST_VALID(ASTInitializerList);
 	int res, n = 0;
@@ -65,10 +65,18 @@ int printASTInitializerList(const ASTInitializerList *list) {
 	return printDList(&list->list, (PrintFunc) printASTNode);
 }
 
+int astInitializerListChildCount(const ASTInitializerList *node) {
+	return node->list.size;
+}
+
+ASTNode *astInitializerListGetChild(ASTInitializerList *node, int index) {
+	return dlistGetm(&node->list, index);
+}
+
 int parseASTInitializer(
 		ASTNode *node,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int res;
 

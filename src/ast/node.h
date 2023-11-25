@@ -28,7 +28,7 @@ typedef enum ASTNodeType {
 	AST_IDENTIFIER_TS, /* typedef reference used in type spec */
 	AST_STRUCT_DECL,
 	AST_ENUM_DECL,
-	AST_ENUMERATOR_DECL,
+	AST_ENUM_CONST,
 	AST_STM,
 	AST_COMP_STM,
 	AST_IF,
@@ -45,6 +45,7 @@ typedef enum ASTNodeType {
 	AST_LBL_CASE,
 	AST_LBL_DEFAULT,
 	AST_FOR,
+	AST_GOTO,
 } ASTNodeType;
 
 struct ASTScope;
@@ -64,6 +65,30 @@ void mvASTNode(ASTNode *dest, ASTNode *src);
 ASTNode *dupASTNode(ASTNode *node);
 char *astNodeTypeStr(ASTNodeType type);
 int printASTNode(ASTNode const *node);
+int astNodeChildCount(ASTNode const *node);
+ASTNode *astNodeGetChild(ASTNode *node, int index);
+struct ASTScope *astNodeScope(ASTNode *node, struct ASTScope *defaultScope);
+
+
+/* The result of node traversal */
+typedef enum ASTTravRes {
+	ASTT_FAILED,
+	ASTT_SUCCESS,
+} ASTTravRes;
+
+typedef struct ASTTravCtx {
+	struct ASTScope *scope;
+	ASTNode *node;
+	struct ASTTravCtx *parent;
+}ASTTravCtx;
+
+typedef ASTTravRes (*ASTTravFunc)(ASTNode *, ASTTravCtx *);
+
+ASTTravRes astNodeTrav(
+		ASTNode *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc,
+		ASTTravCtx *parent);
 
 
 #define AST_NODE_S 128

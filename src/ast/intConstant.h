@@ -11,3 +11,6 @@ typedef struct {
 int parseASTIntConstant(ASTIntConstant *node, Token const *tok);
 
 int printASTIntContant(ASTIntConstant const *node);
+
+int astIntConstantChildCount(ASTIntConstant const *node);
+ASTNode *astIntConstantGetChild(ASTIntConstant *node, int index);

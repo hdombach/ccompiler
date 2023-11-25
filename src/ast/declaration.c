@@ -2,17 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arrayDecl.h"
 #include "astUtil.h"
 #include "declaration.h"
-#include "enumDecl.h"
 #include "expression.h"
-#include "funcDecl.h"
 #include "identifier.h"
 #include "initializer.h"
-#include "structDecl.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "node.h"
+#include "specialDecl.h"
 
 /* =========================================================================
  * ASTTypeQualifier
@@ -304,8 +301,8 @@ int printASTArithType(const ASTArithType *type) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wswitch"
 
-int astArithTypeNormalize(const ASTArithType *type) {
-	switch (*type) {
+ASTArithType astArithTypeNormalize(ASTArithType type) {
+	switch (type) {
 		case AST_AT_CHAR:
 			return AST_AT_CHAR;
 
@@ -368,7 +365,7 @@ int astArithTypeNormalize(const ASTArithType *type) {
 int _parseTypedefIdentifier(
 		ASTIdentifier *identifier,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTIdentifier);
 	int res, n = 0;
@@ -404,7 +401,7 @@ void freeASTTypeSpec(ASTTypeSpec *typeSpec) {
 int parseASTTypeSpec(
 		ASTTypeSpec *typeSpec,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTTypeSpec);
 	int n = 0, res;
@@ -523,6 +520,14 @@ int printASTTypeSpec(ASTTypeSpec const * typeSpec) {
 	return n;
 }
 
+int astTypeSpecChildCount(const ASTTypeSpec *typeSpec) {
+	return 1;
+}
+
+ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index) {
+	return typeSpec->content;
+}
+
 /* =========================================================================
  * ASTDeclarator
  * ========================================================================= */
@@ -557,7 +562,7 @@ void freeASTDeclarator(ASTDeclarator *declarator) {
 int parseASTDeclarator(
 		ASTDeclarator *declarator,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTDeclarator);
 	int n = 0, res;
@@ -599,25 +604,20 @@ int parseASTDeclarator(
 			n += res;
 		}
 
-		if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
-			tempBuf.node.type = AST_POINTER_DECL;
-			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
-			n += res;
-		} else {
-			declarator->encl = NULL;
-		}
+		n += parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope);
+		tempBuf.node.type = AST_POINTER_DECL;
+		declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 	}
 
 	if (tok[n].type == TT_O_PARAN) {
 		//Searches forward for a function declaration
 		ASTNode *enclBuf = NULL;
 
-		if (!declarator->encl) {
+		if (declarator->encl) {
 			enclBuf = declarator->encl;
-			declarator->encl = NULL;
 		}
 
-		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, (ASTDeclarator *) enclBuf, scope))) {
+		if ((res = parseASTFuncDecl((ASTFuncDecl *) &tempBuf, tok + n, enclBuf, scope))) {
 			n += res;
 			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 		} else {
@@ -629,9 +629,8 @@ int parseASTDeclarator(
 			//Searches forward for an array declaration
 			ASTNode *enclBuf = NULL;
 
-			if (!declarator->encl) {
+			if (declarator->encl) {
 				enclBuf = declarator->encl;
-				declarator->encl = NULL;
 			}
 
 			if ((res = parseASTArrayDecl((ASTArrayDecl *) &tempBuf, tok + n, enclBuf, scope))) {
@@ -678,7 +677,7 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 
 	n += printf("{");
 
-	n += printf("\"Node type\": \"Declarator\"");
+	n += printf("\"Node type\": \"%s\"", astNodeTypeStr(declarator->node.type));
 
 	n += printf(", \"enclosed\": ");
 	if (declarator->encl) {
@@ -707,6 +706,18 @@ int printASTDeclarator(const ASTDeclarator *declarator) {
 	return n;
 }
 
+int astDeclaratorChildCount(const ASTDeclarator *node) {
+	return 3;
+}
+
+ASTNode *astDeclaratorGetChild(ASTDeclarator *node, int index) {
+	return (ASTNode *[]) {
+		node->encl,
+		node->bitField,
+		node->initializer,
+	}[index];
+}
+
 /* =========================================================================
  * ASTDeclaration
  * ========================================================================= */
@@ -728,11 +739,12 @@ void freeASTDeclaration(ASTDeclaration *declaration) {
 int parseASTDeclaration(
 		ASTDeclaration *declaration,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	AST_VALID(ASTDeclaration);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
+	DList typedefNames;
 
 	initASTDeclaration(declaration, tok);
 
@@ -778,6 +790,9 @@ int parseASTDeclaration(
 	}
 	n++;
 
+	typedefNames = astDeclarationTypedefNames(declaration);
+	astScopeAddTypedefNames(scope, typedefNames);
+
 	declaration->node.type = AST_DECLARATION;
 	return n;
 }
@@ -810,13 +825,25 @@ int printASTDeclaration(const ASTDeclaration *declaration) {
 	return n;
 }
 
+int astDeclarationChildCount(const ASTDeclaration *node) {
+	return node->declarators.size + 1;
+}
+
+ASTNode *astDeclarationGetChild(ASTDeclaration *node, int index) {
+	if (index < 1) {
+		return (ASTNode *) node->typeSpec;
+	} else {
+		return dlistGetm(&node->declarators, index - 1);
+	}
+}
+
 DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 	DList result;
 	if (declaration->typeSpec->storage & AST_SC_TYPEDEF) {
 		initDListCap(&result, sizeof(char *), declaration->declarators.size);
 		for (int i = 0; i < declaration->declarators.size; i++) {
 			ASTDeclarator const *declarator = dlistGet(&declaration->declarators, i);
-			char *newName = astDeclaratorTypedefName(declarator);
+			char *newName = strdup(astDeclaratorName((ASTNode *) declarator));
 			if (newName) {
 				dlistApp(&result, &newName);
 			}
@@ -827,12 +854,12 @@ DList astDeclarationTypedefNames(const ASTDeclaration *declaration) {
 	return result;
 }
 
-char *astDeclaratorTypedefName(const ASTDeclarator *declarator) {
+const char *astDeclaratorName(const ASTNode *declarator) {
 	ASTNode *curDecl = (ASTNode *) declarator;
 	while (curDecl) {
 		switch (curDecl->type) {
 			case AST_IDENTIFIER_DECL:
-				return strdup(((ASTIdentifier *) curDecl)->name);
+				return ((ASTIdentifier *) curDecl)->name;
 				break;
 			case AST_DECLARATOR:
 			case AST_POINTER_DECL:

@@ -9,4 +9,4 @@ typedef enum TestEnum2 {
 } TestEnum2;
 
 TestEnum2 enumValue1, enumValue2;
-enum TestEnum2 enumValue1, enumValue2;
+//enum TestEnum2 enumValue1, enumValue2;

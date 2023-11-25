@@ -1,7 +1,7 @@
 #include "file.h"
 #include "declaration.h"
 #include "funcDef.h"
-#include "scope.h"
+#include "../sem/scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
 #include "node.h"
@@ -10,7 +10,7 @@
 int parseASTFileItem(
 		ASTNode *item,
 		const Token *tok,
-		ASTScope const *scope)
+		ASTScope *scope)
 {
 	int n = 0, res;
 
@@ -30,30 +30,17 @@ int parseASTFileItem(
 	return n;
 }
 
-DList astFileItemTypes(const ASTNode *item) {
-	DList result;
-
-	switch (item->type) {
-		case AST_DECLARATION:
-			result = astDeclarationTypedefNames((ASTDeclaration *) item);
-			break;
-		default:
-			initDListEmpty(&result, sizeof(char *));
-			break;
-	}
-
-	return result;
-}
-
 void initASTFile(ASTFile *file, Token const *tok) {
 	initASTNode((ASTNode *) file, tok);
-	initDList(&file->items, AST_NODE_S);
-	initASTScope(&file->scope);
+	initDListEmpty(&file->items, AST_NODE_S);
+	file->scope = malloc(sizeof(ASTScope));
+	initASTScope(file->scope);
 }
 
 void freeASTFile(ASTFile *file) {
 	freeDList(&file->items, (FreeFunc) freeASTNode);
-	freeASTScope(&file->scope);
+	freeASTScope(file->scope);
+	free(file->scope);
 }
 
 int parseASTFile(ASTFile *file, const Token *tok) {
@@ -64,12 +51,10 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 	initASTFile(file, tok);
 
 	while (1) {
-		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, &file->scope))) {
+		if ((res = parseASTFileItem((ASTNode *) &tempBuf, tok + n, file->scope))) {
 			n += res;
 			dlistApp(&file->items, &tempBuf);
 
-			DList newTypes = astFileItemTypes((ASTNode *) &tempBuf);
-			astScopeAddTypedefNames(&file->scope, newTypes);
 		} else if (tok[n].type == TT_NEWLINE) {
 			n++;
 		} else {
@@ -80,6 +65,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 		fprintASTErr(stderr);
 	}
 
+	file->node.type = AST_FILE;
 	return n;
 }
 
@@ -96,4 +82,12 @@ int printASTFile(const ASTFile *file) {
 	n += printf("}");
 
 	return n;
+}
+
+int astFileChildCount(const ASTFile *node) {
+	return node->items.size;
+}
+
+ASTNode *astFileGetChild(ASTFile *node, int index) {
+	return dlistGetm(&node->items, index);
 }

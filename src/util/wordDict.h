@@ -82,3 +82,9 @@ static int wordDictRemove(WordDict *dict, char const *key) {
 static int printWordDict(WordDict const *dict) {
 	return printDict(dict, (PrintFunc) printJsonStrp, (PrintFunc) printIntp);
 }
+
+typedef void (*WordDictIterFunc)(const char **key, int *value, void *context);
+
+static void wordDictIter(WordDict *dict, WordDictIterFunc func, void *context) {
+	dictIter(dict, (DictIterFunc) func, context);
+}

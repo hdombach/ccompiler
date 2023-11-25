@@ -23,7 +23,7 @@ static void initASTIdentifier(ASTIdentifier *node) {
 static int parseASTIdentifier(
 		ASTIdentifier *node,
 		struct Token const *tok,
-		struct ASTScope const *scope) 
+		struct ASTScope *scope) 
 {
 	AST_VALID(ASTIdentifier);
 	if (tok->type == TT_IDENTIFIER) {
@@ -46,4 +46,12 @@ static int printASTIdentifier(ASTIdentifier const *node) {
 	n += printf("}");
 	
 	return n;
+}
+
+static int astIdentifierChildCount(ASTIdentifier const *node) {
+	return 0;
+}
+
+static ASTNode *astIdentifierGetChild(ASTIdentifier *node, int index) {
+	return NULL;
 }

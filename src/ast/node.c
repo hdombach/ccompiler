@@ -2,18 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arrayDecl.h"
+#include "specialDecl.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "doWhile.h"
-#include "enumDecl.h"
 #include "expression.h"
 #include "file.h"
-#include "for.h"
-#include "funcDecl.h"
 #include "funcDef.h"
 #include "identifier.h"
-#include "if.h"
+#include "selection.h"
+#include "iteration.h"
 #include "initializer.h"
 #include "intConstant.h"
 #include "label.h"
@@ -21,9 +18,7 @@
 #include "operation.h"
 #include "param.h"
 #include "statement.h"
-#include "structDecl.h"
-#include "switch.h"
-#include "while.h"
+#include "../util/log.h"
 
 void initASTNode(ASTNode *node, struct Token const *tok) {
 	node->type = AST_UNKNOWN;
@@ -56,7 +51,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_TYPE_SPEC: freeASTTypeSpec((ASTTypeSpec *) node); break;
 		case AST_STRUCT_DECL: freeASTStructDecl((ASTStructDecl *) node); break;
 		case AST_ENUM_DECL: freeASTEnumDecl((ASTEnumDecl *) node); break;
-		case AST_ENUMERATOR_DECL: freeASTEnumeratorDecl((ASTEnumeratorDecl *) node); break;
+		case AST_ENUM_CONST: freeASTEnumConst((ASTEnumConst *) node); break;
 		case AST_STM: freeASTStm((ASTStm *) node); break;
 		case AST_COMP_STM: freeASTCompStm((ASTCompStm *) node); break;
 		case AST_IF: freeASTIf((ASTIf *) node); break;
@@ -73,6 +68,7 @@ void freeASTNode(ASTNode *node) {
 		case AST_LBL_CASE: freeASTLblCase((ASTLblCase *) node); break;
 		case AST_LBL_DEFAULT: break;
 		case AST_FOR: freeASTFor((ASTFor *) node); break;
+		case AST_GOTO: freeASTGoto((ASTGoto *) node); break;
 		default: break;
 	}
 	node->type = AST_UNKNOWN;
@@ -118,7 +114,7 @@ char *_astNodeTypes[] = {
 	"typedef name type specifier",
 	"struct declaration",
 	"enum declaration",
-	"enumerator declaration",
+	"enumerator declaration const",
 	"statement",
 	"compound statement",
 	"if statement",
@@ -135,6 +131,7 @@ char *_astNodeTypes[] = {
 	"case label",
 	"default label",
 	"for statement",
+	"goto statement",
 };
 
 char *astNodeTypeStr(ASTNodeType type) {
@@ -167,7 +164,7 @@ int printASTNode(ASTNode const *node) {
 		case AST_TYPE_SPEC: return printASTTypeSpec((ASTTypeSpec *) node);
 		case AST_STRUCT_DECL: return printASTStructDecl((ASTStructDecl *) node);
 		case AST_ENUM_DECL: return printASTEnumDecl((ASTEnumDecl *) node);
-		case AST_ENUMERATOR_DECL: return printASTEnumeratorDecl((ASTEnumeratorDecl *) node);
+		case AST_ENUM_CONST: return printASTEnumConst((ASTEnumConst *) node);
 		case AST_STM: return printASTStm((ASTStm *) node);
 		case AST_COMP_STM: return printASTCompStm((ASTCompStm *) node);
 		case AST_IF: return printASTIf((ASTIf *) node);
@@ -184,6 +181,169 @@ int printASTNode(ASTNode const *node) {
 		case AST_LBL_CASE: return printASTLblCase((ASTLblCase *) node);
 		case AST_LBL_DEFAULT: return printASTLblDefault(node);
 		case AST_FOR: return printASTFor((ASTFor *) node);
-		default: return printf("\"(unknown node)\"");
+		case AST_GOTO: return printASTGoto((ASTGoto *) node);
+		case AST_UNKNOWN: return printf("\"(unknown node)\"");
 	}
+}
+
+int astNodeChildCount(const ASTNode *node) {
+	switch (node->type) {
+		case AST_INT_CONSTANT: return astIntConstantChildCount((ASTIntConstant *) node);
+		case AST_IDENTIFIER: return astIdentifierChildCount((ASTIdentifier *) node);
+		case AST_FUNC_OPERATION: return astFuncOperationChildCount((ASTFuncOperation *) node);
+		case AST_SUBS_OPERATION: return astOperationChildCount((ASTOperation *) node);
+		case AST_COND_OPERATION: return astCondOperationChildCount((ASTCondOperation *) node);
+		case AST_CAST_OPERATION:
+		case AST_SIZEOF_TYPE_OPERATION:
+		case AST_SIZEOF_EXP_OPERATION:
+		case AST_BINARY_OPERATION:
+		case AST_PREFIX_OPERATION:
+		case AST_POSTFIX_OPERATION: return astOperationChildCount((ASTOperation *) node);
+		case AST_PARAM: return astParamChildCount((ASTParam *) node);
+		case AST_DECLARATION: return astDeclarationChildCount((ASTDeclaration *) node);
+		case AST_ARRAY_DECL: return astArrayDeclChildCount((ASTArrayDecl *) node);
+		case AST_FUNC_DECL: return astFuncDeclChildCount((ASTFuncDecl *) node);
+		case AST_IDENTIFIER_DECL: return astIdentifierChildCount((ASTIdentifier *) node);
+		case AST_POINTER_DECL:
+		case AST_DECLARATOR: return astDeclaratorChildCount((ASTDeclarator *) node);
+		case AST_TYPE_SPEC: return astTypeSpecChildCount((ASTTypeSpec *) node);
+		case AST_IDENTIFIER_TS: return astIdentifierChildCount((ASTIdentifier *) node);
+		case AST_STRUCT_DECL: return astStructDeclChildCount((ASTStructDecl *) node);
+		case AST_ENUM_DECL: return astEnumDeclChildCount((ASTEnumDecl *) node);
+		case AST_ENUM_CONST: return astEnumConstChildCount((ASTEnumConst *) node);
+		case AST_STM: return astStmChildCount((ASTStm *) node);
+		case AST_COMP_STM: return astCompStmChildCount((ASTCompStm *) node);
+		case AST_IF: return astIfChildCount((ASTIf *) node);
+		case AST_SWITCH: return astSwitchChildCount((ASTSwitch *) node);
+		case AST_WHILE: return astWhileChildCount((ASTWhile *) node);
+		case AST_DO_WHILE: return astDoWhileChildCount((ASTDoWhile *) node);
+		case AST_EMPTY_STM: return astEmptyStmChildCount((ASTEmptyStm *) node);
+		case AST_BREAK: return astBreakChildCount((ASTBreak *) node);
+		case AST_CONTINUE: return astContinueChildCount((ASTContinue *) node);
+		case AST_FUNC_DEF: return astFuncDefChildCount((ASTFuncDef *) node);
+		case AST_FILE: return astFileChildCount((ASTFile *) node);
+		case AST_INITIALIZER_LIST: return astInitializerListChildCount((ASTInitializerList *) node);
+		case AST_LBL_IDENTIFIER: return astLblIdentifierChildCount((ASTLblIdentifier *) node);
+		case AST_LBL_CASE: return astLblCaseChildCount((ASTLblCase *) node);
+		case AST_LBL_DEFAULT: return astLblDefaultChildCount(node);
+		case AST_FOR: return astForChildCount((ASTFor *) node);
+		case AST_GOTO: return astGotoChildCount((ASTGoto *) node);
+		case AST_UNKNOWN: return 0;
+	}
+}
+
+ASTNode *astNodeGetChild(ASTNode *node, int index) {
+	switch (node->type) {
+		case AST_INT_CONSTANT: return astIntConstantGetChild((ASTIntConstant *) node, index);
+		case AST_IDENTIFIER: return astIdentifierGetChild((ASTIdentifier *) node, index);
+		case AST_FUNC_OPERATION: return astFuncOperationGetChild((ASTFuncOperation *) node, index);
+		case AST_SUBS_OPERATION: return astOperationGetChild((ASTOperation *) node, index);
+		case AST_COND_OPERATION: return astCondOperationGetChild((ASTCondOperation *) node, index);
+		case AST_CAST_OPERATION:
+		case AST_SIZEOF_TYPE_OPERATION:
+		case AST_SIZEOF_EXP_OPERATION:
+		case AST_BINARY_OPERATION:
+		case AST_PREFIX_OPERATION:
+		case AST_POSTFIX_OPERATION: return astOperationGetChild((ASTOperation *) node, index);
+		case AST_PARAM: return astParamGetChild((ASTParam *) node, index);
+		case AST_DECLARATION: return astDeclarationGetChild((ASTDeclaration *) node, index);
+		case AST_ARRAY_DECL: return astArrayDeclGetChild((ASTArrayDecl *) node, index);
+		case AST_FUNC_DECL: return astFuncDeclGetChild((ASTFuncDecl *) node, index);
+		case AST_IDENTIFIER_DECL: return astIdentifierGetChild((ASTIdentifier *) node, index);
+		case AST_POINTER_DECL:
+		case AST_DECLARATOR: return astDeclaratorGetChild((ASTDeclarator *) node, index);
+		case AST_TYPE_SPEC: return astTypeSpecGetChild((ASTTypeSpec *) node, index);
+		case AST_IDENTIFIER_TS: return astIdentifierGetChild((ASTIdentifier *) node, index);
+		case AST_STRUCT_DECL: return astStructDeclGetChild((ASTStructDecl *) node, index);
+		case AST_ENUM_DECL: return astEnumDeclGetChild((ASTEnumDecl *) node, index);
+		case AST_ENUM_CONST: return astEnumConstGetChild((ASTEnumConst *) node, index);
+		case AST_STM: return astStmGetChild((ASTStm *) node, index);
+		case AST_COMP_STM: return astCompStmGetChild((ASTCompStm *) node, index);
+		case AST_IF: return astIfGetChild((ASTIf *) node, index);
+		case AST_SWITCH: return astSwitchGetChild((ASTSwitch *) node, index);
+		case AST_WHILE: return astWhileGetChild((ASTWhile *) node, index);
+		case AST_DO_WHILE: return astDoWhileGetChild((ASTDoWhile *) node, index);
+		case AST_EMPTY_STM: return astEmptyStmGetChild((ASTEmptyStm *) node, index);
+		case AST_BREAK: return astBreakGetChild((ASTBreak *) node, index);
+		case AST_CONTINUE: return astContinueGetChild((ASTContinue *) node, index);
+		case AST_FUNC_DEF: return astFuncDefGetChild((ASTFuncDef *) node, index);
+		case AST_FILE: return astFileGetChild((ASTFile *) node, index);
+		case AST_INITIALIZER_LIST: return astInitializerListGetChild((ASTInitializerList *) node, index);
+		case AST_LBL_IDENTIFIER: return astLblIdentifierGetChild((ASTLblIdentifier *) node, index);
+		case AST_LBL_CASE: return astLblCaseGetChild((ASTLblCase *) node, index);
+		case AST_LBL_DEFAULT: return astLblDefaultGetChild(node, index);
+		case AST_FOR: return astForGetChild((ASTFor *) node, index);
+		case AST_GOTO: return astGotoGetChild((ASTGoto *) node, index);
+		case AST_UNKNOWN: return 0;
+	}
+}
+
+ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
+	if (node->type == AST_COMP_STM) {
+		ASTCompStm *stm = (ASTCompStm *) node;
+		return stm->scope;
+	} else if (node->type == AST_FILE) {
+		ASTFile *file = (ASTFile *) node;
+		return file->scope;
+	} else if (node->type == AST_FUNC_DECL) {
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
+		return funcDecl->scope;
+	} else if (node->type == AST_FUNC_DEF) {
+		ASTFuncDef *funcDef = (ASTFuncDef *) node;
+		if (!LOG_ASSERT(funcDef->node.type == AST_FUNC_DEF)) return NULL;
+
+		ASTDeclarator *declarator = (ASTDeclarator *) funcDef->funcDecl;
+		if (!LOG_ASSERT(declarator->node.type == AST_DECLARATOR)) return NULL;
+
+		ASTFuncDecl *funcDecl = (ASTFuncDecl *) declarator->encl;
+		if (!LOG_ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
+
+		return funcDecl->scope;
+	} else if (node->type == AST_STRUCT_DECL) {
+		ASTStructDecl *structDecl = (ASTStructDecl *) node;
+		return structDecl->scope;
+	} else {
+		return defaultScope;
+	}
+}
+
+
+ASTTravRes astNodeTrav(
+		ASTNode *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc,
+		ASTTravCtx *ctx)
+{
+	ASTTravCtx curCtx;
+	curCtx.parent = ctx;
+	curCtx.node = node;
+	curCtx.parent = ctx;
+
+	curCtx.scope = astNodeScope(node, (ctx ? ctx->scope : NULL));
+
+	ASTTravRes result = ASTT_SUCCESS;;
+	if (beforeFunc) {
+		result = beforeFunc(node, &curCtx);
+		if (result == ASTT_FAILED) {
+			return result;
+		}
+	}
+
+	int child_count = astNodeChildCount(node);
+	for (int i = 0; i < child_count; i++) {
+		ASTNode *child = astNodeGetChild(node, i);
+		if (child) {
+			astNodeTrav(child, beforeFunc, afterFunc, &curCtx);
+		}
+	}
+
+
+	if (result == ASTT_FAILED) {
+		return result;
+	}
+
+	if (afterFunc) {
+		result = afterFunc(node, &curCtx);
+	}
+	return result;
 }

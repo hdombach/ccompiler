@@ -100,3 +100,7 @@ int printDict(
 		Dict const *dict,
 		PrintFunc printKeyFunc,
 		PrintFunc printValueFunc);
+
+typedef void (*DictIterFunc)(void *key, void *value, void *context);
+
+void dictIter(Dict *dict, DictIterFunc func, void *context);

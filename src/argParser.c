@@ -5,11 +5,15 @@
 #include "util/dlist.h"
 #include "util/util.h"
 #include "util/callbacks.h"
+#include "util/wordList.h"
+
+Args g_args;
 
 const char *ARGS_HELP_MSG =
 "usage: cmd [-h | --help] file...\n"
 "\n"
 "ARGS:\n"
+"\t-v: verbose\n"
 "\t--help: Shows this message.\n";
 
 /*
@@ -26,27 +30,27 @@ int _parseArg(int argc, char **argv, Args *args) {
 	if (strcmp(argv[0], "--help") == 0 || strcmp(argv[0], "-h") == 0) {
 		args->help = 1;
 		return 1;
+	} else if (strcmp(argv[0], "-v") == 0) {
+		args->verbose = 1;
+		return 1;
 	} else if (argv[0][0] == '-') {
 		fprintf(stderr, "Invalid option %s", argv[0]);
 		return 0;
 	} else {
 		tempStr = strdup(argv[0]);
-		dlistApp(&args->files, &tempStr);
+		wordListApp(&args->files, tempStr);
 		return 1;
 	}
 }
 
-int _printStr(char **str) {
-	return printf("%s", *str);
-}
-
 void initArgs(Args *args) {
 	args->help = 0;
-	initDList(&args->files, sizeof(char*));
+	args->verbose = 0;
+	initWorldList(&args->files);
 }
 
 void freeArgs(Args *args) {
-	freeDList(&args->files, (FreeFunc) freeStr);
+	destroyWordList(&args->files);
 }
 
 int parseArgs(int argc, char **argv, Args *args) {
@@ -72,8 +76,9 @@ int argsPrint(const Args *args) {
 	int n = 0;
 	n += printf("{");
 	n += printf("\"help\": %d", args->help);
+	n += printf(", \"verbose\": %d", args->verbose);
 	n += printf(", \"files\": ");
-	n += printDList(&args->files, (PrintFunc) _printStr);
+	n += printWordList(&args->files);
 	n += printf("}");
 	return n;
 }
