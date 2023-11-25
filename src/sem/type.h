@@ -177,7 +177,7 @@ typedef struct SFunction {
 void initSFunction(SFunction *type);
 void destroySFunction(SFunction *type);
 int loadSFunction(
-		SFunction *type,
+		SType *type,
 		SType *internal,
 		ASTFuncDecl *declarator,
 		ASTScope *scope);

@@ -69,7 +69,7 @@ static int loadDecl(
 			(ASTArrayDecl *) node,
 			scope);
 		case AST_FUNC_DECL: return loadSFunction(
-			(SFunction *) type,
+			type,
 			internal,
 			(ASTFuncDecl *) node,
 			scope);
@@ -523,9 +523,8 @@ int loadSPointer(
 	return 1;
 
 failure:
-	return 0;
-
 	destroySPointer((SPointer *) &pointer);
+	return 0;
 }
 
 int printSPointer(const SPointer *type) {
@@ -566,16 +565,20 @@ void destroySFunction(SFunction *type) {
 }
 
 int loadSFunction(
-		SFunction *type,
+		SType *type,
 		SType *internal,
 		ASTFuncDecl *declarator,
 		ASTScope *scope)
 {
 	if (!LOG_ASSERT(declarator->node.type == AST_FUNC_DECL)) return 0;
-	initSFunction(type);
-	type->returnType = movaSType(internal);
-	type->paramScope = declarator->scope;
-	type->type.type = STT_FUNC;
+	STypeBuf func;
+	SFunction *funcPtr = (SFunction *) &func;
+	initSFunction(funcPtr);
+	funcPtr->returnType = movaSType(internal);
+	funcPtr->paramScope = declarator->scope;
+	funcPtr->type.type = STT_FUNC;
+
+	if (!loadDecl((SType *) type, (SType *) funcPtr, declarator->encl, scope)) return 0;
 	return 1;
 }
 

@@ -604,13 +604,9 @@ int parseASTDeclarator(
 			n += res;
 		}
 
-		if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
-			tempBuf.node.type = AST_POINTER_DECL;
-			declarator->encl = dupASTNode((ASTNode *) &tempBuf);
-			n += res;
-		} else {
-			declarator->encl = NULL;
-		}
+		n += parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope);
+		tempBuf.node.type = AST_POINTER_DECL;
+		declarator->encl = dupASTNode((ASTNode *) &tempBuf);
 	}
 
 	if (tok[n].type == TT_O_PARAN) {

@@ -56,7 +56,7 @@ void static _printScopeIdentifiers(const char **key, int *value, ScopePrintCxt *
 }
 
 int printASTScope(ASTScope const *scope) {
-	ScopePrintCxt ctx = {1, 0, NULL};
+	ScopePrintCxt ctx = {1, 0, NULL, NULL, NULL};
 	if (!scope) return printf("\"(null)\"");
 
 	ctx.n += printf("{");
@@ -79,7 +79,7 @@ int printASTScope(ASTScope const *scope) {
 
 		for (int i = 0; i < scope->tags.size; i++) {
 			if (ctx.completed[i]) continue;
-			ctx.n += printf(", \"anonymous\": ");
+			ctx.n += printf(", \"anonymous-%d\": ", i);
 			ctx.n += printSType(dlistGet(&scope->tags, i));
 		}
 
@@ -87,7 +87,7 @@ int printASTScope(ASTScope const *scope) {
 	}
 
 	if (scope->identifiers.size) {
-		ctx.identifierNames = calloc(0, sizeof(char *) * scope->identifiers.size);
+		ctx.identifierNames = calloc(scope->identifiers.size, sizeof(char *));
 		ctx.list = (DList *) &scope->identifiers;
 		ctx.completed = calloc(1, sizeof(int) * scope->identifiers.size);
 
@@ -99,7 +99,7 @@ int printASTScope(ASTScope const *scope) {
 				ctx.n += printf(", \"%s\": ", ctx.identifierNames[i]);
 				free((void *) ctx.identifierNames[i]);
 			} else {
-				ctx.n += printf(", \"anonymous\": ");
+				ctx.n += printf(", \"anonymous-%d\": ", i);
 			}
 			ctx.n += printSType(dlistGet(&scope->identifiers, i));
 		}
