@@ -104,6 +104,7 @@ int printASTScope(ASTScope const *scope) {
 			ctx.n += printSType(dlistGet(&scope->identifiers, i));
 		}
 		free(ctx.identifierNames);
+		free(ctx.completed);
 	}
 
 	ctx.n += printf("}");
