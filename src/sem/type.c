@@ -101,8 +101,8 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 		case AST_TST_ARITH:
 			return loadSPrim((SPrim *) type, spec);
 		case AST_TST_TYPEDEF:
-			return loadSTypedefRef(
-				(STypedefRef *) type,
+			return loadSTypeRef(
+				(STypeRef *) type,
 				(ASTIdentifier *) spec->content,
 				scope);
 		case AST_TST_UNKNOWN:
@@ -236,7 +236,7 @@ int printSType(SType const *type) {
 		case STT_UNION_REF: return printSCompoundRef((SCompoundRef *) type);
 		case STT_FUNC: return printSFunction((SFunction *) type);
 		case STT_POINTER: return printSPointer((SPointer *) type);
-		case STT_TYPEDEF_REF: return printSTypedefRef((STypedefRef *) type);
+		case STT_TYPEDEF_REF: return printSTypeRef((STypeRef *) type);
 		case STT_ENUM_CONST: return printSPrim((SPrim *) type);
 		default: return printf("{\"type\": \"%s\"}", sttStr(type->type)); 
 	}
@@ -603,14 +603,14 @@ int printSFunction(const SFunction *func) {
 	return n;
 }
 
-void initSTypedefRef(STypedefRef *type) {
+void initSTypedefRef(STypeRef *type) {
 	initSType((SType *) type);
 	type->index = -1;
 	type->parentScope = NULL;
 }
 
-int loadSTypedefRef(STypedefRef *type, ASTIdentifier *identifier, ASTScope *scope) {
-	STYPE_VALID(STypedefRef);
+int loadSTypeRef(STypeRef *type, ASTIdentifier *identifier, ASTScope *scope) {
+	STYPE_VALID(STypeRef);
 
 	if (!LOG_ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
 
@@ -620,11 +620,11 @@ int loadSTypedefRef(STypedefRef *type, ASTIdentifier *identifier, ASTScope *scop
 	return 1;
 }
 
-SType *stypdefDeref(STypedefRef *ref) {
+SType *stypdefDeref(STypeRef *ref) {
 	return dlistGetm(&ref->parentScope->identifiers, ref->index);
 }
 
-int printSTypedefRef(const STypedefRef *type) {
+int printSTypeRef(const STypeRef *type) {
 	if (!LOG_ASSERT(type->type.type == STT_TYPEDEF_REF)) return 0;
 	int n = 0;
 
@@ -633,7 +633,7 @@ int printSTypedefRef(const STypedefRef *type) {
 	n += printf("\"type\": \"%s\"", sttStr(type->type.type));
 
 	n += printf(", \"content\": ");
-	n += printSType(stypdefDeref((STypedefRef *) type));
+	n += printSType(stypdefDeref((STypeRef *) type));
 
 	n += printf("}");
 

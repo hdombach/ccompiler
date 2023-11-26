@@ -219,7 +219,7 @@ int astScopeAddAnonIdent(ASTScope *scope, struct SType *type) {
 	return index;
 }
 
-int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name) {
+int astScopeGetIdentifier(STypeRef *ref, ASTScope *scope, char *name) {
 	const int *index = wordDictGet(&scope->identifierDict, name);
 	if (!index) return 0;
 	ref->index = *index;

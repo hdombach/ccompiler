@@ -1,9 +1,11 @@
 #pragma once
 
-#include "declaration.h"
 #include "../token.h"
 #include "specialDecl.h"
 #include "node.h"
+
+typedef struct ASTDeclarator ASTDeclarator;
+typedef struct ASTTypeSpec ASTTypeSpec;
 
 typedef struct ASTParam {
 	ASTNode node;

@@ -36,6 +36,15 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 	return ASTT_SUCCESS;
 }
 
+static int checkIdentifier(ASTIdentifier *identifier, ASTScope *scope) {
+	STypeRef ref;
+	if (!astScopeGetIdentifier(&ref, scope, identifier->name)) {
+		logErrTok(identifier->node.tok, "Identifier %s is not defined.", identifier->name);
+		return 0;
+	}
+	return 1;
+}
+
 static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_DECLARATION) {
 		ASTDeclaration *declaration = (ASTDeclaration *) node;
@@ -49,6 +58,8 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 	} else if (node->type == AST_PARAM) {
 		ASTParam *param = (ASTParam *) node;
 		loadParamSType(ctx->scope, param);
+	} else if (node->type == AST_IDENTIFIER) {
+		checkIdentifier((ASTIdentifier *) node, ctx->scope);
 	}
 
 	return ASTT_SUCCESS;
@@ -66,4 +77,6 @@ void typeGen(ASTFile *file) {
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
+
+	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
 }

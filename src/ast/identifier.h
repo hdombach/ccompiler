@@ -6,18 +6,22 @@
 #include "node.h"
 #include "../token.h"
 #include "../util/util.h"
+#include "../sem/type.h"
 
 struct Token;
 struct ASTScope;
+typedef struct STypeRef STypeRef;
 
 typedef struct ASTIdentifier {
 	ASTNode node;
 	char *name;
+	STypeRef typeRef;
 } ASTIdentifier;
 
 static void initASTIdentifier(ASTIdentifier *node) {
 	node->name = NULL;
 	node->node.type = AST_IDENTIFIER;
+	initSTypeRef(&node->typeRef);
 }
 
 static int parseASTIdentifier(
