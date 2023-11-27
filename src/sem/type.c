@@ -1,10 +1,12 @@
-#include "type.h"
-#include "../util/log.h"
-#include "scope.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "type.h"
+#include "../util/log.h"
+#include "scope.h"
+#include "../ast/declaration.h"
 
 /*************************************************************
  * Semantic Type
