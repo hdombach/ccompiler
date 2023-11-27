@@ -605,7 +605,7 @@ int printSFunction(const SFunction *func) {
 	return n;
 }
 
-void initSTypedefRef(STypeRef *type) {
+void initSTypeRef(STypeRef *type) {
 	initSType((SType *) type);
 	type->index = -1;
 	type->parentScope = NULL;
