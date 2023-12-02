@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "log.h"
 #include "../token.h"
@@ -12,19 +13,78 @@ const int isLogDebug = 1;
 const int isLogDebug = 0;
 #endif
 
-void logErrHead(const char *fmt, ...) {
-	fprintf(stderr, "[" COLOR_RED);
+void logErrHead(FILE *file, const char *fmt, ...) {
+	fprintf(file, "[" COLOR_RED);
+
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(file, fmt, args);
+	va_end(args);
+
+	fprintf(file, COLOR_RESET "] ");
+}
+
+void logDebugHead(FILE *file, const char *fmt, ...) {
+	fprintf(file, "[" COLOR_BLUE);
+
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(file, fmt, args);
+	va_end(args);
+
+	fprintf(file, COLOR_RESET "] ");
+}
+
+
+
+int _cerrCount = 0;
+CError *_cerrs = NULL;
+
+void initCerr() {
+	freeCerr();
+}
+
+void freeCerr() {
+	if (_cerrs) free(_cerrs);
+	_cerrs = NULL;
+	_cerrCount = 0;
+}
+
+int cerrCount() {
+	return _cerrCount;
+}
+
+CError const *getCerr() {
+	return _cerrs;
+}
+
+void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
+	if (tok) {
+		logErrHead(stderr, "ERROR %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
+	} else {
+		logErrHead(stderr, "ERROR");
+	}
+
+	fprintf(stderr, "%s: ", cerrStr(err));
 
 	va_list args;
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 
-	fprintf(stderr, COLOR_RESET "] ");
+	_cerrs = realloc(_cerrs, _cerrCount + 1);
+	_cerrs[_cerrCount] = err;
+	_cerrCount++;
 }
 
-void logErrTok(const struct Token *tok, const char *fmt, ...) {
-	logErrHead("ERROR %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
+const char *cerrStr(CError err) {
+	return (const char *[]){
+		"unknown"
+	}[err];
+}
+
+void logDebug(const char *file, int line, const char *label, const char *fmt, ...) {
+	logDebugHead(stderr, "%s %s:%d", label, file, line);
 
 	va_list args;
 	va_start(args, fmt);
@@ -34,41 +94,8 @@ void logErrTok(const struct Token *tok, const char *fmt, ...) {
 	fprintf(stderr, "\n");
 }
 
-void logErr(const char *head, const char *fmt, ...) {
-	logErrHead(head);
-
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-
-	fprintf(stderr, "\n");
-}
-
-void logDebugHead(const char *fmt, ...) {
-	fprintf(stderr, "[" COLOR_BLUE);
-
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-
-	fprintf(stderr, COLOR_RESET "] ");
-}
-
-void logDebugTok(const struct Token *tok, const char *fmt, ...) {
-	logDebugHead("DEBUG %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
-
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-
-	fprintf(stderr, "\n");
-}
-
-void logDebug(const char *head, const char *fmt, ...) {
-	logDebugHead(head);
+void logDebugTok(const char *file, int line, const struct Token *tok, const char *fmt, ...) {
+	logDebugHead(stderr, "DEBUG %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
 
 	va_list args;
 	va_start(args, fmt);
@@ -80,7 +107,19 @@ void logDebug(const char *head, const char *fmt, ...) {
 
 int logAssert(int exp, char *file, int line, char *expStr) {
 	if (!exp) {
-		logErr("ASSERT FAILED", "%s:%d (%s)", file, line, expStr);
+		logErrHead(stderr, "ASSERT FAILED");
+		fprintf(stderr, "%s:%d (%s)", file, line, expStr);
 	}
 	return exp;
+}
+
+void logTodo(const char *file, int line, const char *fmt, ...) {
+	logErrHead(stderr, "TODO %s:%d", file, line);
+
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+
+	fprintf(stderr, "\n");
 }
