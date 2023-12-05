@@ -20,7 +20,7 @@ const char *cerrStr(CError err);
 extern const int isLogDebug;
 
 void logDebug(const char *file, int line, const char *label, const char *fmt, ...);
-#define DEBUG(msg, ...) \
+#define DEBUG_MSG(msg, ...) \
 	logDebug(__FILE__, __LINE__, "DEBUG", msg __VA_OPT__(,) __VA_ARGS__)
 
 void logDebugTok(const char *file, int line, const Token *tok, const char *fmt, ...);

@@ -2,6 +2,7 @@
 #include "token.h"
 #include "util/dlist.h"
 #include "util/dstr.h"
+#include "util/stream.h"
 #include "util/tokList.h"
 
 #include <stdio.h>
@@ -69,9 +70,9 @@ void _parseUnknown(TokenzState *state) {
 void _parseNumber(TokenzState *state) {
 	Token token;
 
-	if (strchr(_ALPH_NUM, state->curChar) || state->curChar == '.') {
+	if (strchr(_ALPH_NUM, state->curChar) && state->curChar || state->curChar == '.') {
 		dstrApp(&state->curWord, state->curChar);
-	} else if (strchr("-+", state->curChar)) {
+	} else if (strchr("-+", state->curChar) && state->curChar) {
 		if (state->curWord.size > 2 && *dstrGet(&state->curWord, state->curWord.size - 2) == 'e') {
 			dstrApp(&state->curWord, state->curChar);
 		} else {
@@ -145,7 +146,7 @@ void _parseSymbol(TokenzState *state) {
 	}
 	dstrApp(&state->curWord, state->curChar);
 	tempTokenType = findPunctuation(state->curWord.data);
-	if (tempTokenType != TT_UNKNOWN) {
+	if (tempTokenType != TT_UNKNOWN && state->curChar) {
 		state->lastSymbolType = tempTokenType;
 	} else if (strcmp(state->curWord.data, "..") == 0) {
 		//This one edge case breaks the algorithm for 
@@ -166,7 +167,7 @@ void _parseSymbol(TokenzState *state) {
 void _parseIdentifier(TokenzState *state) {
 	Token token;
 
-	if (strchr(_ALPH_NUM, state->curChar)) {
+	if (strchr(_ALPH_NUM, state->curChar) && state->curChar) {
 		dstrApp(&state->curWord, state->curChar);
 	} else {
 		initIdentToken(&token, state);
@@ -207,7 +208,7 @@ void _parseMarco(TokenzState *state) {
 /*
  * Generates tokens from file
  */
-TokList tokenize(FILE *fp, const char *filename) {
+TokList tokenize(Stream *stream, const char *filename) {
 	TokList result;
 	Token token;
 	TokenzState state;
@@ -217,7 +218,7 @@ TokList tokenize(FILE *fp, const char *filename) {
 	_resetAccumulation(&state);
 
 	do {
-		curChar_i = getc(fp);
+		curChar_i = streamGetc(stream);
 		state.curChar = curChar_i;
 		if (state.curChar == '\n') {
 			state.curLine++;
@@ -264,7 +265,7 @@ TokList tokenize(FILE *fp, const char *filename) {
 		}
 
 		state.wasBackslash = 0;
-	} while (curChar_i != EOF);
+	} while (curChar_i > 0);
 
 	initEOFToken(&token, &state);
 	tokListApp(&state.tokens, &token);

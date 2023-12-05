@@ -72,6 +72,8 @@ void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 
+	fprintf(stderr, "\n");
+
 	_cerrs = realloc(_cerrs, _cerrCount + 1);
 	_cerrs[_cerrCount] = err;
 	_cerrCount++;
@@ -108,7 +110,7 @@ void logDebugTok(const char *file, int line, const struct Token *tok, const char
 int logAssert(int exp, char *file, int line, char *expStr) {
 	if (!exp) {
 		logErrHead(stderr, "ASSERT FAILED");
-		fprintf(stderr, "%s:%d (%s)", file, line, expStr);
+		fprintf(stderr, "%s:%d (%s)\n", file, line, expStr);
 	}
 	return exp;
 }

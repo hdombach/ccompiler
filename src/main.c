@@ -11,6 +11,7 @@
 #include "sem/scope.h"
 #include "token.h"
 #include "tokenizer.h"
+#include "util/stream.h"
 #include "util/tokList.h"
 #include "util/dlist.h"
 #include "util/macroDict.h"
@@ -40,6 +41,7 @@ int main(int argc, char **argv) {
 	for (int i = 0; i < g_args.files.size; i++) {
 		char *file;
 		FILE *fp;
+		Stream stream;
 		int n;
 
 		file = *(char **) dlistGet(&g_args.files, i);
@@ -48,9 +50,10 @@ int main(int argc, char **argv) {
 			perror("ree");
 			return 1;
 		}
-		tokens = tokenize(fp, file);
+		initStreamFile(&stream, fp);
+		tokens = tokenize(&stream, file);
 
-		//printDList(&tokens, (DListPrintFunc) printToken);
+		printDList(&tokens, (PrintFunc) printToken);
 
 		preprocessor(&tokens);
 

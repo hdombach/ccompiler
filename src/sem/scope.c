@@ -52,7 +52,11 @@ void static _printScopeStructs(const char **key, int *value, ScopePrintCxt *ctx)
 }
 
 void static _printScopeIdentifiers(const char **key, int *value, ScopePrintCxt *ctx) {
-	ctx->identifierNames[*value] = strdup(*key);
+	if (*key) {
+		ctx->identifierNames[*value] = strdup(*key);
+	} else {
+		ctx->identifierNames[*value] = NULL;
+	}
 }
 
 int printASTScope(ASTScope const *scope) {

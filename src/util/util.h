@@ -10,3 +10,5 @@ int printIntp(int const *value);
 int printJsonStr(char const *str);
 int printrStr(char const *str);
 int printJsonStrp(char const **str);
+
+#define COUNTOF(LIST) (sizeof(LIST) / sizeof(LIST[0]))
