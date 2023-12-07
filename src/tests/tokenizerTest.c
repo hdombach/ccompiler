@@ -72,9 +72,23 @@ void tokenizerTestStr() {
 		(TokenType[]) {TT_NUMB_CONSTANT, TT_STR_CONSTANT, TT_IDENTIFIER, TT_EOF});
 }
 
+void tokenizerTestMacroIf() {
+	tStartSection("Tokenizer macro if");
+
+	tTokensSuccess(
+		"#if 1\n"
+		"#if HELLO",
+		(TokenType[]) {TT_MACRO_IF, TT_NUMB_CONSTANT, TT_NEWLINE, TT_MACRO_IF, TT_IDENTIFIER, TT_EOF});
+
+	tTokensFailed(
+			"#iff", 
+			(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
 	tokenizerTestChar();
 	tokenizerTestStr();
+	tokenizerTestMacroIf();
 }

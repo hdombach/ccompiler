@@ -7,6 +7,8 @@
 
 void tTokensSuccess(const char *code, TokenType types[]);
 
+void tTokensFailed(const char *code, CError *errors);
+
 #define T_INTEGRATION_F(CODE, ERRORS) \
 	tIntegrationFailed(CODE, ERRORS, COUNTOF(ERRORS))
 void tIntegrationFailed(const char *code, CError *errors, int errors_s);

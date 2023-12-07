@@ -7,11 +7,13 @@
 struct Token;
 
 typedef enum CError {
-	CERR_UNKNOWN = 0
+	CERR_UNKNOWN = 0,
+	CERR_TOKENIZER = 1,
 } CError;
 
 void initCerr();
 void freeCerr();
+void cerrDisablePrint();
 int cerrCount();
 CError const *getCerr();
 void logCerr(CError err, const struct Token *tok, const char *fmt, ...);

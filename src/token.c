@@ -4,6 +4,7 @@
 
 #include "token.h"
 #include "tokenizer.h"
+#include "util/log.h"
 #include "util/util.h"
 
 void initToken(Token *token) {
@@ -96,7 +97,7 @@ void initMacroToken(Token *token, const TokenzState *state) {
 
 	token->type = findMacro(state->curWord.data);
 	if (token->type == TT_UNKNOWN) {
-		fprintf(stderr, "Unrecognized macro %s\n", (char *) state->curWord.data);
+		logCerr(CERR_TOKENIZER, NULL, "Unrecognized macro %s\n", state->curWord.data);
 		return;
 	}
 }

@@ -196,7 +196,7 @@ void _parseMultiComm(TokenzState *state) {
 void _parseMarco(TokenzState *state) {
 	Token token;
 
-	if (strchr(_ALPH_NUM, state->curChar)) {
+	if (strchr(_ALPH_NUM, state->curChar) && state->curChar) {
 		dstrApp(&state->curWord, state->curChar);
 	} else {
 		initMacroToken(&token, state);

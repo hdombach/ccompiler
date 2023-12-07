@@ -38,9 +38,11 @@ void logDebugHead(FILE *file, const char *fmt, ...) {
 
 
 int _cerrCount = 0;
+int _cerrShouldPrint = 1;
 CError *_cerrs = NULL;
 
 void initCerr() {
+	_cerrShouldPrint = 1;
 	freeCerr();
 }
 
@@ -48,6 +50,10 @@ void freeCerr() {
 	if (_cerrs) free(_cerrs);
 	_cerrs = NULL;
 	_cerrCount = 0;
+}
+
+void cerrDisablePrint() {
+	_cerrShouldPrint = 0;
 }
 
 int cerrCount() {
@@ -59,20 +65,22 @@ CError const *getCerr() {
 }
 
 void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
-	if (tok) {
-		logErrHead(stderr, "ERROR %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
-	} else {
-		logErrHead(stderr, "ERROR");
+	if (_cerrShouldPrint) {
+		if (tok) {
+			logErrHead(stderr, "ERROR %s:%d,%d", tok->filename, tok->posLine, tok->posColumn);
+		} else {
+			logErrHead(stderr, "ERROR");
+		}
+
+		fprintf(stderr, "%s: ", cerrStr(err));
+
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(stderr, fmt, args);
+		va_end(args);
+
+		fprintf(stderr, "\n");
 	}
-
-	fprintf(stderr, "%s: ", cerrStr(err));
-
-	va_list args;
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-
-	fprintf(stderr, "\n");
 
 	_cerrs = realloc(_cerrs, _cerrCount + 1);
 	_cerrs[_cerrCount] = err;
@@ -81,7 +89,8 @@ void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
 
 const char *cerrStr(CError err) {
 	return (const char *[]){
-		"unknown"
+		"unknown",
+		"tokenizer",
 	}[err];
 }
 
