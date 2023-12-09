@@ -82,7 +82,7 @@ void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
 		fprintf(stderr, "\n");
 	}
 
-	_cerrs = realloc(_cerrs, _cerrCount + 1);
+	_cerrs = realloc(_cerrs, (_cerrCount + 1) * sizeof(CError));
 	_cerrs[_cerrCount] = err;
 	_cerrCount++;
 }
