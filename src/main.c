@@ -11,6 +11,7 @@
 #include "sem/scope.h"
 #include "token.h"
 #include "tokenizer.h"
+#include "util/log.h"
 #include "util/stream.h"
 #include "util/tokList.h"
 #include "util/dlist.h"
@@ -24,6 +25,7 @@ ASTTravRes travTest(ASTNode *node, ASTTravCtx *_) {
 
 int main(int argc, char **argv) {
 	TokList tokens;
+	initCerr();
 
 	initArgs(&g_args);
 
@@ -77,5 +79,6 @@ int main(int argc, char **argv) {
 	}
 
 	freeArgs(&g_args);
+	freeCerr();
 	return 0;
 }
