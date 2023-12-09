@@ -85,10 +85,86 @@ void tokenizerTestMacroIf() {
 			(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
 }
 
+void tokenizerTestMacroElif() {
+	tStartSection("Tokenizer macro elif");
+
+	tTokensSuccess(
+		"#elif\n"
+		"#define DEBUG",
+		(TokenType[]) {TT_MACRO_ELIF, TT_NEWLINE, TT_MACRO_DEFINE, TT_IDENTIFIER, TT_EOF});
+
+	tTokensFailed(
+			"#elseif\n",
+			(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroElse() {
+	tStartSection("Tokenizer macro else");
+
+	tTokensSuccess(
+			"#else\n", 
+			(TokenType[]) {TT_MACRO_ELSE, TT_NEWLINE, TT_EOF});
+
+	tTokensFailed(
+		"#elsee\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroEndif() {
+	tStartSection("Tokenizer macro endif");
+
+	tTokensSuccess(
+		"#endif\n", 
+		(TokenType[]) {TT_MACRO_ENDIF, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#if 1 == thing()\n"
+		"#else\n"
+		"#endif",
+		(TokenType[]) {
+			TT_MACRO_IF, TT_NUMB_CONSTANT, TT_DBLE_EQL, TT_IDENTIFIER, TT_O_PARAN, TT_C_PARAN, TT_NEWLINE,
+			TT_MACRO_ELSE, TT_NEWLINE,
+			TT_MACRO_ENDIF, TT_EOF,
+		});
+
+	tTokensFailed(
+		"#endiff", 
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroIfdef() {
+	tStartSection("Tokenizer macro ifdef");
+
+	tTokensSuccess(
+		"#ifdef\n",
+		(TokenType[]) {TT_MACRO_IFDEF, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#ifdef",
+		(TokenType[]) {TT_MACRO_IFDEF, TT_EOF});
+
+	tTokensFailed(
+		"#ifdeff\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+
+	tTokensSuccess(
+		"#ifdef HELLO\n"
+		"#define THING\n"
+		"#endif\n",
+		(TokenType[]) {
+			TT_MACRO_IFDEF, TT_IDENTIFIER, TT_NEWLINE,
+			TT_MACRO_DEFINE, TT_IDENTIFIER, TT_NEWLINE,
+			TT_MACRO_ENDIF, TT_NEWLINE, TT_EOF,
+		});
+}
+
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
 	tokenizerTestChar();
 	tokenizerTestStr();
 	tokenizerTestMacroIf();
+	tokenizerTestMacroElif();
+	tokenizerTestMacroEndif();
+	tokenizerTestMacroIfdef();
 }
