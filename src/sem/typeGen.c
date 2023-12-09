@@ -20,7 +20,7 @@ static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
 		if (stm->label && stm->label->type == AST_LBL_IDENTIFIER) {
 			ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm->label;
 			astScopeAddLabel(ctx->scope, stm);
-			logDebugTok(node->tok, "Added label \"%s\"", lbl->name);
+			DEBUG_TOK(node->tok, "Added label \"%s\"", lbl->name);
 		}
 	}
 	return ASTT_SUCCESS;
@@ -30,10 +30,19 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_GOTO) {
 		ASTGoto *stm = (ASTGoto *) node;
 		if (!astScopeGetLabel(ctx->scope, stm->name)) {
-			logErrTok(node->tok, "No corresponding label \"%s\"", stm->name);
+			logCerr(CERR_UNKNOWN, node->tok, "No corresponding label \"%s\"", stm->name);
 		}
 	}
 	return ASTT_SUCCESS;
+}
+
+static int checkIdentifier(ASTIdentifier *identifier, ASTScope *scope) {
+	STypeRef ref;
+	if (!astScopeGetIdentifier(&ref, scope, identifier->name)) {
+		logCerr(CERR_UNKNOWN, identifier->node.tok, "Identifier %s is not defined.", identifier->name);
+		return 0;
+	}
+	return 1;
 }
 
 static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
@@ -49,6 +58,8 @@ static ASTTravRes resolveTypes(ASTNode *node, ASTTravCtx *ctx) {
 	} else if (node->type == AST_PARAM) {
 		ASTParam *param = (ASTParam *) node;
 		loadParamSType(ctx->scope, param);
+	} else if (node->type == AST_IDENTIFIER) {
+		checkIdentifier((ASTIdentifier *) node, ctx->scope);
 	}
 
 	return ASTT_SUCCESS;

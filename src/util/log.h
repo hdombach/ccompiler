@@ -6,26 +6,33 @@
 
 struct Token;
 
-/**
- * @brief internal errors which mean I did something wrong
- */
-void logErrHead(const char *fmt, ...);
-void logErrTok(const struct Token *tok, const char *fmt, ...);
-void logErr(const char *head, const char *fmt, ...);
+typedef enum CError {
+	CERR_UNKNOWN = 0,
+	CERR_TOKENIZER = 1,
+} CError;
+
+void initCerr();
+void freeCerr();
+void cerrDisablePrint();
+int cerrCount();
+CError const *getCerr();
+void logCerr(CError err, const struct Token *tok, const char *fmt, ...);
+const char *cerrStr(CError err);
 
 extern const int isLogDebug;
 
-void logDebugHead(const char *fmt, ...);
-void logDebugTok(const struct Token *tok, const char *fmt, ...);
-void logDebug(const char *head, const char *fmt, ...);
+void logDebug(const char *file, int line, const char *label, const char *fmt, ...);
+#define DEBUG_MSG(msg, ...) \
+	logDebug(__FILE__, __LINE__, "DEBUG", msg __VA_OPT__(,) __VA_ARGS__)
+
+void logDebugTok(const char *file, int line, const Token *tok, const char *fmt, ...);
+#define DEBUG_TOK(tok, msg, ...) \
+	logDebugTok(__FILE__, __LINE__, tok, msg __VA_OPT__(,) __VA_ARGS__)
 
 int logAssert(int exp, char *file, int line, char *expStr);
-
-#define LOG_ASSERT(exp) \
+#define ASSERT(exp) \
 	logAssert(exp, __FILE__, __LINE__, #exp)
 
-#define TODO(msg) \
-{ \
-	logErrHead("TODO %s:%d", __FILE__, __LINE__); \
-	fprintf(stderr, "%s\n", msg); \
-}
+void logTodo(const char *file, int line, const char *fmt, ...);
+#define TODO(msg, ...) \
+	logTodo(__FILE__, __LINE__, msg __VA_OPT__(,) __VA_ARGS__)

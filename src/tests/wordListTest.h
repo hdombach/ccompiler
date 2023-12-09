@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 void wordListTestEmpty();
 void wordListTestApp();

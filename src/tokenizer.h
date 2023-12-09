@@ -3,6 +3,7 @@
 #include "token.h"
 #include "util/dlist.h"
 #include "util/dstr.h"
+#include "util/stream.h"
 #include "util/tokList.h"
 
 #include <stdio.h>
@@ -37,5 +38,5 @@ typedef struct _TokenzState {
 void initTokenzState(TokenzState *state, const char *filename);
 void freeTokenzState(TokenzState *state);
 
-TokList tokenize(FILE *fp, const char *filename);
+TokList tokenize(Stream *stream, const char *filename);
 

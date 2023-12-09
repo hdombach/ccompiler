@@ -3,9 +3,12 @@
 #include <stdlib.h>
 
 #include "../util/dlist.h"
-#include "../ast/declaration.h"
+//#include "../ast/declaration.h"
 #include "../sem/scope.h"
 #include "../ast/param.h"
+
+typedef struct ASTIdentifier ASTIdentifier;
+typedef struct ASTDeclaration ASTDeclaration;
 
 /*************************************************************
  * Semantic Type
@@ -187,17 +190,17 @@ int printSFunction(SFunction const *func);
  * Semantic Typedef Ref
  *************************************************************/
 
-typedef struct STypedefRef {
+typedef struct STypeRef {
 	SType type;
 	/* Does not own this */
 	ASTScope *parentScope;
 	int index;
-} STypedefRef;
+} STypeRef;
 
-void initSTypedefRef(STypedefRef *type);
-int loadSTypedefRef(STypedefRef *type, ASTIdentifier *typeSpec, ASTScope *scope);
-SType *stypdefDeref(STypedefRef *ref);
-int printSTypedefRef(STypedefRef const *type);
+void initSTypeRef(STypeRef *type);
+int loadSTypeRef(STypeRef *type, ASTIdentifier *typeSpec, ASTScope *scope);
+SType *stypeDeref(STypeRef *ref);
+int printSTypeRef(STypeRef const *type);
 
 /*************************************************************
  * Semantic Enum

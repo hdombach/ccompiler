@@ -1,10 +1,12 @@
-#include "type.h"
-#include "../util/log.h"
-#include "scope.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "type.h"
+#include "../util/log.h"
+#include "scope.h"
+#include "../ast/declaration.h"
 
 /*************************************************************
  * Semantic Type
@@ -48,8 +50,8 @@ static int loadDecl(
 		mvSType(type, internal);
 		return 1;
 	}
-	logDebug(
-			"DEBUG DECL", "loadDecl %s (%s)",
+	DEBUG_MSG(
+			"load decl %s (%s)",
 			astNodeTypeStr(node->type),
 			astDeclaratorName(node));
 	switch (node->type) {
@@ -81,7 +83,7 @@ static int loadDecl(
 };
 
 static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
-	if (!LOG_ASSERT(spec->node.type == AST_TYPE_SPEC)) return 0;
+	if (!ASSERT(spec->node.type == AST_TYPE_SPEC)) return 0;
 
 	switch (spec->typeSpecType) {
 		case AST_TST_UNION:
@@ -101,8 +103,8 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 		case AST_TST_ARITH:
 			return loadSPrim((SPrim *) type, spec);
 		case AST_TST_TYPEDEF:
-			return loadSTypedefRef(
-				(STypedefRef *) type,
+			return loadSTypeRef(
+				(STypeRef *) type,
 				(ASTIdentifier *) spec->content,
 				scope);
 		case AST_TST_UNKNOWN:
@@ -111,12 +113,12 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 }
 
 int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
-	if (!LOG_ASSERT(declaration->node.type == AST_DECLARATION)) return 0;
+	if (!ASSERT(declaration->node.type == AST_DECLARATION)) return 0;
 
 	STypeBuf tempInternal, tempType;
 
 	if (!loadTypespec((SType *) &tempInternal, declaration->typeSpec, scope)) {
-		logErrTok(declaration->node.tok, "Problem loading typespecs");
+		logCerr(CERR_UNKNOWN, declaration->node.tok, "Problem loading typespec");
 		return 0;
 	}
 
@@ -131,10 +133,11 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 				(ASTNode *) declarator,
 				scope))
 		{
-			logErrTok(
-				declaration->node.tok,
-				"Problem loading type identifier %s",
-				astDeclaratorName((ASTNode *) declarator));
+			logCerr(
+					CERR_UNKNOWN,
+					declaration->node.tok,
+					"Problem loading type identifier %s",
+					astDeclaratorName((ASTNode *) declarator));
 			return 0;
 		}
 
@@ -143,10 +146,11 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 				(SType *) &tempType,
 				strdup(astDeclaratorName((ASTNode *) declarator))))
 		{
-			logErrTok(
-				declaration->node.tok,
-				"Couldn't add identifier %s",
-				astDeclaratorName((ASTNode *) declarator));
+			logCerr(
+					CERR_UNKNOWN,
+					declaration->node.tok,
+					"Couldn't add identifier %s",
+					astDeclaratorName((ASTNode *) declarator));
 			return 0;
 		}
 	}
@@ -155,12 +159,12 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 }
 
 int loadParamSType(ASTScope *scope, struct ASTParam *param) {
-	if (!LOG_ASSERT(param->node.type == AST_PARAM)) return 0;
+	if (!ASSERT(param->node.type == AST_PARAM)) return 0;
 
 	STypeBuf tempInternal, tempType;
 
 	if (!loadTypespec((SType *) &tempInternal, param->typeSpec, scope)) {
-		logErrTok(param->node.tok, "Problem loading param typespec");
+		logCerr(CERR_UNKNOWN, param->node.tok, "Problem loading param typespec");
 		return 0;
 	}
 
@@ -170,10 +174,11 @@ int loadParamSType(ASTScope *scope, struct ASTParam *param) {
 			(ASTNode *) param->declarator,
 			scope))
 	{
-		logErrTok(
-			param->node.tok, 
-			"Problem loading param identifier %s",
-			astDeclaratorName((ASTNode *) param->declarator));
+		logCerr(
+				CERR_UNKNOWN,
+				param->node.tok,
+				"Problem loading param identifier %s",
+				astDeclaratorName((ASTNode *) param->declarator));
 		return 0;
 	}
 
@@ -184,8 +189,9 @@ int loadParamSType(ASTScope *scope, struct ASTParam *param) {
 				(SType *) &tempType, 
 				strdup(astDeclaratorName((ASTNode *) param->declarator))))
 		{
-			logErrTok(
-					param->declarator->node.tok, 
+			logCerr(
+					CERR_UNKNOWN,
+					param->declarator->node.tok,
 					"Couldn't add param identifier %s",
 					astDeclaratorName((ASTNode *) param->declarator));
 			return 0;
@@ -236,7 +242,7 @@ int printSType(SType const *type) {
 		case STT_UNION_REF: return printSCompoundRef((SCompoundRef *) type);
 		case STT_FUNC: return printSFunction((SFunction *) type);
 		case STT_POINTER: return printSPointer((SPointer *) type);
-		case STT_TYPEDEF_REF: return printSTypedefRef((STypedefRef *) type);
+		case STT_TYPEDEF_REF: return printSTypeRef((STypeRef *) type);
 		case STT_ENUM_CONST: return printSPrim((SPrim *) type);
 		default: return printf("{\"type\": \"%s\"}", sttStr(type->type)); 
 	}
@@ -256,7 +262,7 @@ void initSPrim(SPrim *type) {
 
 int loadSPrim(SPrim *type, ASTTypeSpec *typeSpec) {
 	STYPE_VALID(SPrim);
-	if (!LOG_ASSERT(typeSpec->node.type == AST_TYPE_SPEC)) return 0;
+	if (!ASSERT(typeSpec->node.type == AST_TYPE_SPEC)) return 0;
 
 	ASTArithType arith = astArithTypeNormalize(typeSpec->arith);
 
@@ -330,7 +336,7 @@ const char *sptStr(SPrimType t) {
 }
 
 int printSPrim(const SPrim *type) {
-	if (!LOG_ASSERT(type->type.type == STT_PRIM || type->type.type == STT_ENUM_CONST)) return 0;
+	if (!ASSERT(type->type.type == STT_PRIM || type->type.type == STT_ENUM_CONST)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -364,7 +370,7 @@ void destroySArray(SArray *type) {
 
 int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope *scope) {
 	STYPE_VALID(SArray);
-	if (!LOG_ASSERT(arrayDecl->node.type == AST_ARRAY_DECL)) return 0;
+	if (!ASSERT(arrayDecl->node.type == AST_ARRAY_DECL)) return 0;
 
 	STypeBuf tempBuf;
 	initSArray(type);
@@ -385,7 +391,7 @@ int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope 
 }
 
 int printSArray(const SArray *type) {
-	if (!LOG_ASSERT(type->type.type == STT_ARRAY)) return 0;
+	if (!ASSERT(type->type.type == STT_ARRAY)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -418,13 +424,13 @@ void initSCompound(SCompound *type) {
 }
 
 int printSCompound(const SCompound *ref) {
-	if (!LOG_ASSERT(ref->type.type == STT_STRUCT || ref->type.type == STT_UNION))
+	if (!ASSERT(ref->type.type == STT_STRUCT || ref->type.type == STT_UNION))
 		return 0;
 	return printASTScope(ref->scope);
 }
 
 int loadSCompound(SCompound *type, ASTStructDecl *decl) {
-	if (!LOG_ASSERT(decl->node.type == AST_STRUCT_DECL)) return 0;
+	if (!ASSERT(decl->node.type == AST_STRUCT_DECL)) return 0;
 	type->isUnion = decl->isUnion;
 	type->scope = decl->scope;
 	if (type->isUnion) {
@@ -447,7 +453,7 @@ int loadSCompoundRef(
 		ASTScope *scope)
 {
 	STYPE_VALID(SCompoundRef);
-	if (!LOG_ASSERT(structDecl->node.type == AST_STRUCT_DECL)) return 0;
+	if (!ASSERT(structDecl->node.type == AST_STRUCT_DECL)) return 0;
 
 	SCompound tempComp;
 
@@ -467,7 +473,7 @@ int loadSCompoundRef(
 }
 
 int printSCompoundRef(const SCompoundRef *ref) {
-	if (!LOG_ASSERT(ref->type.type == STT_STRUCT_REF || ref->type.type == STT_UNION_REF))
+	if (!ASSERT(ref->type.type == STT_STRUCT_REF || ref->type.type == STT_UNION_REF))
 		return 0;
 	int n = 0;
 
@@ -528,7 +534,7 @@ failure:
 }
 
 int printSPointer(const SPointer *type) {
-	if (!LOG_ASSERT(type->type.type == STT_POINTER)) return 0;
+	if (!ASSERT(type->type.type == STT_POINTER)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -570,7 +576,7 @@ int loadSFunction(
 		ASTFuncDecl *declarator,
 		ASTScope *scope)
 {
-	if (!LOG_ASSERT(declarator->node.type == AST_FUNC_DECL)) return 0;
+	if (!ASSERT(declarator->node.type == AST_FUNC_DECL)) return 0;
 	STypeBuf func;
 	SFunction *funcPtr = (SFunction *) &func;
 	initSFunction(funcPtr);
@@ -583,7 +589,7 @@ int loadSFunction(
 }
 
 int printSFunction(const SFunction *func) {
-	if (!LOG_ASSERT(func->type.type == STT_FUNC)) return 0;
+	if (!ASSERT(func->type.type == STT_FUNC)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -603,16 +609,16 @@ int printSFunction(const SFunction *func) {
 	return n;
 }
 
-void initSTypedefRef(STypedefRef *type) {
+void initSTypeRef(STypeRef *type) {
 	initSType((SType *) type);
 	type->index = -1;
 	type->parentScope = NULL;
 }
 
-int loadSTypedefRef(STypedefRef *type, ASTIdentifier *identifier, ASTScope *scope) {
-	STYPE_VALID(STypedefRef);
+int loadSTypeRef(STypeRef *type, ASTIdentifier *identifier, ASTScope *scope) {
+	STYPE_VALID(STypeRef);
 
-	if (!LOG_ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
+	if (!ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
 
 	if (!astScopeGetIdentifier(type, scope, identifier->name)) return 0;
 
@@ -620,12 +626,12 @@ int loadSTypedefRef(STypedefRef *type, ASTIdentifier *identifier, ASTScope *scop
 	return 1;
 }
 
-SType *stypdefDeref(STypedefRef *ref) {
+SType *stypdefDeref(STypeRef *ref) {
 	return dlistGetm(&ref->parentScope->identifiers, ref->index);
 }
 
-int printSTypedefRef(const STypedefRef *type) {
-	if (!LOG_ASSERT(type->type.type == STT_TYPEDEF_REF)) return 0;
+int printSTypeRef(const STypeRef *type) {
+	if (!ASSERT(type->type.type == STT_TYPEDEF_REF)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -633,7 +639,7 @@ int printSTypedefRef(const STypedefRef *type) {
 	n += printf("\"type\": \"%s\"", sttStr(type->type.type));
 
 	n += printf(", \"content\": ");
-	n += printSType(stypdefDeref((STypedefRef *) type));
+	n += printSType(stypdefDeref((STypeRef *) type));
 
 	n += printf("}");
 
@@ -646,7 +652,7 @@ void initSEnum(SEnum *type) {
 }
 
 int printSEnum(SEnum *type) {
-	if (!LOG_ASSERT(type->type.type == STT_ENUM)) return 0;
+	if (!ASSERT(type->type.type == STT_ENUM)) return 0;
 	if (type->scope) {
 		return printASTScope(type->scope);
 	} else {
@@ -655,7 +661,7 @@ int printSEnum(SEnum *type) {
 }
 
 int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
-	if (!LOG_ASSERT(decl->node.type == AST_ENUM_DECL)) return 0;
+	if (!ASSERT(decl->node.type == AST_ENUM_DECL)) return 0;
 	STYPE_VALID(SEnum);
 	type->type.type = STT_ENUM;
 	return 1;
@@ -669,7 +675,7 @@ void initSEnumRef(SEnumRef *type) {
 
 int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 	STYPE_VALID(SEnumRef);
-	if (!LOG_ASSERT(declaration->node.type == AST_ENUM_DECL)) return 0;
+	if (!ASSERT(declaration->node.type == AST_ENUM_DECL)) return 0;
 
 	SEnum tempEnum;
 
@@ -689,7 +695,7 @@ int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 }
 
 int printSEnumRef(const SEnumRef *ref) {
-	if (!LOG_ASSERT(ref->type.type == STT_ENUM_REF)) return 0;
+	if (!ASSERT(ref->type.type == STT_ENUM_REF)) return 0;
 	int n = 0;
 
 	n += printf("{");
@@ -709,7 +715,7 @@ SEnum *senumDeref(SEnumRef const *ref) {
 
 int loadSEnumConst(SPrim *type, ASTEnumConst *decl, ASTScope *scope) {
 	STYPE_VALID(SPrim);
-	if (!LOG_ASSERT(decl->node.type == AST_ENUM_CONST)) return 0;
+	if (!ASSERT(decl->node.type == AST_ENUM_CONST)) return 0;
 
 	type->type.type = STT_ENUM_CONST;
 	type->primType = SPT_INT;

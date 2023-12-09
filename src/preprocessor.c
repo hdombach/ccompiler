@@ -9,6 +9,7 @@
 #include "tokenizer.h"
 #include "util/dlist.h"
 #include "util/macroDict.h"
+#include "util/stream.h"
 #include "util/tokList.h"
 #include "util/callbacks.h"
 
@@ -170,6 +171,7 @@ void preprocessor(DList *tokens) {
 		} else if ((res = parseASTMacroIncl(&u.astIncl, tok + n))) {
 			//printASTMacroIncl(&include);
 			FILE *fp;
+			Stream stream;
 			if (u.astIncl.type == AST_MIT_DIRECT) {
 				fp = _openDirectFile(&u.astIncl, tok);
 			} else if (u.astIncl.type == AST_MIT_LIBRARY) {
@@ -178,7 +180,8 @@ void preprocessor(DList *tokens) {
 			if (!fp) {
 				break;
 			}
-			TokList newTokens = tokenize(fp, u.astIncl.filename);
+			initStreamFile(&stream, fp);
+			TokList newTokens = tokenize(&stream, u.astIncl.filename);
 			tokListRemLast(&newTokens); //remove EOF token
 			dlistRemMult(tokens, n, res, (FreeFunc) freeToken);
 			dlistInsMult(tokens, &newTokens, n);

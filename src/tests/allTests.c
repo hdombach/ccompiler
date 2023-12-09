@@ -8,6 +8,7 @@
 #include "macroDictTest.h"
 #include "wordDictTest.h"
 #include "wordListTest.h"
+#include "tokenizerTest.h"
 
 int main() {
 	tInit();
@@ -17,6 +18,7 @@ int main() {
 	macroDictTest();
 	wordDictTest();
 	wordListTest();
+	tokenizerTest();
 
 	tPrintResult();
 

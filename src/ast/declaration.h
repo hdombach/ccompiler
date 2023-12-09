@@ -89,7 +89,7 @@ typedef enum {
  * A type specifier
  * (The first chunk of a declaration)
  */
-typedef struct {
+typedef struct ASTTypeSpec {
 	ASTNode node;
 	ASTTypeQualifier qualifiers;
 	ASTStorageClassSpec storage;

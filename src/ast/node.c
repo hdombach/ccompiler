@@ -290,13 +290,13 @@ ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
 		return funcDecl->scope;
 	} else if (node->type == AST_FUNC_DEF) {
 		ASTFuncDef *funcDef = (ASTFuncDef *) node;
-		if (!LOG_ASSERT(funcDef->node.type == AST_FUNC_DEF)) return NULL;
+		if (!ASSERT(funcDef->node.type == AST_FUNC_DEF)) return NULL;
 
 		ASTDeclarator *declarator = (ASTDeclarator *) funcDef->funcDecl;
-		if (!LOG_ASSERT(declarator->node.type == AST_DECLARATOR)) return NULL;
+		if (!ASSERT(declarator->node.type == AST_DECLARATOR)) return NULL;
 
 		ASTFuncDecl *funcDecl = (ASTFuncDecl *) declarator->encl;
-		if (!LOG_ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
+		if (!ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
 
 		return funcDecl->scope;
 	} else if (node->type == AST_STRUCT_DECL) {

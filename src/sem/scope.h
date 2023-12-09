@@ -8,7 +8,7 @@ struct ASTStm;
 struct SCompound;
 struct SType;
 struct SEnum;
-typedef struct STypedefRef STypedefRef;
+typedef struct STypeRef STypeRef;
 
 typedef struct ASTScope {
 	/**
@@ -101,7 +101,7 @@ int astScopeAddAnonIdent(ASTScope *scope, struct SType *type);
  *
  * @returns 1 on success, 0 on failure
  */
-int astScopeGetIdentifier(STypedefRef *ref, ASTScope *scope, char *name);
+int astScopeGetIdentifier(STypeRef *ref, ASTScope *scope, char *name);
 
 int astScopeHasEnum(ASTScope *scope, const char *name);
 
