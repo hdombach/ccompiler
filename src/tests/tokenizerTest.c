@@ -158,6 +158,216 @@ void tokenizerTestMacroIfdef() {
 		});
 }
 
+void tokenizerTestMacroIfndef () {
+	tStartSection("Tokenizer macroifndef");
+
+	tTokensSuccess(
+		"$ifndef\n",
+		(TokenType[]) {TT_MACRO_IFNDEF, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#ifndef",
+		(TokenType[]) {TT_MACRO_IFNDEF, TT_EOF});
+
+	tTokensSuccess(
+		"#ifndef DEBUG\n"
+		"#define DEBUG\n"
+		"#endif\n",
+		(TokenType[]) {
+			TT_MACRO_IFNDEF, TT_IDENTIFIER, TT_NEWLINE, TT_EOF,
+			TT_MACRO_DEFINE, TT_IDENTIFIER, TT_NEWLINE, TT_EOF,
+			TT_MACRO_ENDIF, TT_NEWLINE, TT_EOF,
+		});
+}
+
+void tokenizerTestMacroDefine() {
+	tStartSection("Tokenizer macro define");
+
+	tTokensSuccess(
+		"#define DEFINE\n", 
+		(TokenType[]) {TT_MACRO_DEFINE, TT_IDENTIFIER, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#define LOG(VALUE) printf(VALUE)\n", 
+		(TokenType[]) {
+			TT_MACRO_DEFINE, TT_IDENTIFIER, TT_O_PARAN, TT_IDENTIFIER, TT_C_PARAN,
+			TT_IDENTIFIER, TT_O_PARAN, TT_IDENTIFIER, TT_C_PARAN, TT_NEWLINE, TT_EOF,
+		});
+
+	tTokensFailed(
+		"#definee\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroUndef() {
+	tStartSection("Tokenizer macro undef");
+
+	tTokensSuccess(
+		"#undef DEBUG\n", 
+		(TokenType[]) {TT_MACRO_UNDEF, TT_IDENTIFIER, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#ifdef TEST\n"
+		"#undef TEST\n"
+		"#endif\n",
+		(TokenType[]) {
+			TT_MACRO_IFDEF, TT_IDENTIFIER, TT_NEWLINE,
+			TT_MACRO_UNDEF, TT_IDENTIFIER, TT_NEWLINE,
+			TT_MACRO_ENDIF, TT_NEWLINE, TT_EOF,
+		});
+
+	tTokensFailed(
+		"#undeff\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroInclude() {
+	tStartSection("Tokenizer macro include");
+
+	tTokensSuccess(
+		"#include <stdio.h>\n",
+		(TokenType[]) {
+			TT_MACRO_INCLUDE, TT_LESS, TT_IDENTIFIER,
+			TT_PERIOD, TT_IDENTIFIER, TT_GREATER, TT_NEWLINE, TT_EOF,
+		});
+
+	tTokensSuccess(
+		"#include \"stdio.h\"\n",
+		(TokenType[]) {
+			TT_MACRO_INCLUDE, TT_STR_CONSTANT, TT_NEWLINE, TT_EOF,
+		});
+
+	tTokensSuccess(
+		"#include\n",
+		(TokenType[]) {TT_MACRO_INCLUDE, TT_NEWLINE, TT_EOF});
+
+	tTokensFailed(
+		"#includee\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroLine() {
+	tStartSection("Tokenizer macro line");
+
+	tTokensSuccess(
+		"#line 152\n",
+		(TokenType[]) {TT_MACRO_LINE, TT_NUMB_CONSTANT, TT_NEWLINE, TT_EOF});
+
+	tTokensSuccess(
+		"#line 152",
+		(TokenType[]) {TT_MACRO_LINE, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess(
+		"#line 12 \"reee.cpp\"\n",
+		(TokenType[]) {
+			TT_MACRO_LINE, TT_NUMB_CONSTANT, TT_STR_CONSTANT, TT_NEWLINE, TT_EOF
+		});
+
+	tTokensFailed(
+		"#linee 14\n",
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroError() {
+	tStartSection("Tokenizer macro error");
+
+	tTokensSuccess(
+		"#error \"oh nooo\"\n",
+		(TokenType[]) {TT_MACRO_ERROR, TT_STR_CONSTANT, TT_NEWLINE, TT_EOF});
+
+	tTokensFailed(
+		"#errorror", 
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestMacroPragma() {
+	tStartSection("Tokenier macro pragma");
+
+	tTokensSuccess(
+		"#pragma once\n",
+		(TokenType[]) {TT_MACRO_PRAGMA, TT_IDENTIFIER, TT_NEWLINE, TT_EOF});
+
+	tTokensFailed(
+		"#pragmaa", 
+		(CError[]) {CERR_TOKENIZER, CERR_UNKNOWN});
+}
+
+void tokenizerTestOpenCurly() {
+	tStartSection("Tokenizer open curly");
+
+	tTokensSuccess(
+		"{",
+		(TokenType[]) {TT_O_CURLY, TT_EOF});
+
+	tTokensSuccess(
+		"{{,{",
+		(TokenType[]) {TT_O_CURLY, TT_O_CURLY, TT_COMMA, TT_O_CURLY, TT_EOF});
+
+	tTokensSuccess(
+		"{\"{\"",
+		(TokenType[]) {TT_O_CURLY, TT_STR_CONSTANT, TT_EOF});
+
+	tTokensSuccess(
+		"{\n"
+		"{",
+		(TokenType[]) {TT_O_CURLY, TT_O_CURLY, TT_EOF});
+}
+
+void tokenizerTestCloseCurly() {
+	tStartSection("Tokenizer close curly");
+
+	tTokensSuccess(
+		"}",
+		(TokenType[]) {TT_C_CURLY, TT_EOF});
+
+	tTokensSuccess(
+		"{}",
+		(TokenType[]) {TT_O_CURLY, TT_C_CURLY, TT_EOF});
+
+	tTokensSuccess(
+		"{{value}}", 
+		(TokenType[]) {TT_O_CURLY, TT_O_CURLY, TT_IDENTIFIER, TT_C_CURLY, TT_C_CURLY, TT_EOF});
+}
+
+void tokenizerTestBraces() {
+	tStartSection("Tokenizer test braces");
+
+	tTokensSuccess(
+		"[", 
+		(TokenType[]) {TT_O_BRACE, TT_EOF});
+
+	tTokensSuccess(
+		"]", 
+		(TokenType[]) {TT_C_BRACE, TT_EOF});
+
+	tTokensSuccess(
+		"[[4],[hi]]",
+		(TokenType[]) {
+			TT_O_BRACE, TT_O_BRACE, TT_NUMB_CONSTANT, TT_C_BRACE, TT_COMMA,
+			TT_O_BRACE, TT_IDENTIFIER, TT_C_BRACE, TT_C_BRACE, TT_EOF,
+		});
+}
+
+void tokenizerTestParam() {
+	tStartSection("tokenizer test param");
+
+	tTokensSuccess(
+		"(",
+		(TokenType[]) {TT_O_PARAN, TT_EOF});
+
+	tTokensSuccess(
+		")",
+		(TokenType[]) {TT_C_PARAN, TT_EOF});
+
+	tTokensSuccess(
+		"(-)++)",
+		(TokenType[]) {TT_O_PARAN, TT_MINUS, TT_C_PARAN, TT_INC, TT_C_PARAN, TT_EOF});
+
+	tTokensSuccess(
+		"({])}",
+		(TokenType[]) {TT_O_PARAN, TT_O_CURLY, TT_C_BRACE, TT_C_PARAN, TT_C_CURLY, TT_EOF});
+}
+
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
@@ -167,4 +377,14 @@ void tokenizerTest() {
 	tokenizerTestMacroElif();
 	tokenizerTestMacroEndif();
 	tokenizerTestMacroIfdef();
+	tokenizerTestMacroDefine();
+	tokenizerTestMacroUndef();
+	tokenizerTestMacroInclude();
+	tokenizerTestMacroLine();
+	tokenizerTestMacroError();
+	tokenizerTestMacroPragma();
+	tokenizerTestOpenCurly();
+	tokenizerTestCloseCurly();
+	tokenizerTestBraces();
+	tokenizerTestParam();
 }
