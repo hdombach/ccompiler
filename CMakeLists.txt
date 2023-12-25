@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(ccompiler)
+set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(COMMON_DIRS src/ast src/sem src/util)
 
