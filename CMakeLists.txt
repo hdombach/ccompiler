@@ -15,7 +15,7 @@ endforeach()
 set(CCOMPILER_SOURCES src/main.c src/argParser.c ${COMMON_SOURCES})
 
 add_executable(ccompiler ${CCOMPILER_SOURCES})
-target_link_options(ccompiler PUBLIC "-lm")
+target_link_libraries(ccompiler m)
 
 file(GLOB TEST_SOURCES "src/tests/*.c")
 list(APPEND TEST_SOURCES ${COMMON_SOURCES})
