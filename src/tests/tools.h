@@ -4,15 +4,12 @@
 #include "../ast/node.h"
 #include "../token.h"
 #include "../util/util.h"
+#include "../ast/node.h"
 
 void tTokensSuccess(const char *code, TokenType types[]);
 
 void tTokensFailed(const char *code, CError *errors);
 
-#define T_INTEGRATION_F(CODE, ERRORS) \
-	tIntegrationFailed(CODE, ERRORS, COUNTOF(ERRORS))
-void tIntegrationFailed(const char *code, CError *errors, int errors_s);
+void tAstSuccess(const char *code, ASTNodeType types[]);
 
-#define T_INTEGRATION_S(CODE, TYPES) \
-	tIntegrationSuccess(CODE, TYPES, COUNTOF(TYPES))
-void tIntegrationSuccess(const char *code, ASTNodeType *types, int types_s);
+void tAstFailed(const char *code, CError *error);
