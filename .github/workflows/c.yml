@@ -16,11 +16,15 @@ jobs:
         version: 1.0
 
     - uses: actions/checkout@v3
+
     - name: configure project
       uses: threeal/cmake-action@v1.3.0
+
     - name: build project
-      uses: cmake --build build
+      run: cmake --build build
+
     - name: run tests
       run: build/all_tests
+
     - name: memory leak check
       run: valgrind --error-exitcode=1 --leak-check=full --track-origins=yes build/ccompiler assets/astTest.c
