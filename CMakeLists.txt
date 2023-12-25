@@ -21,4 +21,5 @@ file(GLOB TEST_SOURCES "src/tests/*.c")
 list(APPEND TEST_SOURCES ${COMMON_SOURCES})
 
 add_executable(all_tests ${TEST_SOURCES})
+target_link_libraries(all_tests m)
 add_test(NAME all_tests COMMAND build/all_tests)
