@@ -41,4 +41,6 @@ if (DOXYGEN_FOUND)
 
 	doxygen_add_docs(docs ALL
 		COMMENT "Generating docs with Doxygen")
+else()
+	message(STATUS "Cannot load doxygen")
 endif()
