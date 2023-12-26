@@ -1,7 +1,12 @@
 #pragma once
 
-/*
- * All the token types
+/**
+ * @file
+ * @brief Tools related to tokens
+ */
+
+/**
+ * @brief All possible token types
  */
 typedef enum {
 	TT_UNKNOWN = 0,
@@ -142,55 +147,161 @@ typedef enum {
 	TT_NEWLINE, /* Is helpful for macros */
 } TokenType;
 
+/**
+ * @brief Discrete element parsed from source
+ */
 typedef struct Token {
+	/** @brief Identifies type of token */
 	TokenType type;
+	/**
+	 * @brief Copy of non-keyword token text
+	 *
+	 * Is a copy of the source code representating non-keywords
+	 * like identifiers or constants
+	 */
 	char *contents;
 
+	/** @brief Line position in source code */
 	int posLine;
+	/** @brief Column position in source code */
 	int posColumn;
+	/** @brief File that token came from */
 	char *filename;
+	/**
+	 * @brief Whether token is part of token
+	 *
+	 * If a token is a macro, it does not necessarily mean it is a macro
+	 * specific token. For example, replacement macros could contain any
+	 * possible token
+	 */
 	int isMacro;
 } Token;
 
+/**
+ * @param[out] token
+ */
 void initToken(Token *token);
+/**
+ * @param[in] token
+ */
 void freeToken(Token *token);
 
+/** @brief The internal state of the tokenizer */
 struct _TokenzState;
 
+/**
+ * @brief Creates number constant token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initNumbToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Creates a string constant token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initStrToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Creates a char constant token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initCharToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Creates an identifier or keyword token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initIdentToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Create non-alphab tokens
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ * @param[in] type Type of token to create
+ *
+ * Used for tokens like curly brackets which can't be aren't 
+ * made with alpha-numberical characters
+ */
 void initSymToken(Token *token, const struct _TokenzState *state, TokenType type);
+/**
+ * @brief Creates a macro token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initMacroToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Creates an end of file token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ */
 void initEOFToken(Token *token, const struct _TokenzState *state);
+/**
+ * @brief Creates a new line token
+ * @param[out] token
+ * @param[in] state Current state of tokenizer
+ *
+ * Newlines are used for identifiying the end of a macro.
+ * If not part of a macro, newlines are ignored by the tokenizer
+ */
 void initNewlineToken(Token *token, const struct _TokenzState *state);
 
+/**
+ * @brief Copies a token into provided buffer
+ * @param[out] dest Buffer to copy into
+ * @param[in] tok Buffer to copy from
+ */
 void cpToken(Token *dest, Token const *tok);
+/**
+ * @brief Copies a token into newlly created buffer
+ * @param[in] token Token to duplicate
+ * @returns Newly created token buffer
+ */
 Token *dupToken(Token const *token);
 
-/*
- * Get a numeric value for if a token is a bracket and increases
- * or decreases depth
+/**
+ * @brief Gets nest level for bracket tokens
+ * @param[in] type
+ * @returns numberic value representing change in bracket depth
  */
 int tokenBracketDepth(TokenType type);
 
+/**
+ * @brief debug print the token
+ * @param[in] token
+ * @returns Number of characters printed
+ */
 int printToken(Token *token);
-/*
- * Prints the token as it appears in the file
+
+/**
+ * @brief Prints the token as it appears in the file
+ * @param[in] token
+ * @returns Number of characters printed
  */
 int printrToken(Token *token);
+/**
+ * @brief Static string representing token
+ * @param[in] type
+ * @returns static string
+ */
 const char *tokTypeStr(TokenType type);
 
-/*
- * Finds keyword token.
- * Has to match exactly.
+/**
+ * @brief Searches for if the word provided exactly matches a C keyword
+ * @param[in] word
+ * @returns The corresponding type if found, TT_UNKNOWN if not
  */
 TokenType findKeyword(const char *word);
-/*
- * Finds token type.
- * Characters have to match start of the token punctuation
+
+/**
+ * @brief Searches for if the text provided match the start of a C symbol
+ * @param[in] symb
+ * @returns The corresponding type if found, TT_UNKNOWN if not
  */
 TokenType findPunctuation(const char *symb);
 
+/**
+ * @brief Searches for if the word provided exactly matches a C macro
+ * @param[in] word
+ * @returns The corresponding type if found, TT_UNKNOWN if not
+ */
 TokenType findMacro(const char *word);

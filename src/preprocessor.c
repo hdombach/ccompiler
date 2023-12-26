@@ -18,7 +18,7 @@
 #include <string.h>
 #include <libgen.h>
 
-FILE *_openDirectFile(ASTMacroIncl *include, Token *startTok) {
+static FILE *_openDirectFile(ASTMacroIncl *include, Token *startTok) {
 	FILE *result = fopen(include->filename, "r");
 	if (!result) {
 		fprintf(stderr, "Can't open file %s", include->filename);
@@ -30,7 +30,7 @@ FILE *_openDirectFile(ASTMacroIncl *include, Token *startTok) {
 //TODO: I'll prob have to write my own header files
 static char *_libs = "/usr/include";
 
-FILE *_openLibraryFile(ASTMacroIncl *include) {
+static FILE *_openLibraryFile(ASTMacroIncl *include) {
 	FILE *result = NULL;
 
 	int filenameLength = 256 + strlen(include->filename);
@@ -68,7 +68,7 @@ typedef struct _TokenRange {
 } _TokenRange;
 
 
-int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
+static int _expandMacro(TokList *insert, ASTMacroDef *macro, Token const *tok) {
 	int n = 1, curDepth = 0;
 	DList ranges;
 	_TokenRange curRange;
