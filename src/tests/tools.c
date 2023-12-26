@@ -1,10 +1,12 @@
+#include <stdio.h>
+
 #include "tools.h"
 #include "../util/dlist.h"
 #include "../util/stream.h"
 #include "../tokenizer.h"
 #include "../token.h"
+#include "../ast/file.h"
 #include "test.h"
-#include <stdio.h>
 
 void tTokensSuccess(const char *code, TokenType *types) {
 	Stream stream;
@@ -31,5 +33,21 @@ void tTokensFailed(const char *code, CError *errors) {
 		snprintf(msg, sizeof(msg), "%s != %s: %s", cerrStr(errors[i]), cerrStr(getCerr()[i]), code);
 		tAssert(msg, errors[i] == getCerr()[i]);
 		if (getCerr()[i] == CERR_UNKNOWN || errors[i] == CERR_UNKNOWN) break;
+	}
+}
+
+static void _tNode(ASTNode *node, ASTNodeType **types) {
+	tAssert("", node->type == **types);
+	(*types)++;
+}
+
+void tAstSuccess(const char *code, ASTNodeType *types) {
+	Stream stream;
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	ASTFile astFile;
+
+	if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
+		//astNodeTrav((ASTNode *) &astFile, ASTTravFunc beforeFunc, ASTTravFunc afterFunc, ASTTravCtx *parent)
 	}
 }

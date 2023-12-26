@@ -4,7 +4,6 @@
 
 #include "log.h"
 #include "../token.h"
-#include "../argParser.h"
 #include "../util/color.h"
 
 #ifdef DEBUG

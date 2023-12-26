@@ -12,15 +12,38 @@ jobs:
     steps:
     - uses: awalsh128/cache-apt-pkgs-action@latest
       with:
-        packages: valgrind
+        packages: valgrind doxygen
         version: 1.0
 
     - uses: actions/checkout@v3
-    - name: make
-      run: make DEBUG=1 -j
-    - name: make test
-      run: make build/allTests DEBUG=1 -j
+
+    - name: configure project
+      run: cmake -B build
+
+    - name: build project
+      run: cmake --build build
+
     - name: run tests
-      run: build/allTests
+      run: build/all_tests
+
     - name: memory leak check
       run: valgrind --error-exitcode=1 --leak-check=full --track-origins=yes build/ccompiler assets/astTest.c
+
+    - name: Upload docs artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ./build/docs
+
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3

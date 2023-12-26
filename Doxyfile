@@ -1,0 +1,3 @@
+HTML_OUTPUT = build/docs
+
+RECURSIVE = YES
