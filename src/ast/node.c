@@ -90,7 +90,7 @@ ASTNode *dupASTNode(ASTNode *node) {
 	return result;
 }
 
-char *_astNodeTypes[] = {
+const char *_astNodeTypes[] = {
 	"unknown",
 	"int constant",
 	"identifier",
@@ -134,7 +134,7 @@ char *_astNodeTypes[] = {
 	"goto statement",
 };
 
-char *astNodeTypeStr(ASTNodeType type) {
+const char *astNodeTypeStr(ASTNodeType type) {
 	return _astNodeTypes[type];
 }
 
