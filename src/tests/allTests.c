@@ -9,6 +9,7 @@
 #include "wordDictTest.h"
 #include "wordListTest.h"
 #include "tokenizerTest.h"
+#include "astTest.h"
 
 int main() {
 	tInit();
@@ -19,6 +20,7 @@ int main() {
 	wordDictTest();
 	wordListTest();
 	tokenizerTest();
+	astTests();
 
 	tPrintResult();
 

@@ -308,7 +308,7 @@ ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
 }
 
 
-ASTTravRes astNodeTrav(
+ASTTravRes _astNodeTrav(
 		ASTNode *node,
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
@@ -318,6 +318,7 @@ ASTTravRes astNodeTrav(
 	curCtx.parent = ctx;
 	curCtx.node = node;
 	curCtx.parent = ctx;
+	if (ctx) curCtx.customCtx = ctx->customCtx;
 
 	curCtx.scope = astNodeScope(node, (ctx ? ctx->scope : NULL));
 
@@ -333,7 +334,7 @@ ASTTravRes astNodeTrav(
 	for (int i = 0; i < child_count; i++) {
 		ASTNode *child = astNodeGetChild(node, i);
 		if (child) {
-			astNodeTrav(child, beforeFunc, afterFunc, &curCtx);
+			_astNodeTrav(child, beforeFunc, afterFunc, &curCtx);
 		}
 	}
 
@@ -346,4 +347,19 @@ ASTTravRes astNodeTrav(
 		result = afterFunc(node, &curCtx);
 	}
 	return result;
+}
+
+ASTTravRes astNodeTrav(
+		ASTNode *node,
+		ASTTravFunc beforeFunc,
+		ASTTravFunc afterFunc,
+		void *customCtx)
+{
+	ASTTravCtx curCtx = {
+		NULL, /* scope */
+		NULL, /* node */
+		NULL, /* parent */
+		customCtx
+	};
+	return _astNodeTrav(node, beforeFunc, afterFunc, &curCtx);
 }

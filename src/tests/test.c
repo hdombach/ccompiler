@@ -1,5 +1,6 @@
 #include "test.h"
 #include <stdio.h>
+#include "../util/log.h"
 
 int testsTotal;
 int testsPassed;
@@ -11,12 +12,18 @@ void tInit() {
 	curSectionName = "";
 }
 
-void tAssert(char *name, int expression) {
+void tAssert(
+		const char *file,
+		int line,
+		char *name,
+		int expression,
+		const char *expressionStr)
+{
 	testsTotal++;
 	if (expression) {
 		testsPassed++;
 	} else {
-		fprintf(stderr, "TEST FAILED! %s: %s\n", curSectionName, name);
+		logTestFailed(file, line, name, expressionStr);
 	}
 }
 

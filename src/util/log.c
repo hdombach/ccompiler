@@ -133,3 +133,14 @@ void logTodo(const char *file, int line, const char *fmt, ...) {
 
 	fprintf(stderr, "\n");
 }
+
+void logTestFailed(
+		const char *file,
+		int line,
+		const char *msg,
+		const char *exp)
+{
+	logErrHead(stderr, "TEST FAILED %s:%d", file, line, file, line);
+
+	fprintf(stderr, "%s (%s)\n", exp, msg);
+}

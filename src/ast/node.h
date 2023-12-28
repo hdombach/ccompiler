@@ -156,6 +156,12 @@ typedef struct ASTTravCtx {
 	struct ASTScope *scope;
 	ASTNode *node;
 	struct ASTTravCtx *parent;
+	/**
+	 * @brief Syntax that can be used by the callback
+	 *
+	 * @note Needs to be allocated and freed by the caller
+	 */
+	void *customCtx;
 }ASTTravCtx;
 
 /** @brief Function used in AST traversal*/
@@ -166,13 +172,13 @@ typedef ASTTravRes (*ASTTravFunc)(ASTNode *, ASTTravCtx *);
  * @param node[in]
  * @param node[in] beforeFunc Function to call in pre-order order
  * @param node[in] afterFunc Function to call in post-order order
- * @param node[in] parent Context used internally (is optional)
+ * @param node[in] customCtx Contex used by callbacks
  */
 ASTTravRes astNodeTrav(
 		ASTNode *node,
 		ASTTravFunc beforeFunc,
 		ASTTravFunc afterFunc,
-		ASTTravCtx *parent);
+		void *customCtx);
 
 /** @brief Size of generic node buffer */
 #define AST_NODE_S 128

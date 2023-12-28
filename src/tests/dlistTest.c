@@ -65,7 +65,7 @@ void dlistTestEmpty() {
 
 	tStartSection("DList test empty");
 	initDList(&list, sizeof(int));
-	tAssert("test size", 0 == list.size);
+	T_ASSERT("test size", 0 == list.size);
 
 	freeDList(&list, NULL);
 }
@@ -79,25 +79,25 @@ void dlistTestCmp() {
 
 	initDList(&list1, sizeof(int));
 	initDList(&list2, sizeof(int));
-	tAssert("empty are equal", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
+	T_ASSERT("empty are equal", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 1;
 	dlistApp(&list1, &value);
-	tAssert("check 2", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
+	T_ASSERT("check 2", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 	dlistApp(&list2, &value);
-	tAssert("check 3", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
+	T_ASSERT("check 3", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 2;
 	dlistApp(&list2, &value);
 	value = 3;
 	dlistApp(&list2, &value);
-	tAssert("check 4", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
+	T_ASSERT("check 4", !dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	value = 2;
 	dlistApp(&list1, &value);
 	value = 3;
 	dlistApp(&list1, &value);
-	tAssert("check 5", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
+	T_ASSERT("check 5", dlistCmp(&list1, &list2, (CmpFunc) _intCmp));
 
 	freeDList(&list1, (FreeFunc) NULL);
 	freeDList(&list2, (FreeFunc) NULL);
@@ -110,7 +110,7 @@ void dlistTestApp() {
 	tStartSection("Appending to dlist");
 
 	initDList(&list, sizeof(int));
-	tAssert("List starts emtpy", 0 == list.size);
+	T_ASSERT("List starts emtpy", 0 == list.size);
 
 	value = 5;
 	dlistApp(&list, &value);
@@ -119,10 +119,10 @@ void dlistTestApp() {
 	value = 7;
 	dlistApp(&list, &value);
 
-	tAssert("List length", list.size == 3);
-	tAssert("item 1", *(int*) dlistGetm(&list, 0) == 5);
-	tAssert("item 2", *(int*) dlistGetm(&list, 1) == 6);
-	tAssert("item 3", *(int*) dlistGetm(&list, 2) == 7);
+	T_ASSERT("List length", list.size == 3);
+	T_ASSERT("item 1", *(int*) dlistGetm(&list, 0) == 5);
+	T_ASSERT("item 2", *(int*) dlistGetm(&list, 1) == 6);
+	T_ASSERT("item 3", *(int*) dlistGetm(&list, 2) == 7);
 
 	freeDList(&list, NULL);
 }
@@ -134,18 +134,18 @@ void dlistTestIns() {
 	tStartSection("Insert into dlist");
 	initDList(&list, sizeof(int));
 	value = 1;
-	tAssert("Invalid index 1", dlistIns(&list, &value, -1) == DLIST_INVALID_INDEX);
-	tAssert("Invalid index 2", dlistIns(&list, &value, 1) == DLIST_INVALID_INDEX);
+	T_ASSERT("Invalid index 1", dlistIns(&list, &value, -1) == DLIST_INVALID_INDEX);
+	T_ASSERT("Invalid index 2", dlistIns(&list, &value, 1) == DLIST_INVALID_INDEX);
 
-	tAssert("insert 1", dlistIns(&list, (value=3, &value), 0) == DLIST_SUCCESS); //3
-	tAssert("insert 2", dlistIns(&list, (value=1, &value), 0) == DLIST_SUCCESS); //1, 3
-	tAssert("insert 3", dlistIns(&list, (value=4, &value), 2) == DLIST_SUCCESS); //1, 3, 4
-	tAssert("insert 4", dlistIns(&list, (value=2, &value), 1) == DLIST_SUCCESS); //1, 3, 4
+	T_ASSERT("insert 1", dlistIns(&list, (value=3, &value), 0) == DLIST_SUCCESS); //3
+	T_ASSERT("insert 2", dlistIns(&list, (value=1, &value), 0) == DLIST_SUCCESS); //1, 3
+	T_ASSERT("insert 3", dlistIns(&list, (value=4, &value), 2) == DLIST_SUCCESS); //1, 3, 4
+	T_ASSERT("insert 4", dlistIns(&list, (value=2, &value), 1) == DLIST_SUCCESS); //1, 3, 4
 
-	tAssert("check 1", *(int*) dlistGetm(&list, 0) == 1);
-	tAssert("check 2", *(int*) dlistGetm(&list, 1) == 2);
-	tAssert("check 3", *(int*) dlistGetm(&list, 2) == 3);
-	tAssert("check 4", *(int*) dlistGetm(&list, 3) == 4);
+	T_ASSERT("check 1", *(int*) dlistGetm(&list, 0) == 1);
+	T_ASSERT("check 2", *(int*) dlistGetm(&list, 1) == 2);
+	T_ASSERT("check 3", *(int*) dlistGetm(&list, 2) == 3);
+	T_ASSERT("check 4", *(int*) dlistGetm(&list, 3) == 4);
 
 	freeDList(&list, NULL);
 }
@@ -161,28 +161,28 @@ void dlistTestRem() {
 	dlistApp(&list, (value=3, &value));
 	dlistApp(&list, (value=4, &value));
 
-	tAssert("invalid index 1", dlistRem(&list, -1, NULL) == DLIST_INVALID_INDEX);
-	tAssert("invalid index 2", dlistRem(&list, 4, NULL) == DLIST_INVALID_INDEX);
+	T_ASSERT("invalid index 1", dlistRem(&list, -1, NULL) == DLIST_INVALID_INDEX);
+	T_ASSERT("invalid index 2", dlistRem(&list, 4, NULL) == DLIST_INVALID_INDEX);
 
-	tAssert("remove 1", dlistRem(&list, 1, NULL) == DLIST_SUCCESS);
-	tAssert("check 1", *(int*) dlistGetm(&list, 0) == 1);
-	tAssert("check 2", *(int*) dlistGetm(&list, 1) == 3);
-	tAssert("check 3", *(int*) dlistGetm(&list, 2) == 4);
-	tAssert("check size 2", list.size == 3);
+	T_ASSERT("remove 1", dlistRem(&list, 1, NULL) == DLIST_SUCCESS);
+	T_ASSERT("check 1", *(int*) dlistGetm(&list, 0) == 1);
+	T_ASSERT("check 2", *(int*) dlistGetm(&list, 1) == 3);
+	T_ASSERT("check 3", *(int*) dlistGetm(&list, 2) == 4);
+	T_ASSERT("check size 2", list.size == 3);
 
-	tAssert("remove 2", dlistRem(&list, 2, NULL) == DLIST_SUCCESS);
-	tAssert("check 4", *(int*) dlistGetm(&list, 0) == 1);
-	tAssert("check 5", *(int*) dlistGetm(&list, 1) == 3);
-	tAssert("check size 3", list.size == 2);
+	T_ASSERT("remove 2", dlistRem(&list, 2, NULL) == DLIST_SUCCESS);
+	T_ASSERT("check 4", *(int*) dlistGetm(&list, 0) == 1);
+	T_ASSERT("check 5", *(int*) dlistGetm(&list, 1) == 3);
+	T_ASSERT("check size 3", list.size == 2);
 
-	tAssert("remove 3", dlistRem(&list, 0, NULL) == DLIST_SUCCESS);
-	tAssert("check 5", *(int*) dlistGetm(&list, 0) == 3);
-	tAssert("check size 4", list.size == 1);
+	T_ASSERT("remove 3", dlistRem(&list, 0, NULL) == DLIST_SUCCESS);
+	T_ASSERT("check 5", *(int*) dlistGetm(&list, 0) == 3);
+	T_ASSERT("check size 4", list.size == 1);
 
-	tAssert("remove 4", dlistRem(&list, 0, NULL) == DLIST_SUCCESS);
-	tAssert("check size 5", list.size == 0);
+	T_ASSERT("remove 4", dlistRem(&list, 0, NULL) == DLIST_SUCCESS);
+	T_ASSERT("check size 5", list.size == 0);
 
-	tAssert("invalid index 3", dlistRem(&list, 0, NULL) == DLIST_INVALID_INDEX);
+	T_ASSERT("invalid index 3", dlistRem(&list, 0, NULL) == DLIST_INVALID_INDEX);
 
 	freeDList(&list, NULL);
 }
@@ -213,23 +213,23 @@ void dlistTestDynObj() {
 	dlistIns(&list2, &obj1, 0); //1, 2
 	dlistIns(&list2, &obj3, 2); //1, 2, 3
 
-	tAssert("compare 1", dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
+	T_ASSERT("compare 1", dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
 
-	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
-	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
-	tAssert("valid 3", _validTestType(dlistGet(&list1, 2)));
-	tAssert("valid 4", _validTestType(dlistGet(&list2, 0)));
-	tAssert("valid 5", _validTestType(dlistGet(&list2, 1)));
-	tAssert("valid 6", _validTestType(dlistGet(&list2, 2)));
+	T_ASSERT("valid 1", _validTestType(dlistGet(&list1, 0)));
+	T_ASSERT("valid 2", _validTestType(dlistGet(&list1, 1)));
+	T_ASSERT("valid 3", _validTestType(dlistGet(&list1, 2)));
+	T_ASSERT("valid 4", _validTestType(dlistGet(&list2, 0)));
+	T_ASSERT("valid 5", _validTestType(dlistGet(&list2, 1)));
+	T_ASSERT("valid 6", _validTestType(dlistGet(&list2, 2)));
 
 	_testObjCpy(&tempObj, dlistGet(&list1, 0));
 	dlistRem(&list1, 1, (FreeFunc) _freeTestType);
 	dlistIns(&list1, &tempObj, 1);
-	tAssert("valid 1", _validTestType(dlistGet(&list1, 0)));
-	tAssert("valid 2", _validTestType(dlistGet(&list1, 1)));
-	tAssert("valid 3", _validTestType(dlistGet(&list1, 2)));
-	tAssert("compare 2", _testTypeCmp(dlistGet(&list1, 0), dlistGet(&list1, 1)));
-	tAssert("compare 3", !dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
+	T_ASSERT("valid 1", _validTestType(dlistGet(&list1, 0)));
+	T_ASSERT("valid 2", _validTestType(dlistGet(&list1, 1)));
+	T_ASSERT("valid 3", _validTestType(dlistGet(&list1, 2)));
+	T_ASSERT("compare 2", _testTypeCmp(dlistGet(&list1, 0), dlistGet(&list1, 1)));
+	T_ASSERT("compare 3", !dlistCmp(&list1, &list2, (CmpFunc) _testTypeCmp));
 
 	freeDList(&list1, (FreeFunc) _freeTestType);
 	freeDList(&list2, (FreeFunc) _freeTestType);
@@ -250,10 +250,10 @@ void dlistTestRemMult() {
 	dlistApp(&list, (value=7, &value));
 
 	dlistRemMult(&list, 2, 3, NULL);
-	tAssert("index 0", *(int *) dlistGet(&list, 0) == 1);
-	tAssert("index 1", *(int *) dlistGet(&list, 1) == 2);
-	tAssert("index 2", *(int *) dlistGet(&list, 2) == 6);
-	tAssert("index 3", *(int *) dlistGet(&list, 3) == 7);
+	T_ASSERT("index 0", *(int *) dlistGet(&list, 0) == 1);
+	T_ASSERT("index 1", *(int *) dlistGet(&list, 1) == 2);
+	T_ASSERT("index 2", *(int *) dlistGet(&list, 2) == 6);
+	T_ASSERT("index 3", *(int *) dlistGet(&list, 3) == 7);
 
 	freeDList(&list, NULL);
 }
@@ -277,14 +277,14 @@ void dlistTestInsMult() {
 
 	dlistInsMult(&list, &elements, 1);
 
-	tAssert("index 0", *(int *) dlistGet(&list, 0) == 1);
-	tAssert("index 1", *(int *) dlistGet(&list, 1) == 6);
-	tAssert("index 2", *(int *) dlistGet(&list, 2) == 7);
-	tAssert("index 3", *(int *) dlistGet(&list, 3) == 8);
-	tAssert("index 4", *(int *) dlistGet(&list, 4) == 2);
-	tAssert("index 5", *(int *) dlistGet(&list, 5) == 3);
-	tAssert("index 6", *(int *) dlistGet(&list, 6) == 4);
-	tAssert("index 7", *(int *) dlistGet(&list, 7) == 5);
+	T_ASSERT("index 0", *(int *) dlistGet(&list, 0) == 1);
+	T_ASSERT("index 1", *(int *) dlistGet(&list, 1) == 6);
+	T_ASSERT("index 2", *(int *) dlistGet(&list, 2) == 7);
+	T_ASSERT("index 3", *(int *) dlistGet(&list, 3) == 8);
+	T_ASSERT("index 4", *(int *) dlistGet(&list, 4) == 2);
+	T_ASSERT("index 5", *(int *) dlistGet(&list, 5) == 3);
+	T_ASSERT("index 6", *(int *) dlistGet(&list, 6) == 4);
+	T_ASSERT("index 7", *(int *) dlistGet(&list, 7) == 5);
 
 	freeDList(&list, NULL);
 }
@@ -302,10 +302,10 @@ void dlistTestCp() {
 
 	cpDList(&dest, &src, NULL);
 
-	tAssert("size", 3 == dest.size);
-	tAssert("index 0", *(int *) dlistGet(&dest, 0) == 1);
-	tAssert("index 1", *(int *) dlistGet(&dest, 1) == 2);
-	tAssert("index 2", *(int *) dlistGet(&dest, 2) == 3);
+	T_ASSERT("size", 3 == dest.size);
+	T_ASSERT("index 0", *(int *) dlistGet(&dest, 0) == 1);
+	T_ASSERT("index 1", *(int *) dlistGet(&dest, 1) == 2);
+	T_ASSERT("index 2", *(int *) dlistGet(&dest, 2) == 3);
 
 	freeDList(&src, NULL);
 	freeDList(&dest, NULL);
