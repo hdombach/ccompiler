@@ -124,11 +124,13 @@ const char *astNodeTypeStr(ASTNodeType type);
  */
 int printASTNode(ASTNode const *node);
 /**
+ * @brief Get the child count for any node
  * @param[in] node
  * @returns number of children in tree
  */
 int astNodeChildCount(ASTNode const *node);
 /**
+ * @brief Get a specific child of any node
  * @param[in] node
  * @param[in] index
  * @returns The node at the corresponding index
