@@ -37,9 +37,9 @@ void tTokensFailed(const char *code, CError *errors) {
 }
 
 static void _tNode(ASTNode *node, ASTTravCtx *ctx) {
-	ASTNodeType **types = (ASTNodeType **) &ctx->customCtx;
+	ASTNodeType **types = (ASTNodeType **) ctx->customCtx;
 	char msg[256];
-	snprintf(msg, sizeof(msg), "%s != %s", astNodeTypeStr(node->type), astNodeTypeStr(*(*types)));
+	snprintf(msg, sizeof(msg), "%s != %s", astNodeTypeStr(node->type), astNodeTypeStr(**types));
 	T_ASSERT(msg, node->type == **types);
 	(*types)++;
 }
@@ -50,8 +50,9 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile astFile;
 
+	ASTNodeType **curType = &types;
 	if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
-		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tNode, NULL, types);
+		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tNode, NULL, curType);
 	} else {
 		T_ASSERT("parseASTFile failed", 0);
 	}

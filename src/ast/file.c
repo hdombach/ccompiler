@@ -57,6 +57,9 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 
 		} else if (tok[n].type == TT_NEWLINE) {
 			n++;
+		} else if (tok[n].type == TT_EOF) {
+			n++;
+			break;
 		} else {
 			break;
 		}
