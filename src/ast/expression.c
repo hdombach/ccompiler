@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "expression.h"
+#include "floatConst.h"
 #include "identifier.h"
 #include "intConstant.h"
 #include "astUtil.h"
@@ -23,10 +24,10 @@ int parseASTExpSing(ASTNode *node, Token const *tok, ASTScope *scope) {
 	}
 
 	if ((res = parseASTIntConstant((ASTIntConstant *) node, tok))) {
-		n += res;
+		return res;
+	} else if ((res = parseASTFloatConstant((ASTFloatConstant *) node, tok))) {
 		return res;
 	} else if ((res = parseASTIdentifier((ASTIdentifier *) node, tok, scope))) {
-		n += res;
 		return res;
 	} else if (tok[n].type == TT_O_PARAN) {
 		n++;

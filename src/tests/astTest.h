@@ -236,9 +236,12 @@ void astConstantTest() {
 	tAstDebug(
 			"int int_test = 5;\n");
 
-	tAstDebug(
-			"float f_test = 5.23;\n");
+	tTokensDebug("float f_test = 5.23;\n");
 
+	tAstDebug(
+			"float f_test = 523;\n");
+
+/*
 	tAstDebug(
 			"float f_test = 5.23f;\n");
 
@@ -261,7 +264,7 @@ void astConstantTest() {
 
 	tAstDebug(
 			"struct box_t box = prev_box;\n");
-
+*/
 }
 
 void astTests() {
@@ -270,5 +273,5 @@ void astTests() {
 	astDeclaratorTest();
 	astInitializersTest();
 	TODO("Figure out why constant tests aren't working");
-	//astConstantTest();
+	astConstantTest();
 }

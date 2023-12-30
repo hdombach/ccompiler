@@ -13,6 +13,7 @@
 #include "iteration.h"
 #include "initializer.h"
 #include "intConstant.h"
+#include "floatConst.h"
 #include "label.h"
 #include "node.h"
 #include "operation.h"
@@ -30,6 +31,7 @@ void initASTNode(ASTNode *node, struct Token const *tok) {
 void freeASTNode(ASTNode *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: break;
+		case AST_FLOAT_CONSTANT: break;
 		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: free(((ASTIdentifier *) node)->name); break;
@@ -93,6 +95,7 @@ ASTNode *dupASTNode(ASTNode *node) {
 const char *_astNodeTypes[] = {
 	"unknown",
 	"int constant",
+	"float constant",
 	"identifier",
 	"function call operation",
 	"subscript operation",
@@ -143,6 +146,7 @@ const char *astNodeTypeStr(ASTNodeType type) {
 int printASTNode(ASTNode const *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return printASTIntContant((ASTIntConstant *) node);
+		case AST_FLOAT_CONSTANT: return printASTFloatConstant((ASTFloatConstant *) node);
 		case AST_IDENTIFIER_DECL:
 		case AST_IDENTIFIER_TS:
 		case AST_IDENTIFIER: return printASTIdentifier((ASTIdentifier *) node);
@@ -189,6 +193,7 @@ int printASTNode(ASTNode const *node) {
 int astNodeChildCount(const ASTNode *node) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return astIntConstantChildCount((ASTIntConstant *) node);
+		case AST_FLOAT_CONSTANT: return astFloatConstantChildCount((ASTFloatConstant *) node);
 		case AST_IDENTIFIER: return astIdentifierChildCount((ASTIdentifier *) node);
 		case AST_FUNC_OPERATION: return astFuncOperationChildCount((ASTFuncOperation *) node);
 		case AST_SUBS_OPERATION: return astOperationChildCount((ASTOperation *) node);
@@ -235,6 +240,7 @@ int astNodeChildCount(const ASTNode *node) {
 ASTNode *astNodeGetChild(ASTNode *node, int index) {
 	switch (node->type) {
 		case AST_INT_CONSTANT: return astIntConstantGetChild((ASTIntConstant *) node, index);
+		case AST_FLOAT_CONSTANT: return astFloatConstantGetChild((ASTFloatConstant *) node, index);
 		case AST_IDENTIFIER: return astIdentifierGetChild((ASTIdentifier *) node, index);
 		case AST_FUNC_OPERATION: return astFuncOperationGetChild((ASTFuncOperation *) node, index);
 		case AST_SUBS_OPERATION: return astOperationGetChild((ASTOperation *) node, index);
