@@ -14,6 +14,11 @@
 void tTokensSuccess(const char *code, TokenType types[]);
 
 void tTokensFailed(const char *code, CError *errors);
+/**
+ * @brief Prints out the list of Tokens that are parsed
+ * @param[in] code
+ */
+void tTokensDebug(const char *code);
 
 /**
  * @brief Tests the generated ast against types

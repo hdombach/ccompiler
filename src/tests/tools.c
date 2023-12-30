@@ -36,6 +36,16 @@ void tTokensFailed(const char *code, CError *errors) {
 	}
 }
 
+void tTokensDebug(const char *code) {
+	Stream stream;
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	char msg[256];
+
+	printf("tokens: ");
+	printDList(&tokens, (PrintFunc) printToken);
+}
+
 static void _tNode(ASTNode *node, ASTTravCtx *ctx) {
 	ASTNodeType **types = (ASTNodeType **) ctx->customCtx;
 	char msg[256];

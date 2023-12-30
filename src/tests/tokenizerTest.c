@@ -368,6 +368,339 @@ void tokenizerTestParam() {
 		(TokenType[]) {TT_O_PARAN, TT_O_CURLY, TT_C_BRACE, TT_C_PARAN, TT_C_CURLY, TT_EOF});
 }
 
+void tokenizerTestSemicolon() {
+	tStartSection("Tokenizer test semi colon");
+
+	tTokensSuccess(
+			";",
+			(TokenType[]) {TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			";;", 
+			(TokenType[]) {TT_SEMI_COLON, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"[;]+23;", 
+			(TokenType[]) {TT_O_BRACE, TT_SEMI_COLON, TT_C_BRACE, TT_PLUS, TT_NUMB_CONSTANT, TT_SEMI_COLON, TT_EOF});
+}
+
+void tokenizerTestColon() {
+	tStartSection("Tokenizer test colon");
+
+	tTokensSuccess(
+			":", 
+			(TokenType[]) {TT_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"value ? 2 : 4", 
+			(TokenType[]) {TT_IDENTIFIER, TT_QUESTION, TT_NUMB_CONSTANT, TT_COLON, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess("int test:4", (TokenType[]) {TT_INT, TT_IDENTIFIER, TT_COLON, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestDots() {
+	tStartSection("Tokenizer test dots");
+
+	tTokensSuccess("...", (TokenType[]) {TT_DOTS, TT_EOF});
+
+	tTokensSuccess("....", (TokenType[]) {TT_DOTS, TT_PERIOD, TT_EOF});
+
+	TODO("Should should probably be better handeled");
+	tTokensSuccess("2..2", (TokenType[]) {TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestQuestion() {
+	tStartSection("Tokenizer test question");
+
+	tTokensSuccess("?", (TokenType[]) {TT_QUESTION, TT_EOF});
+
+	tTokensSuccess("??", (TokenType[]) {TT_QUESTION, TT_QUESTION, TT_EOF});
+
+	tTokensSuccess(
+			"value ? 2 : 4", 
+			(TokenType[]) {TT_IDENTIFIER, TT_QUESTION, TT_NUMB_CONSTANT, TT_COLON, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestPeriod() {
+	tStartSection("Tokenizer test period");
+
+	tTokensSuccess(".", (TokenType[]) {TT_PERIOD, TT_EOF});
+
+	tTokensSuccess("5.2", (TokenType[]) {TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess("thing.member", (TokenType[]) {TT_IDENTIFIER, TT_PERIOD, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("thing\n.\nmember", (TokenType[]) {TT_IDENTIFIER, TT_PERIOD, TT_IDENTIFIER, TT_EOF});
+}
+
+void tokenizerTestArrow() {
+	tStartSection("Tokenizer test arrow");
+
+	tTokensSuccess("->", (TokenType[]) {TT_ARROW, TT_EOF});
+
+	tTokensSuccess("-->>", (TokenType[]) {TT_DEC, TT_DBLE_GREATER, TT_EOF});
+
+	tTokensSuccess("--->>", (TokenType[]) {TT_DEC, TT_ARROW, TT_GREATER, TT_EOF});
+
+	tTokensSuccess("thing.member->member2", (TokenType[]) {
+			TT_IDENTIFIER, TT_PERIOD, TT_IDENTIFIER, TT_ARROW, TT_IDENTIFIER, TT_EOF
+	});
+}
+
+void tokenizerTestTilde() {
+	tStartSection("Tokenier test tilde");
+
+	tTokensSuccess("~", (TokenType[]) {TT_TILDE, TT_EOF});
+
+	tTokensSuccess("~01101001b", (TokenType[]) {TT_TILDE, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess("++~423-2", (TokenType[]) {TT_INC, TT_TILDE, TT_NUMB_CONSTANT, TT_MINUS, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestExclaim() {
+	tStartSection("Tokenizer test exclaim");
+
+	tTokensSuccess("!", (TokenType[]) {TT_EXCLAIM, TT_EOF});
+
+	tTokensSuccess("!!hello", (TokenType[]) {TT_EXCLAIM, TT_EXCLAIM, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("(!4&hello)", (TokenType[]) {TT_O_PARAN, TT_EXCLAIM, TT_NUMB_CONSTANT, TT_AMP, TT_IDENTIFIER, TT_C_PARAN, TT_EOF});
+}
+
+void tokenizerTestPlus() {
+	tStartSection("Tokenizer test plus");
+
+	tTokensSuccess("+", (TokenType[]) {TT_PLUS, TT_EOF});
+
+	tTokensSuccess("+++", (TokenType[]) {TT_INC, TT_PLUS, TT_EOF});
+
+	tTokensSuccess("hello+4", (TokenType[]) {TT_IDENTIFIER, TT_PLUS, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestMinus() {
+	tStartSection("Tokenizer test minus");
+
+	tTokensSuccess("-", (TokenType[]) {TT_MINUS, TT_EOF});
+
+	tTokensSuccess("---", (TokenType[]) {TT_DEC, TT_MINUS, TT_EOF});
+
+	tTokensSuccess("hello-4", (TokenType[]) {TT_IDENTIFIER, TT_MINUS, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestMult() {
+	tStartSection("Tokenizer test mult");
+
+	tTokensSuccess("*", (TokenType[]) {TT_MULT, TT_EOF});
+
+	tTokensSuccess("*hello", (TokenType[]) {TT_MULT, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("**hello", (TokenType[]) {TT_MULT, TT_MULT, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("5*2-3", (TokenType[]) {TT_NUMB_CONSTANT, TT_MULT, TT_NUMB_CONSTANT, TT_MINUS, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestDiv() {
+	tStartSection("Tokenizer test divide");
+
+	tTokensSuccess("/", (TokenType[]) {TT_DIV, TT_EOF});
+
+	tTokensSuccess("/ /", (TokenType[]) {TT_DIV, TT_DIV, TT_EOF});
+
+	tTokensSuccess("adf/agd", (TokenType[]) {TT_IDENTIFIER, TT_DIV, TT_IDENTIFIER, TT_EOF});
+}
+
+void tokenizerTestPerc() {
+	tStartSection("Tokenizer test perc");
+
+	tTokensSuccess("%", (TokenType[]) {TT_PERC, TT_EOF});
+
+	tTokensSuccess("++(%%>", (TokenType[]) {TT_INC, TT_O_PARAN, TT_PERC, TT_PERC, TT_GREATER, TT_EOF});
+}
+
+void tokenizerTestCaret() {
+	tStartSection("Tokenizer test caret");
+
+	tTokensSuccess("^", (TokenType[]) {TT_CARET, TT_EOF});
+
+	tTokensSuccess("^^", (TokenType[]) {TT_CARET, TT_CARET, TT_EOF});
+
+	tTokensSuccess("5^12", (TokenType[]) {TT_NUMB_CONSTANT, TT_CARET, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess("+^{", (TokenType[]) {TT_PLUS, TT_CARET, TT_O_CURLY, TT_EOF});
+}
+
+void tokenizerTestAmp() {
+	tStartSection("Tokenizer test amp");
+
+	tTokensSuccess("&", (TokenType[]) {TT_AMP, TT_EOF});
+
+	tTokensSuccess("&&&", (TokenType[]) {TT_DBLE_AMP, TT_AMP, TT_EOF});
+
+	tTokensSuccess("5&12", (TokenType[]) {TT_NUMB_CONSTANT, TT_AMP, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess("+&{", (TokenType[]) {TT_PLUS, TT_AMP, TT_O_CURLY, TT_EOF});
+}
+
+void tokenizerTestBar() {
+	tStartSection("Tokenizer test bar");
+
+	tTokensSuccess("|", (TokenType[]) {TT_BAR, TT_EOF});
+
+	tTokensSuccess("|||", (TokenType[]) {TT_DBLE_BAR, TT_BAR, TT_EOF});
+
+	tTokensSuccess("132|value", (TokenType[]) {TT_NUMB_CONSTANT, TT_BAR, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("{|)", (TokenType[]) {TT_O_CURLY, TT_BAR, TT_C_PARAN, TT_EOF});
+}
+
+void tokenizerTestEql() {
+	tStartSection("Tokenizer test equal");
+
+	tTokensSuccess("=", (TokenType[]) {TT_EQL, TT_EOF});
+
+	tTokensSuccess("===", (TokenType[]) {TT_DBLE_EQL, TT_EQL, TT_EOF});
+
+	tTokensSuccess("value = 5", (TokenType[]) {TT_IDENTIFIER, TT_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestPlusEql() {
+	tStartSection("Tokenizer test plus equal");
+
+	tTokensSuccess("+=", (TokenType[]) {TT_PLUS_EQL, TT_EOF});
+
+	tTokensSuccess("++=", (TokenType[]) {TT_INC, TT_EQL, TT_EOF});
+	
+	tTokensSuccess("+++=", (TokenType[]) {TT_INC, TT_PLUS_EQL, TT_EOF});
+
+	tTokensSuccess("value += 4", (TokenType[]) {TT_IDENTIFIER, TT_PLUS_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestMinusEql() {
+	tStartSection("Tokenizer test plus equal");
+
+	tTokensSuccess("-=", (TokenType[]) {TT_MINUS_EQL, TT_EOF});
+
+	tTokensSuccess("--=", (TokenType[]) {TT_DEC, TT_EQL, TT_EOF});
+	
+	tTokensSuccess("---=", (TokenType[]) {TT_DEC, TT_MINUS_EQL, TT_EOF});
+
+	tTokensSuccess("value -= 4", (TokenType[]) {TT_IDENTIFIER, TT_MINUS_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestMultEql() {
+	tStartSection("Tokenizer test mult equal");
+
+	tTokensSuccess("*=", (TokenType[]) {TT_MULT_EQL, TT_EOF});
+
+	tTokensSuccess("**=", (TokenType[]) {TT_MULT, TT_MULT_EQL, TT_EOF});
+	
+	tTokensSuccess("***=", (TokenType[]) {TT_MULT, TT_MULT, TT_MULT_EQL, TT_EOF});
+
+	tTokensSuccess("value *= 4", (TokenType[]) {TT_IDENTIFIER, TT_MULT_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestDivEql() {
+	tStartSection("Tokenier test divide equal");
+
+	tTokensSuccess("/=", (TokenType[]) {TT_DIV_EQL, TT_EOF});
+
+	tTokensSuccess("/ /=", (TokenType[]) {TT_DIV, TT_DIV_EQL, TT_EOF});
+
+	tTokensSuccess("/ / /=", (TokenType[]) {TT_DIV, TT_DIV, TT_DIV_EQL, TT_EOF});
+
+	tTokensSuccess("///=", (TokenType[]) {TT_EOF}); /* is a comment */
+
+	tTokensSuccess("value /= 4", (TokenType[]) {TT_IDENTIFIER, TT_DIV_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestPercEql() {
+	tStartSection("Tokenizer test perc equal");
+
+	tTokensSuccess("%=", (TokenType[]) {TT_PERC_EQL, TT_EOF});
+
+	tTokensSuccess("%%=", (TokenType[]) {TT_PERC, TT_PERC_EQL, TT_EOF});
+
+	tTokensSuccess("value%=4;", (TokenType[]) {TT_IDENTIFIER, TT_PERC_EQL, TT_NUMB_CONSTANT, TT_SEMI_COLON, TT_EOF});
+}
+
+void tokenizerTestCaretEql() {
+	tStartSection("Tokenizer test caret equal");
+
+	tTokensSuccess("^=", (TokenType[]) {TT_CARET_EQL, TT_EOF});
+
+	tTokensSuccess("^^=", (TokenType[]) {TT_CARET, TT_CARET_EQL, TT_EOF});
+
+	tTokensSuccess("value ^= 5;", (TokenType[]) {TT_IDENTIFIER, TT_CARET_EQL, TT_NUMB_CONSTANT, TT_SEMI_COLON, TT_EOF});
+}
+
+void tokenizerTestAmpEql() {
+	tStartSection("Tokenizer test amp equal");
+
+	tTokensSuccess("&= ", (TokenType[]) {TT_AMP_EQL, TT_EOF});
+
+	tTokensSuccess("&&=", (TokenType[]) {TT_DBLE_AMP, TT_EQL, TT_EOF});
+
+	tTokensSuccess("&&&=", (TokenType[]) {TT_DBLE_AMP, TT_AMP_EQL, TT_EOF});
+
+	tTokensSuccess("value &= 1;", (TokenType[]) {TT_IDENTIFIER, TT_AMP_EQL, TT_NUMB_CONSTANT, TT_SEMI_COLON, TT_EOF});
+}
+
+void tokenizerTestBarEql() {
+	tStartSection("Tokenizer test bar equal");
+
+	tTokensSuccess("|=", (TokenType[]) {TT_BAR_EQL, TT_EOF});
+
+	tTokensSuccess("||=", (TokenType[]) {TT_DBLE_BAR, TT_EQL, TT_EOF});
+
+	tTokensSuccess("|||=", (TokenType[]) {TT_DBLE_BAR, TT_BAR_EQL, TT_EOF});
+
+	tTokensSuccess("value |= 0b100101", (TokenType[]) {TT_IDENTIFIER, TT_BAR_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestDbleEql() {
+	tStartSection("Tokenizer test double equal");
+
+	tTokensSuccess("==", (TokenType[]) {TT_DBLE_EQL, TT_EOF});
+
+	tTokensSuccess("===", (TokenType[]) {TT_DBLE_EQL, TT_EQL, TT_EOF});
+
+	tTokensSuccess("value == 573", (TokenType[]) {TT_IDENTIFIER, TT_DBLE_EQL, TT_NUMB_CONSTANT, TT_EOF});
+
+	tTokensSuccess(
+			"value1 = value == 583;",
+			(TokenType[]) {TT_IDENTIFIER, TT_EQL, TT_IDENTIFIER, TT_DBLE_EQL, TT_NUMB_CONSTANT, TT_SEMI_COLON, TT_EOF});
+}
+
+void tokenizerTestNotEql() {
+	tStartSection("Tokenizer test not equal");
+
+	tTokensSuccess("!=", (TokenType[]) {TT_NOT_EQL, TT_EOF});
+
+	tTokensSuccess("!!==", (TokenType[]) {TT_EXCLAIM, TT_NOT_EQL, TT_EQL, TT_EOF});
+
+	tTokensSuccess("!value!=523", (TokenType[]) {TT_EXCLAIM, TT_IDENTIFIER, TT_NOT_EQL, TT_NUMB_CONSTANT, TT_EOF});
+}
+
+void tokenizerTestLess() {
+	tStartSection("Tokenizer test less");
+
+	tTokensSuccess("<", (TokenType[]) {TT_LESS, TT_EOF});
+
+	tTokensSuccess("5<!value", (TokenType[]) {TT_NUMB_CONSTANT, TT_LESS, TT_EXCLAIM, TT_IDENTIFIER, TT_EOF});
+}
+
+void tokenizerTestGreater() {
+	tStartSection("Tokenizer test greater");
+
+	tStartSection("Tokenizer test greater");
+
+	tTokensSuccess(">", (TokenType[]) {TT_GREATER, TT_EOF});
+
+	tTokensSuccess("-5>~value", (TokenType[]) {TT_MINUS, TT_NUMB_CONSTANT, TT_GREATER, TT_TILDE, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("=<>!", (TokenType[]) {TT_EQL, TT_LESS, TT_GREATER, TT_EXCLAIM, TT_EOF});
+}
+
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
@@ -387,4 +720,33 @@ void tokenizerTest() {
 	tokenizerTestCloseCurly();
 	tokenizerTestBraces();
 	tokenizerTestParam();
+	tokenizerTestSemicolon();
+	tokenizerTestColon();
+	tokenizerTestDots();
+	tokenizerTestQuestion();
+	tokenizerTestPeriod();
+	tokenizerTestArrow();
+	tokenizerTestTilde();
+	tokenizerTestExclaim();
+	tokenizerTestPlus();
+	tokenizerTestMinus();
+	tokenizerTestMult();
+	tokenizerTestDiv();
+	tokenizerTestPerc();
+	tokenizerTestCaret();
+	tokenizerTestAmp();
+	tokenizerTestBar();
+	tokenizerTestEql();
+	tokenizerTestPlusEql();
+	tokenizerTestMinusEql();
+	tokenizerTestMultEql();
+	tokenizerTestDivEql();
+	tokenizerTestPercEql();
+	tokenizerTestCaretEql();
+	tokenizerTestAmpEql();
+	tokenizerTestBarEql();
+	tokenizerTestDbleEql();
+	tokenizerTestNotEql();
+	tokenizerTestLess();
+	tokenizerTestGreater();
 }

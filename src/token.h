@@ -156,8 +156,15 @@ typedef struct Token {
 	/**
 	 * @brief Copy of non-keyword token text
 	 *
-	 * Is a copy of the source code representating non-keywords
+	 * @details Is a copy of the source code representating non-keywords
 	 * like identifiers or constants
+	 * - TT_IDENTIFIER: is the identifier name
+	 * - TT_NUMB_CONSTANT: Is the ascii representation of the number (as seen in source code)
+	 * - TT_STR_CONSTANT: Is the string itself (Without `"`)
+	 * - TT_CHAR_CONSTANT: Is the character
+	 *
+	 *   @note Numberic constants encompess every type of number. (ints, floating points,
+	 *   hex, binary). It is stored as a number and the actual value is parsed later
 	 */
 	char *contents;
 
