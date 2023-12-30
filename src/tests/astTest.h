@@ -261,11 +261,17 @@ void astConstantTest() {
 				AST_UNKNOWN,
 			});
 
-/*
-	tAstDebug(
+	tAstSuccess(
 			"double d_test = .52e3;\n"
-			"double d_test2 = 52.e+5;\n");
+			"double d_test2 = 52.e+5;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_FLOAT_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_FLOAT_CONSTANT,
+				AST_UNKNOWN,
+			});
 
+/*
 	tAstDebug(
 			"char c_test = '5';\n"
 			"char c_test2 = '\\n';\n"

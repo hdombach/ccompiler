@@ -5,6 +5,7 @@
 #include "util/stream.h"
 #include "util/tokList.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -131,6 +132,12 @@ void _parseChar(TokenzState *state) {
 	}
 }
 
+/**
+ * @brief Parses "keywords" which aren't made of ascii characters
+ * For all *most* symbols, If you remove the last character, you
+ * still get a valid symbol. For example, `<<=` is a valid symbol.
+ * If you remove the last `=`, you get `<<`
+ */
 void _parseSymbol(TokenzState *state) {
 	TokenType tempTokenType;
 	Token token;
@@ -146,11 +153,19 @@ void _parseSymbol(TokenzState *state) {
 	}
 	dstrApp(&state->curWord, state->curChar);
 	tempTokenType = findPunctuation(state->curWord.data);
-	if (tempTokenType != TT_UNKNOWN && state->curChar) {
+	if (state->lastSymbolType == TT_PERIOD && isdigit(state->curChar)) {
+		/**
+		 * Yet another edge case because `.23` is a valid number
+		 * but the beggining looks like a symbol
+		 */
+		state->type = TOKENZ_STATE_NUMBER;
+		_parseNumber(state);
+	} else if (tempTokenType != TT_UNKNOWN && state->curChar) {
 		state->lastSymbolType = tempTokenType;
 	} else if (strcmp(state->curWord.data, "..") == 0) {
-		//This one edge case breaks the algorithm for 
-		//determaining punctionation based tokens.
+		/* The symbole `...` Is the one token that doesn't
+		 * have a valid shorter version
+		 */
 	} else if (state->lastSymbolType != TT_UNKNOWN) {
 		initSymToken(&token, state, state->lastSymbolType);
 		tokListApp(&state->tokens, &token);

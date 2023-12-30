@@ -34,6 +34,10 @@ void tokenizerTestNum() {
 	tTokensSuccess(
 		"{42{hi",
 		(TokenType[]) {TT_O_CURLY, TT_NUMB_CONSTANT, TT_O_CURLY, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess(
+		"5.2f 42.E4 31.5L .123",
+		(TokenType[]) {TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_EOF});
 }
 
 void tokenizerTestChar() {
@@ -404,9 +408,6 @@ void tokenizerTestDots() {
 	tTokensSuccess("...", (TokenType[]) {TT_DOTS, TT_EOF});
 
 	tTokensSuccess("....", (TokenType[]) {TT_DOTS, TT_PERIOD, TT_EOF});
-
-	TODO("Should should probably be better handeled");
-	tTokensSuccess("2..2", (TokenType[]) {TT_NUMB_CONSTANT, TT_EOF});
 }
 
 void tokenizerTestQuestion() {
