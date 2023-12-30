@@ -44,6 +44,7 @@ void tTokensDebug(const char *code) {
 
 	printf("tokens: ");
 	printDList(&tokens, (PrintFunc) printToken);
+	printf("\n");
 }
 
 static void _tNode(ASTNode *node, ASTTravCtx *ctx) {

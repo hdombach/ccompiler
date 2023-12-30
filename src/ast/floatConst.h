@@ -11,6 +11,20 @@ typedef struct Token Token;
  */
 
 /**
+ * @brief What ASTFloatConstant stores internally
+ *
+ * Also used to determain the default numeric type for a
+ * float constant
+ * - `5.2`: `double`
+ * - `5.2l`: `double`
+ * - `5.2f`: `float`
+ */
+typedef enum ASTFloatConstantType {
+	FCT_DOUBLE,
+	FCT_FLOAT,
+} ASTFloatConstantType;
+
+/**
  * @brief Represents a float constant
  * @extends ASTNode
  *
@@ -19,7 +33,11 @@ typedef struct Token Token;
 typedef struct ASTFloatConstant {
 	ASTNode node;
 	/** @brief The parsed floating point value */
-	double value;
+	ASTFloatConstantType valueType;
+	union {
+		double d;
+		float f;
+	} value;
 } ASTFloatConstant;
 
 /**

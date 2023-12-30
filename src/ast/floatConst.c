@@ -49,13 +49,13 @@ int parseASTFloatConstant(ASTFloatConstant *node, const Token *tok) {
 	if (tok->type != TT_NUMB_CONSTANT) return 0;
 
 	char const *content = tok->contents;
-	node->value = 0;
 
 	if (!*content) return 0;
 
 	double fracPart = 0;
 	unsigned long int wholePart = 0;
 	unsigned long int expPart = 0;
+	double value = 0;
 	int isNegExp = 0;
 
 	content += _atoi(content, &wholePart);
@@ -74,13 +74,30 @@ int parseASTFloatConstant(ASTFloatConstant *node, const Token *tok) {
 		content += _atoi(content, &expPart);
 	}
 
+	value = wholePart + fracPart;
+	if (isNegExp) {
+		value *= pow(0.1, expPart);
+	} else {
+		value *= pow(10, expPart);
+	}
+
+	node->valueType = FCT_DOUBLE;
+	if (*content == 'f' || *content == 'F') {
+		node->valueType = FCT_FLOAT;
+		content++;
+	} else if (*content == 'l' || *content == 'L') {
+		node->valueType = FCT_DOUBLE;
+		content++;
+	} else {
+		node->valueType = FCT_DOUBLE;
+	}
+
 	if (*content) return 0;
 
-	node->value = wholePart + fracPart;
-	if (isNegExp) {
-		node->value *= pow(0.1, expPart);
+	if (node->valueType == FCT_DOUBLE) {
+		node->value.d = value;
 	} else {
-		node->value *= pow(10, expPart);
+		node->value.f = value;
 	}
 
 	node->node.type = AST_FLOAT_CONSTANT;
@@ -92,7 +109,11 @@ int printASTFloatConstant(const ASTFloatConstant *node) {
 	
 	n += printf("{");
 	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
-	n += printf(", \"value\": %f", node->value);
+	if (node->valueType == FCT_DOUBLE) {
+		n += printf(", \"value\": %f", node->value.d);
+	} else {
+		n += printf(", \"value\": %f", node->value.f);
+	}
 	n += printf("}");
 
 	return n;

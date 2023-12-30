@@ -233,30 +233,43 @@ void astInitializersTest() {
 }
 
 void astConstantTest() {
-	tAstDebug(
-			"int int_test = 5;\n");
+	tAstSuccess(
+			"int int_test = 5;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_INT_CONSTANT,
+				AST_UNKNOWN
+			});
 
-	tTokensDebug("float f_test = 5.23;\n");
+	tAstSuccess(
+			"float f_test = 5.23f;\n"
+			"float f_test2 = -5.235;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_FLOAT_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_PREFIX_OPERATION, AST_FLOAT_CONSTANT,
+				AST_UNKNOWN,
+			});
 
-	tAstDebug(
-			"float f_test = 523;\n");
+	tAstSuccess(
+			"double d_test = 5.23F;\n"
+			"double d_test2 = -5.235;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_FLOAT_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_PREFIX_OPERATION, AST_FLOAT_CONSTANT,
+				AST_UNKNOWN,
+			});
 
 /*
 	tAstDebug(
-			"float f_test = 5.23f;\n");
-
-	tAstDebug(
-			"float f_test = 5.23f;\n"
-			"float f_test2 = -5.235;\n");
-
-	tAstDebug(
-			"double f_test = 5.23f;\n"
-			"double f_test2 = -5.235;\n");
+			"double d_test = .52e3;\n"
+			"double d_test2 = 52.e+5;\n");
 
 	tAstDebug(
 			"char c_test = '5';\n"
-			"char c_test2 = '\\n'\n;"
-			"char c_test3 = '\''\n;");
+			"char c_test2 = '\\n';\n"
+			"char c_test3 = '\\'';\n");
 
 	tAstDebug(
 			"char *s_test = \"hello world\";\n"
@@ -264,7 +277,7 @@ void astConstantTest() {
 
 	tAstDebug(
 			"struct box_t box = prev_box;\n");
-*/
+			*/
 }
 
 void astTests() {
