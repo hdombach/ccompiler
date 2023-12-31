@@ -36,7 +36,7 @@ int parseASTIntConstant(ASTIntConstant *node, Token const *tok);
 /**
  * @brief Debug print the int constant
  * @param[in] node
- * @returns The number of tokens parsed
+ * @returns The number of characters printed
  */
 int printASTIntContant(ASTIntConstant const *node);
 

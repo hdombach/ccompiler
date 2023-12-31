@@ -42,6 +42,7 @@ typedef struct ASTFloatConstant {
 
 /**
  * @param[in] node
+ * @param[in] tok
  */
 void initASTFloatConstant(ASTFloatConstant *node, Token const *tok);
 

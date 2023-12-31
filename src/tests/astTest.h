@@ -271,12 +271,19 @@ void astConstantTest() {
 				AST_UNKNOWN,
 			});
 
-/*
-	tAstDebug(
+	tAstSuccess(
 			"char c_test = '5';\n"
 			"char c_test2 = '\\n';\n"
-			"char c_test3 = '\\'';\n");
+			"char c_test3 = '\\'';\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_CHAR_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_CHAR_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_CHAR_CONSTANT,
+				AST_UNKNOWN,
+			});
 
+/*
 	tAstDebug(
 			"char *s_test = \"hello world\";\n"
 			"char *s_test = \"hello \"\"world\";\n");
