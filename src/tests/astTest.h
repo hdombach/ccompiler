@@ -482,6 +482,64 @@ static void astCondOperationTest() {
 
 }
 
+static void astCastOperationTest() {
+	tStartSection("Cast operation test");
+
+	tAstSuccess(
+			"int test = (int) 3.2;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC, AST_FLOAT_CONSTANT,
+				AST_UNKNOWN
+			});
+
+	tAstSuccess(
+			"int test = (int) (float) 3;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC,
+					AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC,
+					AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"typedef int value_t;\n"
+			"int test = (value_t) value;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC, AST_IDENTIFIER_TS,
+					AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = 4 + (int) 2.3f + 5;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_BINARY_OPERATION,
+					AST_INT_CONSTANT,
+					AST_BINARY_OPERATION,
+						AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC, AST_FLOAT_CONSTANT,
+						AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = (int) ++\"hello\"[2];",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_CAST_OPERATION, AST_PARAM, AST_TYPE_SPEC,
+						AST_PREFIX_OPERATION, AST_SUBS_OPERATION, AST_STR_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+}
+
 void astTests() {
 	astTestFile();
 	astSimpleDecl();
@@ -491,4 +549,5 @@ void astTests() {
 	astFuncOperationTest();
 	astSubsOperationTest();
 	astCondOperationTest();
+	astCastOperationTest();
 }

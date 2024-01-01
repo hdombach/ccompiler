@@ -106,7 +106,7 @@ const char *_astNodeTypes[] = {
 	"function call operation",
 	"subscript operation",
 	"conditional operation",
-	"type case operation",
+	"type cast operation",
 	"sizeof type operation",
 	"sizeof expression operation",
 	"binary operation",

@@ -326,7 +326,7 @@ int _parseASTCastOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp1((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTExp2((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->rhs = dupASTNode((ASTNode *) &tempBuf);
 	} else {
