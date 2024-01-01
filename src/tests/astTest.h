@@ -13,7 +13,7 @@
  */
 static void astTests();
 
-void astTestFile() {
+static void astTestFile() {
 	tStartSection("AST File");
 
 	tAstSuccess(
@@ -35,7 +35,7 @@ void astTestFile() {
 			});
 }
 
-void astSimpleDecl() {
+static void astSimpleDecl() {
 	tStartSection("Ast Declaration");
 
 	tAstSuccess(
@@ -123,7 +123,9 @@ void astSimpleDecl() {
 			});
 }
 
-void astDeclaratorTest() {
+static void astDeclaratorTest() {
+	tStartSection("Declarator test");
+
 	tAstSuccess(
 			"void *ptr_test;\n"
 			"void **ptr_test2;\n",
@@ -207,7 +209,9 @@ void astDeclaratorTest() {
 			});
 }
 
-void astInitializersTest() {
+static void astInitializersTest() {
+	tStartSection("Initializer test");
+
 	tAstSuccess(
 			"int test1 = 5;\n"
 			"void *ptr_test = NULL;\n",
@@ -232,7 +236,9 @@ void astInitializersTest() {
 			});
 }
 
-void astConstantTest() {
+static void astConstantTest() {
+	tStartSection("Constant tests");
+
 	tAstSuccess(
 			"int int_test = 5;\n",
 			(ASTNodeType[]) {

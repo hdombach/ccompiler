@@ -15,15 +15,14 @@
  *
  * Internally holds an unsigned int becuase signed numbers are handeled
  * later through the `-` operation
- * 
- * ASTIntConstant does not need to be initialized or freed
- * becuase it does not own any buffers
  */
 typedef struct {
 	ASTNode node;
 	/** @brief The parsed int */
 	unsigned long int value;
 } ASTIntConstant;
+
+void initASTIntConstant(ASTIntConstant *node, Token const *tok);
 
 /**
  * @brief Parses the int constant statement from the token list

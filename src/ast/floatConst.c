@@ -46,6 +46,8 @@ int parseASTFloatConstant(ASTFloatConstant *node, const Token *tok) {
 	AST_VALID(ASTFloatConstant);
 	if (astHasErr()) return 0;
 
+	initASTFloatConstant(node, tok);
+
 	if (tok->type != TT_NUMB_CONSTANT) return 0;
 
 	char const *content = tok->contents;

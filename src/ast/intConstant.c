@@ -53,17 +53,19 @@ int _parseBin(ASTIntConstant *node, char const *content) {
 	return 1;
 }
 
+void initASTIntConstant(ASTIntConstant *node, const Token *tok) {
+	initASTNode((ASTNode *) node, tok);
+}
+
 int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
 	int n = 0;
 
 	AST_VALID(ASTIntConstant);
-	if (astHasErr()) {
-		return 0;
-	}
+	if (astHasErr()) return 0;
 
-	if (tok->type != TT_NUMB_CONSTANT) {
-		return 0;
-	}
+	initASTNode((ASTNode *) node, tok);
+
+	if (tok->type != TT_NUMB_CONSTANT) return 0;
 
 	char const *content = tok->contents;
 	node->value = 0;
