@@ -23,7 +23,7 @@ void tAssert(
 	if (expression) {
 		testsPassed++;
 	} else {
-		logTestFailed(file, line, name, expressionStr);
+		logTestFailed(file, line, curSectionName, name, expressionStr);
 	}
 }
 

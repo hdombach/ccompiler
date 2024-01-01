@@ -540,6 +540,69 @@ static void astCastOperationTest() {
 			});
 }
 
+static void astSizeofOperation() {
+	tStartSection("Sizeof operation tests");
+
+	tAstSuccess(
+			"int test = sizeof(float);",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_SIZEOF_TYPE_OPERATION, AST_PARAM, AST_TYPE_SPEC,
+				AST_UNKNOWN,
+			});
+
+	TODO("Add test for \"sizeof float\"");
+
+	tAstSuccess(
+			"int test = sizeof 4;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_SIZEOF_EXP_OPERATION, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = sizeof(4);",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_SIZEOF_EXP_OPERATION, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess("int test = sizeof value++;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_SIZEOF_EXP_OPERATION, AST_POSTFIX_OPERATION, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+	
+	tAstSuccess(
+			"int test = sizeof value * 3;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION,
+						AST_SIZEOF_EXP_OPERATION, AST_IDENTIFIER,
+						AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = sizeof value++ * 3;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION,
+						AST_SIZEOF_EXP_OPERATION, AST_POSTFIX_OPERATION, AST_IDENTIFIER,
+						AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+}
+
 void astTests() {
 	astTestFile();
 	astSimpleDecl();
@@ -550,4 +613,5 @@ void astTests() {
 	astSubsOperationTest();
 	astCondOperationTest();
 	astCastOperationTest();
+	astSizeofOperation();
 }

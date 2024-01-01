@@ -137,10 +137,23 @@ void logTodo(const char *file, int line, const char *fmt, ...) {
 void logTestFailed(
 		const char *file,
 		int line,
+		const char *section,
 		const char *msg,
 		const char *exp)
 {
-	logErrHead(stderr, "TEST FAILED %s:%d", file, line, file, line);
+	if (file) {
+		logErrHead(stderr, "TEST FAILED %s:%d", file, line);
+	} else {
+		logErrHead(stderr, "TEST FAILED");
+	}
 
-	fprintf(stderr, "%s (%s)\n", exp, msg);
+	if (exp) {
+		fprintf(stderr, "%s ", exp);
+	}
+
+	if (msg) {
+		fprintf(stderr, "(%s:%s)\n", section, msg);
+	} else {
+		fprintf(stderr, "(%s)\n", section);
+	}
 }

@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -120,7 +121,7 @@ ASTNode *astFuncOperationGetChild(ASTFuncOperation *node, int index) {
  * Subscript Operation
  *************************************************************/
 
-int _parseASTSubscriptOperation(
+static int _parseASTSubscriptOperation(
 		ASTOperation *node,
 		const Token *tok,
 		ASTNode *lhs,
@@ -295,7 +296,7 @@ ASTNode *astCondOperationGetChild(ASTCondOperation *node, int index) {
  * Type cast Operation
  *************************************************************/
 
-int _parseASTCastOperation(
+static int _parseASTCastOperation(
 		ASTOperation *node,
 		const Token *tok,
 		struct ASTScope *scope)
@@ -340,10 +341,10 @@ int _parseASTCastOperation(
 }
 
 /*************************************************************
- * Sizeof Operation
+ * Sizeof Type Operation
  *************************************************************/
 
-int _parseASTSizeofOperation(
+static int _parseASTSizeofTypeOperation(
 		ASTOperation *node,
 		Token const *tok,
 		struct ASTScope *scope)
@@ -367,32 +368,60 @@ int _parseASTSizeofOperation(
 
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
-
-		if ((res = parseASTParam((ASTParam *) &tempBuf, tok + n, scope))) {
-			n += res;
-			node->rhs = dupASTNode((ASTNode *) &tempBuf);
-		} else {
-			freeASTOperation(node);
-			return 0;
-		}
-
-		if (tok[n].type == TT_C_PARAN) {
-			n++;
-		} else {
-			freeASTOperation(node);
-			return 0;
-		}
-		node->node.type = AST_SIZEOF_TYPE_OPERATION;
 	} else {
-		if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
-			n += res;
-			node->rhs = dupASTNode((ASTNode *) &tempBuf);
-		} else {
-			freeASTOperation(node);
-			return 0;
-		}
-		node->node.type = AST_SIZEOF_EXP_OPERATION;
+		freeASTOperation(node);
+		return 0;
 	}
+
+	if ((res = parseASTParam((ASTParam *) &tempBuf, tok + n, scope))) {
+		n += res;
+		node->rhs = dupASTNode((ASTNode *) &tempBuf);
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_C_PARAN) {
+		n++;
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	node->node.type = AST_SIZEOF_TYPE_OPERATION;
+	return n;
+}
+
+static int _parseASTSizeofExpOperation(
+		ASTOperation *node,
+		Token const *tok,
+		struct ASTScope *scope)
+{
+	AST_VALID(ASTOperation);
+	int n = 0, res;
+	ASTNodeBuf tempBuf;
+
+	initASTOperation(node, tok);
+	if (astHasErr()) {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	if (tok[n].type == TT_SIZEOF) {
+		n++;
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+
+	if ((res = parseASTExp2((ASTNode *) &tempBuf, tok + n, scope))) {
+		n += res;
+		node->rhs = dupASTNode((ASTNode *) &tempBuf);
+	} else {
+		freeASTOperation(node);
+		return 0;
+	}
+	node->node.type = AST_SIZEOF_EXP_OPERATION;
 
 	return n;
 }
@@ -835,7 +864,9 @@ int parseASTOperation2(
 		n += res;
 	} else if ((res = _parseASTCastOperation(node, tok + n, scope))) {
 		n += res;
-	} else if ((res = _parseASTSizeofOperation(node, tok + n, scope))) {
+	} else if ((res = _parseASTSizeofTypeOperation(node, tok + n, scope))) {
+		n += res;
+	} else if ((res = _parseASTSizeofExpOperation(node, tok + n, scope))) {
 		n += res;
 	} else {
 		return 0;

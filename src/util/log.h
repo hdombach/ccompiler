@@ -37,4 +37,12 @@ void logTodo(const char *file, int line, const char *fmt, ...);
 #define TODO(msg, ...) \
 	logTodo(__FILE__, __LINE__, msg __VA_OPT__(,) __VA_ARGS__)
 
-void logTestFailed(const char *file, int line, const char *msg, const char *exp);
+/**
+ * @brief Prints a test failed message
+ * @param[in, opt] file
+ * @param[in, opt] line
+ * @param[in] section
+ * @param[in, opt] msg
+ * @param[in, opt] exp
+ */
+void logTestFailed(const char *file, int line, const char *section, const char *msg, const char *exp);

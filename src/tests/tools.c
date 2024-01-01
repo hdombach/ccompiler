@@ -50,12 +50,13 @@ void tTokensDebug(const char *code) {
 	printf("\n");
 }
 
-static void _tNode(ASTNode *node, ASTTravCtx *ctx) {
+static ASTTravRes _tNode(ASTNode *node, ASTTravCtx *ctx) {
 	ASTNodeType **types = (ASTNodeType **) ctx->customCtx;
 	char msg[256];
 	snprintf(msg, sizeof(msg), "%s != %s", astNodeTypeStr(node->type), astNodeTypeStr(**types));
-	T_ASSERT(msg, node->type == **types);
+	tAssert(NULL, -1, msg, node->type == **types, NULL);
 	(*types)++;
+	return ASTT_SUCCESS;
 }
 
 void tAstSuccess(const char *code, ASTNodeType *types) {
@@ -68,7 +69,7 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 	if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tNode, NULL, curType);
 	} else {
-		T_ASSERT("parseASTFile failed", 0);
+		tAssert(NULL, -1, "parseASTFile failed", 0, NULL);
 	}
 }
 
@@ -104,6 +105,6 @@ void tAstDebug(const char *code) {
 		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _debugNode, NULL, NULL);
 		printf("\n");
 	} else {
-		T_ASSERT("parseASTFile failed", 0);
+		tAssert(NULL, -1, "parseASTFile failed", 0, NULL);
 	}
 }
