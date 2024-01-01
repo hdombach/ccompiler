@@ -9,7 +9,7 @@
 #include "expression.h"
 #include "astUtil.h"
 #include "../util/util.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "param.h"
 
 /*************************************************************

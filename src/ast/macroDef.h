@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../token.h"
+#include "../tok/token.h"
 #include "../util/dlist.h"
 #include "../util/tokList.h"
 #include "astUtil.h"
+
 
 typedef struct _MacroDefNode {
 	Token *token;

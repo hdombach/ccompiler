@@ -2,7 +2,7 @@
 
 #include "../util/log.h"
 #include "../ast/node.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "../ast/node.h"
 
 /**

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/dlist.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "node.h"
 
 struct ASTDeclaration;

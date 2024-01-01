@@ -3,9 +3,8 @@
 #include <stdlib.h>
 
 #include "macroDef.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "../util/dlist.h"
-#include "tokenParser.h"
 #include "../util/util.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"

@@ -4,8 +4,8 @@
 
 #include "token.h"
 #include "tokenizer.h"
-#include "util/log.h"
-#include "util/util.h"
+#include "../util/log.h"
+#include "../util/util.h"
 
 void initToken(Token *token) {
 	token->type = TT_UNKNOWN;

@@ -4,7 +4,7 @@
 #include "param.h"
 #include "astUtil.h"
 #include "declaration.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "specialDecl.h"
 
 void initASTParam(ASTParam *param) {

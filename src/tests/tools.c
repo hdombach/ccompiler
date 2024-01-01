@@ -3,8 +3,8 @@
 #include "tools.h"
 #include "../util/dlist.h"
 #include "../util/stream.h"
-#include "../tokenizer.h"
-#include "../token.h"
+#include "../tok/tokenizer.h"
+#include "../tok/token.h"
 #include "../ast/file.h"
 #include "test.h"
 

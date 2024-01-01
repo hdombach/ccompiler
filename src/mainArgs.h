@@ -22,10 +22,10 @@ typedef struct {
 	int help;
 	/** @brief The verbosity level */
 	int verbose;
-} Args;
+} MainArgs;
 
 /** @brief A global instance of the parsed args */
-extern Args g_args;
+extern MainArgs g_args;
 
 /** @brief The help message to pring */
 extern const char *ARGS_HELP_MSG;
@@ -33,11 +33,11 @@ extern const char *ARGS_HELP_MSG;
 /** 
  * @param[out] args
  */
-void initArgs(Args *args);
+void initMainArgs(MainArgs *args);
 /**
  * @param[in] args
  */
-void freeArgs(Args *args);
+void freeMainArgs(MainArgs *args);
 
 /**
  * @brief Parse args for ccompiler
@@ -48,10 +48,10 @@ void freeArgs(Args *args);
  * Parses the args passed directly by main.  
  * Assumes that the first argv element is the name of the program
  */
-int parseArgs(int argc, char **argv, Args *args);
+int parseMainArgs(int argc, char **argv, MainArgs *args);
 
 /**
  * @brief Debug print args
  * @param[in] args
  */
-int argsPrint(Args const *args);
+int argsMainPrint(MainArgs const *args);

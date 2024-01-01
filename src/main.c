@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "argParser.h"
+#include "mainArgs.h"
 #include "ast/astUtil.h"
 #include "ast/macroDef.h"
 #include "ast/node.h"
 #include "ast/tokenParser.h"
 #include "ast/file.h"
-#include "preprocessor.h"
+#include "tok/preprocessor.h"
 #include "sem/scope.h"
-#include "token.h"
-#include "tokenizer.h"
+#include "tok/token.h"
+#include "tok/tokenizer.h"
 #include "util/log.h"
 #include "util/stream.h"
 #include "util/tokList.h"
@@ -27,16 +27,16 @@ int main(int argc, char **argv) {
 	TokList tokens;
 	initCerr();
 
-	initArgs(&g_args);
+	initMainArgs(&g_args);
 
-	if (!parseArgs(argc, argv, &g_args)) {
-		freeArgs(&g_args);
+	if (!parseMainArgs(argc, argv, &g_args)) {
+		freeMainArgs(&g_args);
 		return 1;
 	}
 
 	if (g_args.help) {
 		printf("%s\n", ARGS_HELP_MSG);
-		freeArgs(&g_args);
+		freeMainArgs(&g_args);
 		return 0;
 	}
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 		freeTokList(&tokens);
 	}
 
-	freeArgs(&g_args);
+	freeMainArgs(&g_args);
 	freeCerr();
 	return 0;
 }

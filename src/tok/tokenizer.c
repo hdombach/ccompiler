@@ -1,9 +1,9 @@
 #include "tokenizer.h"
 #include "token.h"
-#include "util/dlist.h"
-#include "util/dstr.h"
-#include "util/stream.h"
-#include "util/tokList.h"
+#include "../util/dlist.h"
+#include "../util/dstr.h"
+#include "../util/stream.h"
+#include "../util/tokList.h"
 
 #include <ctype.h>
 #include <stdio.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../token.h"
+#include "../tok/token.h"
 #include "compStatement.h"
 #include "declaration.h"
 #include "specialDecl.h"

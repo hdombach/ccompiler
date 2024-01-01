@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../token.h"
+#include "../tok/token.h"
 
 typedef enum {
 	TP_FAILED = 0,

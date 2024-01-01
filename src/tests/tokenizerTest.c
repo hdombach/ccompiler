@@ -1,7 +1,7 @@
 #include "tokenizerTest.h"
 #include "test.h"
 #include "tools.h"
-#include "../token.h"
+#include "../tok/token.h"
 
 void tokenizerTestIdentifier() {
 	tStartSection("Tokenizer identifier");

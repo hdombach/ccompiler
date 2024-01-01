@@ -1,7 +1,7 @@
 #pragma once
 
 #include "expression.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "../util/dlist.h"
 #include "node.h"
 

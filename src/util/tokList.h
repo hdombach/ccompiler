@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "dlist.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "callbacks.h"
 
 typedef DList TokList;

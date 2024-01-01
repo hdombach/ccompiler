@@ -1,13 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "argParser.h"
-#include "util/dlist.h"
-#include "util/util.h"
-#include "util/callbacks.h"
+#include "mainArgs.h"
 #include "util/wordList.h"
 
-Args g_args;
+MainArgs g_args;
 
 const char *ARGS_HELP_MSG =
 "usage: cmd [-h | --help] file...\n"
@@ -20,7 +17,7 @@ const char *ARGS_HELP_MSG =
  * Parses on argument from the provided args
  * REturns the number of parsed words or 0 on failure
  */
-int _parseArg(int argc, char **argv, Args *args) {
+static int _parseArg(int argc, char **argv, MainArgs *args) {
 	char *tempStr;
 
 	if (argc < 1) {
@@ -43,17 +40,17 @@ int _parseArg(int argc, char **argv, Args *args) {
 	}
 }
 
-void initArgs(Args *args) {
+void initMainArgs(MainArgs *args) {
 	args->help = 0;
 	args->verbose = 0;
 	initWorldList(&args->files);
 }
 
-void freeArgs(Args *args) {
+void freeMainArgs(MainArgs *args) {
 	destroyWordList(&args->files);
 }
 
-int parseArgs(int argc, char **argv, Args *args) {
+int parseMainArgs(int argc, char **argv, MainArgs *args) {
 	int progress;
 	int parseRes;;
 
@@ -72,7 +69,7 @@ int parseArgs(int argc, char **argv, Args *args) {
 	return 1;
 }
 
-int argsPrint(const Args *args) {
+int argsMainPrint(const MainArgs *args) {
 	int n = 0;
 	n += printf("{");
 	n += printf("\"help\": %d", args->help);

@@ -6,7 +6,7 @@
 #include "selection.h"
 #include "node.h"
 #include "statement.h"
-#include "../token.h"
+#include "../tok/token.h"
 
 void initASTIf(ASTIf *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok);

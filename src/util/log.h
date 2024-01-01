@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "../token.h"
+#include "../tok/token.h"
 
 struct Token;
 

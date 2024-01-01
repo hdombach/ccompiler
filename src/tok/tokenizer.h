@@ -1,9 +1,9 @@
 #pragma once
 
 #include "token.h"
-#include "util/dstr.h"
-#include "util/stream.h"
-#include "util/tokList.h"
+#include "../util/dstr.h"
+#include "../util/stream.h"
+#include "../util/tokList.h"
 
 /**
  * @file

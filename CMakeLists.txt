@@ -5,9 +5,9 @@ project(ccompiler)
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
-set(COMMON_DIRS src/ast src/sem src/util)
+set(COMMON_DIRS src/ast src/sem src/util src/tok)
 
-set(COMMON_SOURCES "src/preprocessor.c" "src/token.c" "src/tokenizer.c")
+set(COMMON_SOURCES "")
 
 foreach(COMMON_DIR ${COMMON_DIRS})
 	file(GLOB TMP_SOURCES "${COMMON_DIR}/*.c")
@@ -15,7 +15,8 @@ foreach(COMMON_DIR ${COMMON_DIRS})
 	list(APPEND COMMON_SOURCES ${TMP_SOURCES})
 endforeach()
 
-set(CCOMPILER_SOURCES src/main.c src/argParser.c ${COMMON_SOURCES})
+file(GLOB CCOMPILER_SOURCES "src/*.c")
+list(APPEND CCOMPILER_SOURCES ${COMMON_SOURCES})
 
 add_executable(ccompiler ${CCOMPILER_SOURCES})
 target_link_libraries(ccompiler m)

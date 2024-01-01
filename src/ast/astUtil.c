@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "astUtil.h"
-#include "../token.h"
+#include "../tok/token.h"
 
 char astErrMsgBuf[AST_ERR_MSG_S];
 char *_astErrMsg = NULL;

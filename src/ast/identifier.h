@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "node.h"
-#include "../token.h"
+#include "../tok/token.h"
 #include "../util/util.h"
 #include "../sem/type.h"
 
