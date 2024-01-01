@@ -378,6 +378,74 @@ static void astFuncOperationTest() {
 			});
 }
 
+static void astSubsOperationTest() {
+	tStartSection("Subscript operation test");
+
+	tAstSuccess(
+			"int main() {\n"
+			"\thello[5];"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\thello[5][6];"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_SUBS_OPERATION, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\thello[13].hello2[14];"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_SUBS_OPERATION, AST_BINARY_OPERATION, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT, AST_IDENTIFIER, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tgetList()[2];"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_SUBS_OPERATION, AST_FUNC_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tgetList[2]();"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"char thing = \"hello world\"[2];",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_SUBS_OPERATION, AST_STR_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+}
+
 void astTests() {
 	astTestFile();
 	astSimpleDecl();
@@ -385,4 +453,5 @@ void astTests() {
 	astInitializersTest();
 	astConstantTest();
 	astFuncOperationTest();
+	astSubsOperationTest();
 }
