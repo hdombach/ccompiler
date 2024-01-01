@@ -9,6 +9,7 @@
 #include "node.h"
 #include "operation.h"
 #include "../sem/scope.h"
+#include "stringConstant.h"
 
 int parseASTExp(ASTNode *node, Token const *tok, ASTScope *scope) {
 	return parseASTExp15(node, tok, scope);
@@ -29,6 +30,8 @@ int parseASTExpSing(ASTNode *node, Token const *tok, ASTScope *scope) {
 	} else if ((res = parseASTFloatConstant((ASTFloatConstant *) node, tok))) {
 		return res;
 	} else if ((res = parseASTCharConstant((ASTCharConstant *) node, tok))) {
+		return res;
+	} else if ((res = parseASTStringConstant((ASTStringConstant *) node, tok))) {
 		return res;
 	} else if ((res = parseASTIdentifier((ASTIdentifier *) node, tok, scope))) {
 		return res;

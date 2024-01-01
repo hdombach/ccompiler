@@ -283,14 +283,23 @@ void astConstantTest() {
 				AST_UNKNOWN,
 			});
 
-/*
-	tAstDebug(
+	tAstSuccess(
 			"char *s_test = \"hello world\";\n"
-			"char *s_test = \"hello \"\"world\";\n");
+			"char *s_test2 = \"hello \\\"world\";\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_POINTER_DECL, AST_IDENTIFIER_DECL, AST_STR_CONSTANT,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_POINTER_DECL, AST_IDENTIFIER_DECL, AST_STR_CONSTANT,
+				AST_UNKNOWN,
+			});
 
-	tAstDebug(
-			"struct box_t box = prev_box;\n");
-			*/
+	tAstSuccess(
+			"struct box_t box = prev_box;\n",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_STRUCT_DECL, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
 }
 
 void astTests() {
@@ -298,6 +307,5 @@ void astTests() {
 	astSimpleDecl();
 	astDeclaratorTest();
 	astInitializersTest();
-	TODO("Figure out why constant tests aren't working");
 	astConstantTest();
 }

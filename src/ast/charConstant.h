@@ -19,7 +19,7 @@ typedef struct ASTCharConstant {
 } ASTCharConstant;
 
 /**
- * @param[in] node
+ * @param[out] node
  * @param[in] tok
  */
 void initASTCharConstant(ASTCharConstant *node, const Token *tok);
@@ -37,7 +37,7 @@ int parseASTCharConstant(ASTCharConstant *node, Token const *tok);
  * @param[in] node
  * @returns The number of characters printed
  */
-int printAStCharConstant(ASTCharConstant const *node);
+int printASTCharConstant(ASTCharConstant const *node);
 
 /**
  * @brief Impliments astNodeChildCount for ASTCharConstant

@@ -42,8 +42,11 @@ void tTokensDebug(const char *code) {
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	char msg[256];
 
-	printf("tokens: ");
-	printDList(&tokens, (PrintFunc) printToken);
+	printf("tokens:");
+	for (int i = 0; i < tokens.size; i++) {
+		Token *tok = dlistGetm(&tokens, i);
+		printf(" \"%s\"", tokTypeStr(tok->type));
+	}
 	printf("\n");
 }
 

@@ -23,7 +23,7 @@ int parseASTCharConstant(ASTCharConstant *node, const Token *tok) {
 	return 1;
 }
 
-int printAStCharConstant(const ASTCharConstant *node) {
+int printASTCharConstant(const ASTCharConstant *node) {
 	int n = 0;
 
 	n += printf("{");
