@@ -308,10 +308,81 @@ static void astConstantTest() {
 			});
 }
 
+static void astFuncOperationTest() {
+	tStartSection("Func operation tests");
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tsayHi();"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tprintf(\"hello world\");"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER, AST_STR_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tprintInt((5 - 2));"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER, AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tcallbacks.sayHi();"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_BINARY_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tcallbacks.sayHi(\"hello\");"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_BINARY_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER, AST_STR_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {\n"
+			"\tcallbacksList[4](help);"
+			"}",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL, AST_COMP_STM,
+					AST_STM, AST_FUNC_OPERATION, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT, AST_IDENTIFIER,
+				AST_UNKNOWN
+			});
+}
+
 void astTests() {
 	astTestFile();
 	astSimpleDecl();
 	astDeclaratorTest();
 	astInitializersTest();
 	astConstantTest();
+	astFuncOperationTest();
 }
