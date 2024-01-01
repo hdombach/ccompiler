@@ -443,6 +443,42 @@ static void astSubsOperationTest() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_SUBS_OPERATION, AST_STR_CONSTANT, AST_INT_CONSTANT,
 				AST_UNKNOWN,
 			});
+}
+
+static void astCondOperationTest() {
+	tStartSection("Testing condition operation");
+
+	tAstSuccess(
+			"int test = 12 ? 2 : 2;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_COND_OPERATION, AST_INT_CONSTANT, AST_INT_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = 12 + 2 ? 42 || 32 : 2;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_COND_OPERATION, AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_INT_CONSTANT,
+					AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_INT_CONSTANT,
+					AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = test2 = var1 ? var2 : var3 && var4;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION, AST_IDENTIFIER, AST_COND_OPERATION,
+						AST_IDENTIFIER,
+						AST_IDENTIFIER,
+						AST_BINARY_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
 
 }
 
@@ -454,4 +490,5 @@ void astTests() {
 	astConstantTest();
 	astFuncOperationTest();
 	astSubsOperationTest();
+	astCondOperationTest();
 }
