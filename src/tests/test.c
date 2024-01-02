@@ -32,5 +32,6 @@ void tPrintResult() {
 }
 
 void tStartSection(char *name) {
+	logInfo("Testing Section: \"%s\"", name);
 	curSectionName = name;
 }

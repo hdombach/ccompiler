@@ -5,11 +5,11 @@
 /**
  * @file
  *
- * Provides functions to parse ccompiler args and load the result into Args
+ * Provides functions to parse ccompiler args and load the result into MainArgss
  */
 
 /**
- * @brief parseArgs result
+ * @brief parseMainArgs result
  *
  * Contains all the information contained in the cmd-lines args but in a
  * friendly format
@@ -54,4 +54,4 @@ int parseMainArgs(int argc, char **argv, MainArgs *args);
  * @brief Debug print args
  * @param[in] args
  */
-int argsMainPrint(MainArgs const *args);
+int mainArgsPrint(MainArgs const *args);

@@ -97,7 +97,7 @@ void initMacroToken(Token *token, const TokenzState *state) {
 
 	token->type = findMacro(state->curWord.data);
 	if (token->type == TT_UNKNOWN) {
-		logCerr(CERR_TOKENIZER, NULL, "Unrecognized macro %s\n", state->curWord.data);
+		logCerr(CERR_TOKENIZER, NULL, "Unrecognized macro %s", state->curWord.data);
 		return;
 	}
 }

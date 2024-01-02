@@ -23,7 +23,6 @@ void tTokensSuccess(const char *code, TokenType *types) {
 
 void tTokensFailed(const char *code, CError *errors) {
 	initCerr();
-	cerrDisablePrint();
 	Stream stream;
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
@@ -75,7 +74,6 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 
 void tAstFailed(const char *code, CError *errors) {
 	initCerr();
-	cerrDisablePrint();
 	Stream stream;
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
