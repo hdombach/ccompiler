@@ -4,6 +4,7 @@
 
 #include "astUtil.h"
 #include "../tok/token.h"
+#include "../util/log.h"
 
 char astErrMsgBuf[AST_ERR_MSG_S];
 char *_astErrMsg = NULL;
@@ -18,7 +19,7 @@ void astErr(char *msg, const Token *tok) {
 }
 
 int astHasErr() {
-	return _astErrMsg != NULL;
+	return _astErrMsg != NULL || cerrCount() > 0;
 }
 
 int fprintASTErr(FILE *fp) {

@@ -10,6 +10,7 @@
 
 void tTokensSuccess(const char *code, TokenType *types) {
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	char msg[256];
@@ -22,8 +23,8 @@ void tTokensSuccess(const char *code, TokenType *types) {
 }
 
 void tTokensFailed(const char *code, CError *errors) {
-	initCerr();
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	char msg[256];
@@ -37,6 +38,7 @@ void tTokensFailed(const char *code, CError *errors) {
 
 void tTokensDebug(const char *code) {
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	char msg[256];
@@ -60,6 +62,7 @@ static ASTTravRes _tNode(ASTNode *node, ASTTravCtx *ctx) {
 
 void tAstSuccess(const char *code, ASTNodeType *types) {
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile astFile;
@@ -73,8 +76,8 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 }
 
 void tAstFailed(const char *code, CError *errors) {
-	initCerr();
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile file;
@@ -94,6 +97,7 @@ static void _debugNode(ASTNode *node, ASTTravCtx *ctx) {
 
 void tAstDebug(const char *code) {
 	Stream stream;
+	initCerr();
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile astFile;
