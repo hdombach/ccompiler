@@ -11,6 +11,13 @@
 typedef struct Token Token;
 
 /**
+ * @brief A [x macro](https://en.wikipedia.org/wiki/X_macro) for CError
+ */
+#define X_CERROR \
+	X(CERR_UNKNOWN, "unknown") \
+	X(CERR_TOKENIZER, "tokenizer error") \
+
+/**
  * @brief The possible errors that can be thrown by the compile stages
  *
  * The errors aren't completely necessary since a more descriptive will
@@ -19,10 +26,11 @@ typedef struct Token Token;
  * 
  * If the proper error isn't added yet, just use CERR_UNKNOWN
  */
+#define X(NAME, STR) NAME,
 typedef enum CError {
-	CERR_UNKNOWN = 0,
-	CERR_TOKENIZER = 1,
+	X_CERROR
 } CError;
+#undef X
 
 /**
  * @brief Bitfield listing different types of logs

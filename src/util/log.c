@@ -88,12 +88,14 @@ void logCerr(CError err, const struct Token *tok, const char *fmt, ...) {
 	_cerrCount++;
 }
 
+#define X(NAME, STR) STR,
 const char *cerrStr(CError err) {
 	return (const char *[]){
-		"unknown",
-		"tokenizer",
+		X_CERROR
 	}[err];
 }
+#undef X
+
 
 void logDebug(const char *file, int line, const char *label, const char *fmt, ...) {
 	if (gLogLevel & LL_DEBUG) {

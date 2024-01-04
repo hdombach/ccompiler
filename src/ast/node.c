@@ -96,52 +96,11 @@ ASTNode *dupASTNode(ASTNode *node) {
 	return result;
 }
 
+#define X(NAME, STR) STR,
 const char *_astNodeTypes[] = {
-	"unknown",
-	"int constant",
-	"float constant",
-	"char constant",
-	"string constant",
-	"identifier",
-	"function call operation",
-	"subscript operation",
-	"conditional operation",
-	"type cast operation",
-	"sizeof type operation",
-	"sizeof expression operation",
-	"binary operation",
-	"prefix operation",
-	"postfix operation",
-	"param",
-	"declaration",
-	"array declarator",
-	"function declarator",
-	"identifier declarator",
-	"pointer declarator",
-	"declarator",
-	"type specifier",
-	"typedef name type specifier",
-	"struct declaration",
-	"enum declaration",
-	"enumerator declaration const",
-	"statement",
-	"compound statement",
-	"if statement",
-	"switch statement",
-	"while statement",
-	"do while statement",
-	"empty statement",
-	"break statement",
-	"continue statement",
-	"function definition",
-	"file",
-	"initializer list",
-	"identifier label",
-	"case label",
-	"default label",
-	"for statement",
-	"goto statement",
+	X_AST_NODE_TYPE
 };
+#undef X
 
 const char *astNodeTypeStr(ASTNodeType type) {
 	return _astNodeTypes[type];

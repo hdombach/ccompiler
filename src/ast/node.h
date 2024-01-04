@@ -11,54 +11,62 @@
  */
 
 /**
+ * @brief A [x macro](https://en.wikipedia.org/wiki/X_macro) for CError
+ */
+#define X_AST_NODE_TYPE \
+	X(AST_UNKNOWN, "unknown") \
+	X(AST_INT_CONSTANT, "int constant") \
+	X(AST_FLOAT_CONSTANT, "float constant") \
+	X(AST_CHAR_CONSTANT, "char constant") \
+	X(AST_STR_CONSTANT, "string constant") \
+	X(AST_IDENTIFIER, "identifier") \
+	X(AST_FUNC_OPERATION, "function call operation") \
+	X(AST_SUBS_OPERATION, "subscript operation") \
+	X(AST_COND_OPERATION, "conditional operation") \
+	X(AST_CAST_OPERATION, "type cast operation") \
+	X(AST_SIZEOF_TYPE_OPERATION, "sizeof type operation") \
+	X(AST_SIZEOF_EXP_OPERATION, "sizeof expression operation") \
+	X(AST_BINARY_OPERATION, "binary operation") \
+	X(AST_PREFIX_OPERATION, "prefix operation") \
+	X(AST_POSTFIX_OPERATION, "postfix operation") \
+	X(AST_PARAM, "param") \
+	X(AST_DECLARATION, "declaration") \
+	X(AST_ARRAY_DECL, "array declarator") \
+	X(AST_FUNC_DECL, "function declarator") \
+	X(AST_IDENTIFIER_DECL, "identifier declarator") \
+	X(AST_POINTER_DECL, "pointer declarator") \
+	X(AST_DECLARATOR, "declarator") \
+	X(AST_TYPE_SPEC, "type specifier") \
+	X(AST_IDENTIFIER_TS, "typedef type specificer") \
+	X(AST_STRUCT_DECL, "struct declaration") \
+	X(AST_ENUM_DECL, "enum declaration") \
+	X(AST_ENUM_CONST, "enumerator declaration const") \
+	X(AST_STM, "statement") \
+	X(AST_COMP_STM, "compound statement") \
+	X(AST_IF, "if statement") \
+	X(AST_SWITCH, "switch statement") \
+	X(AST_WHILE, "while statement") \
+	X(AST_DO_WHILE, "do while statement") \
+	X(AST_EMPTY_STM, "empty statement") \
+	X(AST_BREAK, "break statement") \
+	X(AST_CONTINUE, "continue statement") \
+	X(AST_FUNC_DEF, "function definition") \
+	X(AST_FILE, "file") \
+	X(AST_INITIALIZER_LIST, "initializer list") \
+	X(AST_LBL_IDENTIFIER, "identifier label") \
+	X(AST_LBL_CASE, "case label") \
+	X(AST_LBL_DEFAULT, "default label") \
+	X(AST_FOR, "for statement") \
+	X(AST_GOTO, "goto statement")
+
+#define X(NAME, STR) NAME,
+/**
  * @brief Identifies the node type
  */
 typedef enum ASTNodeType {
-	AST_UNKNOWN,
-	AST_INT_CONSTANT,
-	AST_FLOAT_CONSTANT,
-	AST_CHAR_CONSTANT,
-	AST_STR_CONSTANT,
-	AST_IDENTIFIER,
-	AST_FUNC_OPERATION,
-	AST_SUBS_OPERATION,
-	AST_COND_OPERATION,
-	AST_CAST_OPERATION,
-	AST_SIZEOF_TYPE_OPERATION,
-	AST_SIZEOF_EXP_OPERATION,
-	AST_BINARY_OPERATION,
-	AST_PREFIX_OPERATION,
-	AST_POSTFIX_OPERATION,
-	AST_PARAM, /* temp */
-	AST_DECLARATION,
-	AST_ARRAY_DECL,
-	AST_FUNC_DECL,
-	AST_IDENTIFIER_DECL,
-	AST_POINTER_DECL,
-	AST_DECLARATOR,
-	AST_TYPE_SPEC, 
-	AST_IDENTIFIER_TS, /* typedef reference used in type spec */
-	AST_STRUCT_DECL,
-	AST_ENUM_DECL,
-	AST_ENUM_CONST,
-	AST_STM,
-	AST_COMP_STM,
-	AST_IF,
-	AST_SWITCH,
-	AST_WHILE,
-	AST_DO_WHILE,
-	AST_EMPTY_STM,
-	AST_BREAK,
-	AST_CONTINUE,
-	AST_FUNC_DEF,
-	AST_FILE,
-	AST_INITIALIZER_LIST,
-	AST_LBL_IDENTIFIER,
-	AST_LBL_CASE,
-	AST_LBL_DEFAULT,
-	AST_FOR,
-	AST_GOTO,
+	X_AST_NODE_TYPE
 } ASTNodeType;
+#undef X
 
 struct ASTScope;
 struct Token;
