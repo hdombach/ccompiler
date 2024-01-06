@@ -381,8 +381,17 @@ int _parseTypedefIdentifier(
 	return n;
 }
 
+static ASTNodeVTable _typeSpecVTable = {
+	{
+		(FreeFunc) freeASTTypeSpec,
+		(PrintFunc) printASTTypeSpec,
+	},
+	(ASTChildCount) astTypeSpecChildCount,
+	(ASTGetChild) astTypeSpecGetChild,
+};
+
 void initASTTypeSpec(ASTTypeSpec *typeSpec, Token const *tok) {
-	initASTNode((ASTNode *) typeSpec, tok);
+	initASTNode((ASTNode *) typeSpec, tok, &_typeSpecVTable);
 	initASTTypeQualifier(&typeSpec->qualifiers);
 	initASTStorageClassSpec(&typeSpec->storage);
 	typeSpec->typeSpecType = AST_TST_UNKNOWN;
@@ -532,8 +541,17 @@ ASTNode *astTypeSpecGetChild(ASTTypeSpec *typeSpec, int index) {
  * ASTDeclarator
  * ========================================================================= */
 
+struct ASTNodeVTable _declaratorVTable = {
+	{
+		(FreeFunc) freeASTDeclarator,
+		(PrintFunc) printASTDeclarator,
+	},
+	(ASTChildCount) astDeclaratorChildCount,
+	(ASTGetChild) astDeclaratorGetChild,
+};
+
 void initASTDeclarator(ASTDeclarator *declarator, Token const *tok) {
-	initASTNode((ASTNode *) declarator, tok);
+	initASTNode((ASTNode *) declarator, tok, &_declaratorVTable);
 	declarator->initializer = NULL;
 	declarator->bitField = NULL;
 	declarator->qualifiers = AST_TQ_NONE;
@@ -722,8 +740,17 @@ ASTNode *astDeclaratorGetChild(ASTDeclarator *node, int index) {
  * ASTDeclaration
  * ========================================================================= */
 
+ASTNodeVTable _declarationVTable = {
+	{
+		(FreeFunc) freeASTDeclaration,
+		(PrintFunc) printASTDeclaration,
+	},
+	(ASTChildCount) astDeclarationChildCount,
+	(ASTGetChild) astDeclarationGetChild,
+};
+
 void initASTDeclaration(ASTDeclaration *declaration, Token const *tok) {
-	initASTNode((ASTNode *) declaration, tok);
+	initASTNode((ASTNode *) declaration, tok, &_declarationVTable);
 	declaration->typeSpec = NULL;
 	initDList(&declaration->declarators, AST_NODE_S);
 }

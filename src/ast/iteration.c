@@ -11,8 +11,17 @@
  * While
  ************************************************************/
 
+static ASTNodeVTable _whileVTable = {
+	{
+		(FreeFunc) freeASTWhile,
+		(PrintFunc) printASTWhile,
+	},
+	(ASTChildCount) astWhileChildCount,
+	(ASTGetChild) astDoWhileGetChild,
+};
+
 void initASTWhile(ASTWhile *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_whileVTable);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -126,8 +135,17 @@ ASTNode *astWhileGetChild(ASTWhile *node, int index) {
  * Do While
  ************************************************************/
 
+static ASTNodeVTable _doWhileVTable = {
+	{
+		(FreeFunc) freeASTDoWhile,
+		(PrintFunc) printASTDoWhile,
+	},
+	(ASTChildCount) astDoWhileChildCount,
+	(ASTGetChild) astDoWhileGetChild,
+};
+
 void initASTDoWhile(ASTDoWhile *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_doWhileVTable);
 	node->expression = NULL;
 	node->statement = NULL;
 }
@@ -257,8 +275,17 @@ ASTNode *astDoWhileGetChild(ASTDoWhile *node, int index) {
  * For
  ************************************************************/
 
+static ASTNodeVTable _forVTable = {
+	{
+		(FreeFunc) freeASTFor,
+		(PrintFunc) printASTFor,
+	},
+	(ASTChildCount) astForChildCount,
+	(ASTGetChild) astForGetChild,
+};
+
 void initASTFor(ASTFor *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_forVTable);
 	node->initClause = NULL;
 	node->condExp = NULL;
 	node->iterExp = NULL;

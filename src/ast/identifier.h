@@ -7,6 +7,7 @@
 #include "../tok/token.h"
 #include "../util/util.h"
 #include "../sem/type.h"
+#include "../util/log.h"
 
 /**
  * @file
@@ -32,11 +33,9 @@ typedef struct ASTIdentifier {
 /**
  * @param[in] node
  */
-static void initASTIdentifier(ASTIdentifier *node) {
-	node->name = NULL;
-	node->node.type = AST_IDENTIFIER;
-	initSTypeRef(&node->typeRef);
-}
+void initASTIdentifier(ASTIdentifier *node);
+
+void freeASTIdentifier(ASTIdentifier *node);
 
 /**
  * @param[out] node
@@ -44,47 +43,24 @@ static void initASTIdentifier(ASTIdentifier *node) {
  * @param[in] scope
  * @returns The number of tokens parsed
  */
-static int parseASTIdentifier(
+int parseASTIdentifier(
 		ASTIdentifier *node,
 		struct Token const *tok,
-		struct ASTScope *scope) 
-{
-	AST_VALID(ASTIdentifier);
-	if (tok->type == TT_IDENTIFIER) {
-		node->name = strdup(tok->contents);
-		node->node.type = AST_IDENTIFIER;
-		return 1;
-	} else return 0;
-}
+		struct ASTScope *scope);
 
 /**
  * @brief Debug print the ASTIdentifier
  * @param[in] node
  * @returns The number of characters printed
  */
-static int printASTIdentifier(ASTIdentifier const *node) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
-
-	n += printf(", \"name\": ");
-	n += printJsonStr(node->name);
-
-	n += printf("}");
-	
-	return n;
-}
+int printASTIdentifier(ASTIdentifier const *node);
 
 /**
  * @brief Impliments astNodeChildCount for ASTIdentifier
  * @param[in] node
  * @return the number of chid nodes
  */
-static int astIdentifierChildCount(ASTIdentifier const *node) {
-	return 0;
-}
+int astIdentifierChildCount(ASTIdentifier const *node);
 
 /**
  * @brief Impliments astNodeGetChild for ASTIdentifier
@@ -92,6 +68,4 @@ static int astIdentifierChildCount(ASTIdentifier const *node) {
  * @param[in] index
  * @returns The corresponding child
  */
-static ASTNode *astIdentifierGetChild(ASTIdentifier *node, int index) {
-	return NULL;
-}
+ASTNode *astIdentifierGetChild(ASTIdentifier *node, int index);

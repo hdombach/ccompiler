@@ -14,8 +14,17 @@
  * Empty Statement
  ***********************************************************************/
 
+static ASTNodeVTable _emptyVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTEmptyStm,
+	},
+	(ASTChildCount) astEmptyStmChildCount,
+	(ASTGetChild) astEmptyStmGetChild,
+};
+
 void initASTEmptyStm(ASTEmptyStm *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_emptyVTable);
 }
 
 int parseASTEmptyStm(
@@ -57,8 +66,17 @@ ASTNode *astEmptyStmGetChild(ASTEmptyStm *node, int index) {
  * Break Statement
  ***********************************************************************/
 
+static ASTNodeVTable _breakVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTBreak,
+	},
+	(ASTChildCount) astBreakChildCount,
+	(ASTGetChild) astBreakGetChild,
+};
+
 void initASTBreak(ASTBreak *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_breakVTable);
 }
 
 int parseASTBreak(
@@ -106,8 +124,17 @@ ASTNode *astBreakGetChild(ASTBreak *node, int index) {
  * Continue Statement
  ***********************************************************************/
 
+struct ASTNodeVTable _continueVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTContinue,
+	},
+	(ASTChildCount) astContinueChildCount,
+	(ASTGetChild) astContinueGetChild,
+};
+
 void initASTContinue(ASTContinue *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_continueVTable);
 }
 
 int parseASTContinue(
@@ -151,8 +178,21 @@ ASTNode *astContinueGetChild(ASTContinue *node, int index) {
 	return NULL;
 }
 
+/***********************************************************************
+ * Goto Statement
+ ***********************************************************************/
+
+static ASTNodeVTable _gotoVTable = {
+	{
+		(FreeFunc) freeASTGoto,
+		(PrintFunc) printASTGoto,
+	},
+	(ASTChildCount) astGotoChildCount,
+	(ASTGetChild) astGotoGetChild,
+};
+
 void initASTGoto(ASTGoto *node, const struct Token *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_gotoVTable);
 	node->name = NULL;
 }
 
@@ -226,8 +266,21 @@ ASTNode *astGotoGetChild(ASTGoto *node, int index) {
 	return NULL;
 }
 
+/***********************************************************************
+ * Statement Statement
+ ***********************************************************************/
+
+static ASTNodeVTable _stmVTable = {
+	{
+		(FreeFunc) freeASTStm,
+		(PrintFunc) printASTStm,
+	},
+	(ASTChildCount) astStmChildCount,
+	(ASTGetChild) astStmGetChild,
+};
+
 void initASTStm(ASTStm *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_stmVTable);
 	node->label = NULL;
 	node->content = NULL;
 }

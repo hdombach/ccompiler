@@ -4,8 +4,17 @@
 #include "../sem/scope.h"
 #include "node.h"
 
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) freeASTInitializerList,
+		(PrintFunc) printASTInitializerList,
+	},
+	(ASTChildCount) astInitializerListChildCount,
+	(ASTGetChild) astInitializerListGetChild,
+};
+
 void initASTInitializerList(ASTInitializerList *list, Token const *tok) {
-	initASTNode((ASTNode *) list, tok);
+	initASTNode((ASTNode *) list, tok, &_vtable);
 	initDListEmpty(&list->list, AST_NODE_S);
 }
 

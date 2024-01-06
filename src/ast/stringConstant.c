@@ -4,8 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+static ASTNodeVTable _stringConstVTable = {
+	{
+		(FreeFunc) freeASTStringConstant,
+		(PrintFunc) printASTStringConstant,
+	},
+	(ASTChildCount) astStringConstantChildCount,
+	(ASTGetChild) astStringConstantGetChild,
+};
+
 void initASTStringConstant(ASTStringConstant *node, const Token *tok) {
-	initASTNode((ASTNode *)node, tok);
+	initASTNode((ASTNode *)node, tok, &_stringConstVTable);
 	node->value = NULL;
 }
 
@@ -17,7 +26,7 @@ int parseASTStringConstant(ASTStringConstant *node, const Token *tok) {
 	AST_VALID(ASTStringConstant);
 	if (astHasErr()) return 0;
 
-	initASTNode((ASTNode *) node, tok);
+	initASTStringConstant(node, tok);
 
 	if (tok->type != TT_STR_CONSTANT) return 0;
 	if (!tok->contents) return 0;

@@ -5,12 +5,20 @@
 #include "astUtil.h"
 #include "declaration.h"
 #include "../tok/token.h"
-#include "specialDecl.h"
+
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) freeASTParam,
+		(PrintFunc) printASTParam,
+	},
+	(ASTChildCount) astParamChildCount,
+	(ASTGetChild) astParamGetChild,
+};
 
 void initASTParam(ASTParam *param) {
+	initASTNode((ASTNode *) param, param->node.tok, &_vtable);
 	param->typeSpec = NULL;
 	param->declarator = NULL;
-	param->node.type = AST_PARAM;
 }
 
 void freeASTParam(ASTParam *param) {

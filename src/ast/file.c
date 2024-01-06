@@ -14,7 +14,7 @@ int parseASTFileItem(
 {
 	int n = 0, res;
 
-	initASTNode(item, tok);
+	initASTNode(item, tok, NULL);
 	if (astHasErr()) {
 		return 0;
 	}
@@ -30,8 +30,17 @@ int parseASTFileItem(
 	return n;
 }
 
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) freeASTFile,
+		(PrintFunc) printASTFile,
+	},
+	(ASTChildCount) astFileChildCount,
+	(ASTGetChild) astFileGetChild,
+};
+
 void initASTFile(ASTFile *file, Token const *tok) {
-	initASTNode((ASTNode *) file, tok);
+	initASTNode((ASTNode *) file, tok, &_vtable);
 	initDListEmpty(&file->items, AST_NODE_S);
 	file->scope = malloc(sizeof(ASTScope));
 	initASTScope(file->scope);

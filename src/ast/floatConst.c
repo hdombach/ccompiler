@@ -5,8 +5,17 @@
 #include <math.h>
 #include <stdio.h>
 
+static ASTNodeVTable _vtable = {
+	{
+		NULL,
+		(PrintFunc) printASTFloatConstant,
+	},
+	(ASTChildCount) astFloatConstantChildCount,
+	(ASTGetChild) astFloatConstantGetChild,
+};
+
 void initASTFloatConstant(ASTFloatConstant *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_vtable);
 }
 
 /**

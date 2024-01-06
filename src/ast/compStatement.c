@@ -12,7 +12,7 @@ int parseASTCompItem(
 		struct ASTScope *scope)
 {
 	int res, n = 0;
-	initASTNode(node, tok);
+	initASTNode(node, tok, NULL);
 
 	if (astHasErr()) {
 		return 0;
@@ -30,8 +30,17 @@ int parseASTCompItem(
 	return n;
 }
 
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) freeASTCompStm,
+		(PrintFunc) printASTCompStm,
+	},
+	(ASTChildCount) astCompStmChildCount,
+	(ASTGetChild) astCompStmGetChild,
+};
+
 void initASTCompStm(ASTCompStm *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_vtable);
 	initDListEmpty(&node->items, AST_NODE_S);
 	node->scope = malloc(sizeof(ASTScope));
 	initASTScope(node->scope);

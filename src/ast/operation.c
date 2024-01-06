@@ -1,4 +1,3 @@
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,8 +15,17 @@
  * Func Operation
  *************************************************************/
 
+static ASTNodeVTable _funcVTable = {
+	{
+		(FreeFunc) freeASTFuncOperation,
+		(PrintFunc) printASTFuncOperation,
+	},
+	(ASTChildCount) astFuncOperationChildCount,
+	(ASTGetChild) astFuncOperationGetChild,
+};
+
 void initASTFuncOperation(ASTFuncOperation *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_funcVTable);
 	node->func = NULL;
 	initDListEmpty(&node->params, AST_NODE_S);
 }
@@ -168,8 +176,17 @@ static int _parseASTSubscriptOperation(
  * Condition Operation (ternary)
  *************************************************************/
 
+static ASTNodeVTable _condVTable = {
+	{
+		(FreeFunc) freeASTCondOperation,
+		(PrintFunc) printASTCondOperation,
+	},
+	(ASTChildCount) astCondOperationChildCount,
+	(ASTGetChild) astCondOperationGetChild,
+};
+
 void initASTCondOperation(ASTCondOperation *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_condVTable);
 	node->condition = NULL;
 	node->trueExp = NULL;
 	node->falseExp = NULL;
@@ -430,8 +447,17 @@ static int _parseASTSizeofExpOperation(
  * Operation
  *************************************************************/
 
+static ASTNodeVTable _opVTable = {
+	{
+		(FreeFunc) freeASTOperation,
+		(PrintFunc) printASTOperation,
+	},
+	(ASTChildCount) astOperationChildCount,
+	(ASTGetChild) astOperationGetChild,
+};
+
 void initASTOperation(ASTOperation *node, Token const *tok) {
-	initASTNode(&node->node, tok);
+	initASTNode(&node->node, tok, &_opVTable);
 	node->tokType = TT_UNKNOWN;
 	node->lhs = NULL;
 	node->rhs = NULL;

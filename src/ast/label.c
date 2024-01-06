@@ -5,11 +5,19 @@
 #include "expression.h"
 #include "astUtil.h"
 #include "expression.h"
-#include "../util/util.h"
 #include "node.h"
 
+static ASTNodeVTable _lblIdentifierVTable = {
+	{
+		(FreeFunc) freeASTLblIdentifier,
+		(PrintFunc) printASTLblIdentifier,
+	},
+	(ASTChildCount) astLblIdentifierChildCount,
+	(ASTGetChild) astLblIdentifierGetChild,
+};
+
 void initASTLblIdentifier(ASTLblIdentifier *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_lblIdentifierVTable);
 	node->name = NULL;
 }
 
@@ -73,8 +81,17 @@ ASTNode *astLblIdentifierGetChild(ASTLblIdentifier *node, int index) {
 	return NULL;
 }
 
+static ASTNodeVTable _lblCaseVTable = {
+	{
+		(FreeFunc) freeASTLblCase,
+		(PrintFunc) printASTLblCase,
+	},
+	(ASTChildCount) astLblCaseChildCount,
+	(ASTGetChild) astLblCaseGetChild,
+};
+
 void initASTLblCase(ASTLblCase *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_lblCaseVTable);
 	node->expression = NULL;
 }
 
@@ -152,6 +169,15 @@ ASTNode *astLblCaseGetChild(ASTLblCase *node, int index) {
 	return node->expression;
 }
 
+static ASTNodeVTable _defaultVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTLblDefault,
+	},
+	(ASTChildCount) astLblDefaultChildCount,
+	(ASTGetChild) astLblDefaultGetChild,
+};
+
 int parseASTLblDefault(
 		ASTNode *node,
 		const struct Token *tok,
@@ -159,7 +185,7 @@ int parseASTLblDefault(
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	initASTNode(node, tok);
+	initASTNode(node, tok, &_defaultVTable);
 	if (astHasErr()) {
 		freeASTNode(node);
 		return 0;

@@ -8,8 +8,17 @@
 #include "statement.h"
 #include "../tok/token.h"
 
+static ASTNodeVTable _ifVTable = {
+	{
+		(FreeFunc) freeASTIf,
+		(PrintFunc) printASTIf,
+	},
+	(ASTChildCount) astIfChildCount,
+	(ASTGetChild) astIfGetChild,
+};
+
 void initASTIf(ASTIf *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_ifVTable);
 	node->expression = NULL;
 	node->trueStatement = NULL;
 	node->falseStatement = NULL;
@@ -149,8 +158,17 @@ ASTNode *astIfGetChild(ASTIf *node, int index) {
  * Switch 
  ************************************************************/
 
+static ASTNodeVTable _switchVTable = {
+	{
+		(FreeFunc) freeASTSwitch,
+		(PrintFunc) printASTSwitch,
+	},
+	(ASTChildCount) astSwitchChildCount,
+	(ASTGetChild) astSwitchGetChild,
+};
+
 void initASTSwitch(ASTSwitch *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_switchVTable);
 	node->expression = NULL;
 	node->statement = NULL;
 }

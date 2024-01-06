@@ -1,5 +1,4 @@
 #include "funcDef.h"
-#include "../util/dlist.h"
 #include "astUtil.h"
 #include "compStatement.h"
 #include "declaration.h"
@@ -8,8 +7,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) freeASTFuncDef,
+		(PrintFunc) printASTFuncDef,
+	},
+	(ASTChildCount) astFuncDefChildCount,
+	(ASTGetChild) astFuncDefGetChild,
+};
+
 void initASTFuncDef(ASTFuncDef *def, Token const *tok) {
-	initASTNode((ASTNode *) def, tok);
+	initASTNode((ASTNode *) def, tok, &_vtable);
 	def->typeSpec = NULL;
 	def->funcDecl = NULL;
 	def->compoundStm = NULL;

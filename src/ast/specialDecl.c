@@ -13,8 +13,17 @@
  * Array Decl
  ************************************************************/
 
+static ASTNodeVTable _arrayVTable = {
+	{
+		(FreeFunc) freeASTArrayDecl,
+		(PrintFunc) printASTArrayDecl,
+	},
+	(ASTChildCount) astArrayDeclChildCount,
+	(ASTGetChild) astArrayDeclGetChild,
+};
+
 void initASTArrayDecl(ASTArrayDecl *decl, Token const *tok) {
-	initASTNode((ASTNode *) decl, tok);
+	initASTNode((ASTNode *) decl, tok, &_arrayVTable);
 	decl->exp = NULL;
 	decl->encl = NULL;
 }
@@ -112,8 +121,17 @@ ASTNode *astArrayDeclGetChild(ASTArrayDecl *node, int index) {
  * Enum Decl
  ************************************************************/
 
+static ASTNodeVTable _enumConstVTable = {
+	{
+		(FreeFunc) freeASTEnumConst,
+		(PrintFunc) printASTEnumConst,
+	},
+	(ASTChildCount) astEnumConstChildCount,
+	(ASTGetChild) astEnumConstGetChild,
+};
+
 void initASTEnumConst(ASTEnumConst *decl, Token const *tok) {
-	initASTNode((ASTNode *) decl, tok);
+	initASTNode((ASTNode *) decl, tok, &_enumConstVTable);
 	decl->name = NULL;
 	decl->exp = NULL;
 }
@@ -210,10 +228,19 @@ ASTNode *astEnumeratorDeclGetChild(ASTEnumConst *node, int index) {
 	}[index];
 }
 
+static ASTNodeVTable _enumDeclVTable = {
+	{
+		(FreeFunc) freeASTEnumDecl,
+		(PrintFunc) printASTEnumDecl,
+	},
+	(ASTChildCount) astEnumDeclChildCount,
+	(ASTGetChild) astEnumDeclGetChild,
+};
+
 void initASTEnumDecl(ASTEnumDecl *decl, Token const *tok) {
 	decl->name = NULL;
 	initDListEmpty(&decl->enumerators, AST_NODE_S);
-	initASTNode((ASTNode *) decl, tok);
+	initASTNode((ASTNode *) decl, tok, &_enumDeclVTable);
 }
 
 void freeASTEnumDecl(ASTEnumDecl *decl) {
@@ -316,8 +343,17 @@ ASTNode *astEnumDeclGetChild(ASTEnumDecl *node, int index) {
  * Struct Decl
  ************************************************************/
 
+static ASTNodeVTable _structDeclVTable = {
+	{
+		(FreeFunc) freeASTStructDecl,
+		(PrintFunc) printASTStructDecl,
+	},
+	(ASTChildCount) astStructDeclChildCount,
+	(ASTGetChild) astStructDeclGetChild,
+};
+
 void initASTStructDecl(ASTStructDecl *decl, Token const *tok) {
-	initASTNode((ASTNode *) decl, tok);
+	initASTNode((ASTNode *) decl, tok, &_structDeclVTable);
 	decl->name = NULL;
 	initDListEmpty(&decl->items, AST_NODE_S);
 	decl->scope = malloc(sizeof(struct ASTScope));
@@ -437,8 +473,17 @@ ASTNode *astStructDeclGetChild(ASTStructDecl *node, int index) {
  * Func Decl
  ************************************************************/
 
+static ASTNodeVTable _funcDeclVTable = {
+	{
+		(FreeFunc) freeASTFuncDecl,
+		(PrintFunc) printASTFuncDecl,
+	},
+	(ASTChildCount) astFuncDeclChildCount,
+	(ASTGetChild) astFuncDeclGetChild,
+};
+
 void initASTFuncDecl(ASTFuncDecl *decl, Token const *tok) {
-	initASTNode((ASTNode *) decl, tok);
+	initASTNode((ASTNode *) decl, tok, &_funcDeclVTable);
 	initDListEmpty(&decl->params, AST_NODE_S);
 	decl->scope = malloc(sizeof(ASTScope));
 	initASTScope(decl->scope);

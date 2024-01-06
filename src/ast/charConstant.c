@@ -2,8 +2,17 @@
 #include "astUtil.h"
 #include "node.h"
 
+static ASTNodeVTable _vtable = {
+	{
+		NULL,
+		(PrintFunc) printASTCharConstant,
+	},
+	(ASTChildCount) astCharConstantChildCount,
+	(ASTGetChild) astCharConstantGetChild,
+};
+
 void initASTCharConstant(ASTCharConstant *node, const Token *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_vtable);
 	node->value = 0;
 }
 

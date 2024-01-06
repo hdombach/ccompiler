@@ -4,6 +4,8 @@
 #include <assert.h>
 #endif
 
+#include "../util/vtable.h"
+
 /**
  * @file
  * 
@@ -70,6 +72,19 @@ typedef enum ASTNodeType {
 
 struct ASTScope;
 struct Token;
+typedef struct ASTNode ASTNode;
+
+typedef int (*ASTChildCount)(ASTNode const *node);
+typedef ASTNode *(*ASTGetChild)(ASTNode *node, int index);
+
+/**
+ * @extends VTable
+ */
+typedef struct ASTNodeVTable {
+	VTable table;
+	ASTChildCount childCount;
+	ASTGetChild getChild;
+} ASTNodeVTable;
 
 /**
  * @brief The generic struct for a node
@@ -80,6 +95,7 @@ struct Token;
 typedef struct ASTNode {
 	/** @brief Identifies the node type */
 	ASTNodeType type;
+	ASTNodeVTable const *vtable;
 	/** @brief The parent node in the tree */
 	struct ASTNode *parent;
 	/** @brief The scope the node is currently within */
@@ -96,7 +112,7 @@ typedef struct ASTNode {
  * @param[out] node
  * @param[in] tok
  */
-void initASTNode(ASTNode *node, struct Token const *tok);
+void initASTNode(ASTNode *node, struct Token const *tok, ASTNodeVTable const *vtable);
 /**
  * @brief Frees any node that inherits from ASTNode
  * @param[in] node

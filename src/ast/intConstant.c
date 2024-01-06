@@ -53,8 +53,17 @@ int _parseBin(ASTIntConstant *node, char const *content) {
 	return 1;
 }
 
+static ASTNodeVTable _vtable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTIntContant,
+	},
+	(ASTChildCount) astIntConstantChildCount,
+	(ASTGetChild) astIntConstantGetChild,
+};
+
 void initASTIntConstant(ASTIntConstant *node, const Token *tok) {
-	initASTNode((ASTNode *) node, tok);
+	initASTNode((ASTNode *) node, tok, &_vtable);
 }
 
 int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
@@ -63,7 +72,7 @@ int parseASTIntConstant(ASTIntConstant *node, const Token *tok) {
 	AST_VALID(ASTIntConstant);
 	if (astHasErr()) return 0;
 
-	initASTNode((ASTNode *) node, tok);
+	initASTIntConstant(node, tok);
 
 	if (tok->type != TT_NUMB_CONSTANT) return 0;
 
