@@ -1,7 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/_types/_va_list.h>
 
 #include "log.h"
 #include "../tok/token.h"
