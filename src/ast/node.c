@@ -96,31 +96,42 @@ ASTNode *astNodeGetChild(ASTNode *node, int index) {
 }
 
 ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
-	if (node->type == AST_COMP_STM) {
-		ASTCompStm *stm = (ASTCompStm *) node;
-		return stm->scope;
-	} else if (node->type == AST_FILE) {
-		ASTFile *file = (ASTFile *) node;
-		return file->scope;
-	} else if (node->type == AST_FUNC_DECL) {
-		ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
-		return funcDecl->scope;
-	} else if (node->type == AST_FUNC_DEF) {
-		ASTFuncDef *funcDef = (ASTFuncDef *) node;
-		if (!ASSERT(funcDef->node.type == AST_FUNC_DEF)) return NULL;
+	switch (node->type) {
+		case AST_COMP_STM:
+			{
+				ASTCompStm *stm = (ASTCompStm *) node;
+				return stm->scope;
+			}
+		case AST_FILE:
+			{
+				ASTFile *file = (ASTFile *) node;
+				return file->scope;
+			}
+		case AST_FUNC_DECL:
+			{
+				ASTFuncDecl *funcDecl = (ASTFuncDecl *) node;
+				return funcDecl->scope;
+			}
+		case AST_FUNC_DEF:
+			{
+				ASTFuncDef *funcDef = (ASTFuncDef *) node;
+				if (!ASSERT(funcDef->node.type == AST_FUNC_DEF)) return NULL;
 
-		ASTDeclarator *declarator = (ASTDeclarator *) funcDef->funcDecl;
-		if (!ASSERT(declarator->node.type == AST_DECLARATOR)) return NULL;
+				ASTDeclarator *declarator = (ASTDeclarator *) funcDef->funcDecl;
+				if (!ASSERT(declarator->node.type == AST_DECLARATOR)) return NULL;
 
-		ASTFuncDecl *funcDecl = (ASTFuncDecl *) declarator->encl;
-		if (!ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
+				ASTFuncDecl *funcDecl = (ASTFuncDecl *) declarator->encl;
+				if (!ASSERT(funcDecl->node.type == AST_FUNC_DECL)) return NULL;
 
-		return funcDecl->scope;
-	} else if (node->type == AST_STRUCT_DECL) {
-		ASTStructDecl *structDecl = (ASTStructDecl *) node;
-		return structDecl->scope;
-	} else {
-		return defaultScope;
+				return funcDecl->scope;
+			}
+		case AST_STRUCT_DECL:
+			{
+				ASTStructDecl *structDecl = (ASTStructDecl *) node;
+				return structDecl->scope;
+			}
+		default:
+			return defaultScope;
 	}
 }
 
