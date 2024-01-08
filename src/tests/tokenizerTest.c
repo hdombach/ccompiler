@@ -1183,6 +1183,143 @@ static void tokenizerTestSigned() {
 			(TokenType[]) {TT_SIGNED, TT_CHAR, TT_SEMI_COLON, TT_EOF});
 }
 
+static void tokenizerTestSizeof() {
+	tStartSection("Tokenizer sizeof");
+
+	tTokensSuccess("sizeof", (TokenType[]) {TT_SIZEOF, TT_EOF});
+
+	tTokensSuccess(
+			"sizeof hello_word",
+			(TokenType[]) {TT_SIZEOF, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess(
+		"sizeof(-53)",
+		(TokenType[]) {
+			TT_SIZEOF, TT_O_PARAN, TT_MINUS, TT_NUMB_CONSTANT, TT_C_PARAN, TT_EOF
+		});
+
+	tTokensSuccess(
+		"sizeof(size_t)",
+		(TokenType[]) {
+			TT_SIZEOF, TT_O_PARAN, TT_IDENTIFIER, TT_C_PARAN, TT_EOF
+		});
+}
+
+static void tokenizerTestStatic() {
+	tStartSection("Tokenizer static");
+
+	tTokensSuccess(
+			"static", 
+			(TokenType[]) {TT_STATIC, TT_EOF});
+
+	tTokensSuccess(
+			"int static const thing", 
+			(TokenType[]) {TT_INT, TT_STATIC, TT_CONST, TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestStruct() {
+	tStartSection("Tokenizer test struct");
+
+	tTokensSuccess("struct", (TokenType[]) {TT_STRUCT, TT_EOF});
+
+	tTokensSuccess(
+		"struct thing {};",
+		(TokenType[]) {
+			TT_STRUCT, TT_IDENTIFIER, TT_O_CURLY, TT_C_CURLY, TT_SEMI_COLON, TT_EOF
+		});
+
+	tTokensSuccess(
+		"typedef struct thing;",
+		(TokenType[]) {
+			TT_TYPEDEF, TT_STRUCT, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF
+		});
+
+	tTokensSuccess(
+		"typedef struct_thing;",
+		(TokenType[]) {
+			TT_TYPEDEF, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF
+		});
+}
+
+static void tokenizerTestSwitch() {
+	tStartSection("Tokenizer test switch");
+
+	tTokensSuccess("switch", (TokenType[]) {TT_SWITCH, TT_EOF});
+
+	tTokensSuccess(
+		"switch(thing);",
+		(TokenType[]) {
+			TT_SWITCH, TT_O_PARAN, TT_IDENTIFIER, TT_C_PARAN, TT_SEMI_COLON, TT_EOF
+		});
+}
+
+static void tokenizerTestTypedef() {
+	tStartSection("Tokenizer test typedef");
+
+	tTokensSuccess("typedef", (TokenType[]) {TT_TYPEDEF, TT_EOF});
+
+	tTokensSuccess(
+			"typedef int int_t",
+			(TokenType[]) {TT_TYPEDEF, TT_INT, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess(
+			"typedef*int", 
+			(TokenType[]) {TT_TYPEDEF, TT_MULT, TT_INT, TT_EOF});
+}
+
+static void tokenizerTestUnion() {
+	tStartSection("tokenizer test union");
+
+	tTokensSuccess("union", (TokenType[]) {TT_UNION, TT_EOF});
+
+	tTokensSuccess(
+		"union thing {};",
+		(TokenType[]) {
+			TT_UNION, TT_IDENTIFIER, TT_O_CURLY, TT_C_CURLY, TT_SEMI_COLON, TT_EOF
+		});
+
+	tTokensSuccess(
+		"typedef union thing;",
+		(TokenType[]) {
+			TT_TYPEDEF, TT_UNION, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF
+		});
+
+	tTokensSuccess(
+		"typedef union_thing;",
+		(TokenType[]) {
+			TT_TYPEDEF, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF
+		});
+}
+
+static void tokenizerTestUnsigned() {
+	tStartSection("tokenizer test unsigned");
+
+	tTokensSuccess("unsigned", (TokenType[]) {TT_UNSIGNED, TT_EOF});
+	tTokensSuccess("unsined", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestVoid() {
+	tStartSection("tokenizer test unsigned");
+
+	tTokensSuccess("void", (TokenType[]) {TT_VOID, TT_EOF});
+	tTokensSuccess("Void", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestVolatile() {
+	tStartSection("tokenizer test volatile");
+
+	tTokensSuccess("volatile", (TokenType[]) {TT_VOLATILE, TT_EOF});
+	tTokensSuccess("volatle", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestWhile() {
+	tStartSection("tokenizer test volatile");
+
+	tTokensSuccess("while", (TokenType[]) {TT_WHILE, TT_EOF});
+	tTokensSuccess("dowhile", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+	tTokensSuccess("while(", (TokenType[]) {TT_WHILE, TT_O_PARAN, TT_EOF});
+}
+
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
@@ -1260,4 +1397,14 @@ void tokenizerTest() {
 	tokenizerTestReturn();
 	tokenizerTestShort();
 	tokenizerTestSigned();
+	tokenizerTestSizeof();
+	tokenizerTestStatic();
+	tokenizerTestStruct();
+	tokenizerTestSwitch();
+	tokenizerTestTypedef();
+	tokenizerTestUnion();
+	tokenizerTestUnsigned();
+	tokenizerTestVoid();
+	tokenizerTestVolatile();
+	tokenizerTestWhile();
 }
