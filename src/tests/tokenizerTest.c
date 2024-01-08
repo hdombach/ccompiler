@@ -40,7 +40,7 @@ static void tokenizerTestNum() {
 		(TokenType[]) {TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_NUMB_CONSTANT, TT_EOF});
 }
 
-static void tokenizerTestChar() {
+static void tokenizerTestCharConst() {
 	tStartSection("Tokenizer char constants");
 
 	tTokensSuccess(
@@ -869,13 +869,324 @@ static void tokenizerTestDec() {
 		(TokenType[]) {
 			TT_DEC, TT_DEC, TT_EQL, TT_EOF,
 		});
+}
 
+static void tokenizerTestComma() {
+	tStartSection("Tokenizer test comma");
+
+	tTokensSuccess(",", (TokenType[]) {TT_COMMA, TT_EOF});
+
+	tTokensSuccess(
+		"test(hello, 5)",
+		(TokenType[]) {
+			TT_IDENTIFIER, TT_O_PARAN, TT_IDENTIFIER, TT_COMMA,
+			TT_NUMB_CONSTANT, TT_C_PARAN, TT_EOF
+		});
+
+	tTokensSuccess(
+			"(,)",
+			(TokenType[]) {TT_O_PARAN, TT_COMMA, TT_C_PARAN, TT_EOF});
+}
+
+static void tokenizerTestAuto() {
+	tStartSection("Tokenizer test auto");
+
+	tTokensSuccess("auto", (TokenType[]) {TT_AUTO, TT_EOF});
+
+	tTokensSuccess("{auto}", (TokenType[]) {TT_O_CURLY, TT_AUTO, TT_C_CURLY, TT_EOF});
+
+	tTokensSuccess("aauto", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestBreak() {
+	tStartSection("Tokenizer test break");
+
+	tTokensSuccess("break", (TokenType[]) {TT_BREAK, TT_EOF});
+
+	tTokensSuccess("{break;", (TokenType[]) {TT_O_CURLY, TT_BREAK, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess("Break", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestCase() {
+	tStartSection("Tokenizer test case");
+
+	tTokensSuccess("case", (TokenType[]) {TT_CASE, TT_EOF});
+
+	tTokensSuccess("case 5:", (TokenType[]) {TT_CASE, TT_NUMB_CONSTANT, TT_COLON, TT_EOF});
+
+	tTokensSuccess("case ENUM_VAL:;", (TokenType[]) {TT_CASE, TT_IDENTIFIER, TT_COLON, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess("casee", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestChar() {
+	tStartSection("Tokenizer test char");
+
+	tTokensSuccess("char", (TokenType[]) {TT_CHAR, TT_EOF});
+
+	tTokensSuccess(
+			"const char c;",
+			(TokenType[]) {TT_CONST, TT_CHAR, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"char,",
+			(TokenType[]) {TT_CHAR, TT_COMMA, TT_EOF});
+
+	tTokensSuccess(
+			"chhar CHAR",
+			(TokenType[]) {TT_IDENTIFIER, TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestConst() {
+	tStartSection("Tokenizer test const");
+
+	tTokensSuccess("const", (TokenType[]) {TT_CONST, TT_EOF});
+
+	tTokensSuccess(
+			"const void const*",
+			(TokenType[]) {TT_CONST, TT_VOID, TT_CONST, TT_MULT, TT_EOF});
+
+	tTokensSuccess(
+			"consst", 
+			(TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestContinue() {
+	tStartSection("Tokenizer test continue");
+
+	tTokensSuccess("continue", (TokenType[]) {TT_CONTINUE, TT_EOF});
+
+	tTokensSuccess("continue;", (TokenType[]) {TT_CONTINUE, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			";continue;",
+			(TokenType[]) {TT_SEMI_COLON, TT_CONTINUE, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"coninue", 
+			(TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestDefault() {
+	tStartSection("Tokenizer test default");
+
+	tTokensSuccess("default", (TokenType[]) {TT_DEFAULT, TT_EOF});
+
+	tTokensSuccess(
+			"default: break;",
+			(TokenType[]) {TT_DEFAULT, TT_COLON, TT_BREAK, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"defaut", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestDo() {
+	tStartSection("Tokenizer test do");
+
+	tTokensSuccess("do", (TokenType[]) {TT_DO, TT_EOF});
+
+	tTokensSuccess(
+			"do (do)",
+			(TokenType[]) {TT_DO, TT_O_PARAN, TT_DO, TT_C_PARAN, TT_EOF});
+
+	tTokensSuccess(
+			"doo", 
+			(TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestDouble() {
+	tStartSection("Tokenizer test double");
+
+	tTokensSuccess("double", (TokenType[]) {TT_DOUBLE, TT_EOF});
+
+	tTokensSuccess("long double", (TokenType[]) {TT_LONG, TT_DOUBLE, TT_EOF});
+
+	tTokensSuccess(
+			"double *ptr",
+			(TokenType[]) {TT_DOUBLE, TT_MULT, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess("double_t", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestElse() {
+	tStartSection("Tokenizer test else");
+
+	tTokensSuccess("else", (TokenType[]) {TT_ELSE, TT_EOF});
+
+	tTokensSuccess(
+			"}else{",
+			(TokenType[]) {TT_C_CURLY, TT_ELSE, TT_O_CURLY, TT_EOF});
+
+	tTokensSuccess("elseif", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestEnum() {
+	tStartSection("Tokenizer test enum");
+
+	tTokensSuccess("enum", (TokenType[]) {TT_ENUM, TT_EOF});
+
+	tTokensSuccess(
+			"typedef enum thing{",
+			(TokenType[]) {TT_TYPEDEF, TT_ENUM, TT_IDENTIFIER, TT_O_CURLY, TT_EOF});
+
+	tTokensSuccess("enum{", (TokenType[]) {TT_ENUM, TT_O_CURLY, TT_EOF});
+
+	tTokensSuccess("Enum", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestExtern() {
+	tStartSection("Tokenizer test extern");
+
+	tTokensSuccess("extern", (TokenType[]) {TT_EXTERN, TT_EOF});
+
+	tTokensSuccess(
+			"extern const void *ptr",
+			(TokenType[]) {TT_EXTERN, TT_CONST, TT_VOID, TT_MULT, TT_IDENTIFIER, TT_EOF});
+
+	tTokensSuccess(
+			"{extern;",
+			(TokenType[]) {TT_O_CURLY, TT_EXTERN, TT_SEMI_COLON, TT_EOF});
+}
+
+static void tokenizerTestFloat() {
+	tStartSection("Tokenizer test float");
+
+	tTokensSuccess("float", (TokenType[]) {TT_FLOAT, TT_EOF});
+
+	tTokensSuccess(
+			"float thing;",
+			(TokenType[]) {TT_FLOAT, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+}
+
+static void tokenizerTestFor() {
+	tStartSection("Tokenizer test for");
+
+	tTokensSuccess("for", (TokenType[]) {TT_FOR, TT_EOF});
+
+	tTokensSuccess(
+			"for (;;;)",
+			(TokenType[]) {
+				TT_FOR, TT_O_PARAN, TT_SEMI_COLON,
+				TT_SEMI_COLON, TT_SEMI_COLON, TT_C_PARAN, TT_EOF
+			});
+}
+
+static void tokenizerTestGoto() {
+	tStartSection("Tokenizer test goto");
+
+	tTokensSuccess("goto", (TokenType[]) {TT_GOTO, TT_EOF});
+
+	tTokensSuccess(
+			"goto thing;",
+			(TokenType[]) {TT_GOTO, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"{goto;",
+			(TokenType[]) {TT_O_CURLY, TT_GOTO, TT_SEMI_COLON, TT_EOF});
+}
+
+static void tokenizerTestIf() {
+	tStartSection("Tokenizer test if");
+
+	tTokensSuccess("if", (TokenType[]) {TT_IF, TT_EOF});
+
+	tTokensSuccess(
+			"{if(",
+			(TokenType[]) {TT_O_CURLY, TT_IF, TT_O_PARAN, TT_EOF});
+
+	tTokensSuccess(
+			"if (d) {}",
+			(TokenType[]) {
+				TT_IF, TT_O_PARAN, TT_IDENTIFIER,
+				TT_C_PARAN, TT_O_CURLY, TT_C_CURLY, TT_EOF
+			});
+}
+
+static void tokenizerTestInt() {
+	tStartSection("Tokenizer test int");
+
+	tTokensSuccess("int", (TokenType[]) {TT_INT, TT_EOF});
+
+	tTokensSuccess(
+			"int *ptr;",
+			(TokenType[]) {TT_INT, TT_MULT, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"unsigned int;",
+			(TokenType[]) {TT_UNSIGNED, TT_INT, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"int test, test2",
+			(TokenType[]) {TT_INT, TT_IDENTIFIER, TT_COMMA, TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestLong() {
+	tStartSection("Tokenizer test long");
+
+	tTokensSuccess("long", (TokenType[]) {TT_LONG, TT_EOF});
+
+	tTokensSuccess(
+			"long int;",
+			(TokenType[]) {TT_LONG, TT_INT, TT_SEMI_COLON, TT_EOF});
+}
+
+static void tokenizerTestRegister() {
+	tStartSection("Tokenizer test register");
+
+	tTokensSuccess("register", (TokenType[]) {TT_REGISTER, TT_EOF});
+
+	tTokensSuccess(
+			"register int thing",
+			(TokenType[]) {TT_REGISTER, TT_INT, TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestReturn() {
+	tStartSection("Tokenizer test return");
+
+	tTokensSuccess("return", (TokenType[]) {TT_RETURN, TT_EOF});
+
+	tTokensSuccess(
+			"return(4)",
+			(TokenType[]) {TT_RETURN, TT_O_PARAN, TT_NUMB_CONSTANT, TT_C_PARAN, TT_EOF});
+
+	tTokensSuccess(
+			"return-thing;",
+			(TokenType[]) {TT_RETURN, TT_MINUS, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+}
+
+static void tokenizerTestShort() {
+	tStartSection("Tokenizer test short");
+
+	tTokensSuccess("short", (TokenType[]) {TT_SHORT, TT_EOF});
+
+	tTokensSuccess(
+			"short int *ptr;",
+			(TokenType[]) {TT_SHORT, TT_INT, TT_MULT, TT_IDENTIFIER, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"unsigned short;",
+			(TokenType[]) {TT_UNSIGNED, TT_SHORT, TT_SEMI_COLON, TT_EOF});
+
+	tTokensSuccess(
+			"short test, test2",
+			(TokenType[]) {TT_SHORT, TT_IDENTIFIER, TT_COMMA, TT_IDENTIFIER, TT_EOF});
+}
+
+static void tokenizerTestSigned() {
+	tStartSection("Tokenizer signed");
+
+	tTokensSuccess("signed", (TokenType[]) {TT_SIGNED, TT_EOF});
+
+	tTokensSuccess(
+			"signed char;",
+			(TokenType[]) {TT_SIGNED, TT_CHAR, TT_SEMI_COLON, TT_EOF});
 }
 
 void tokenizerTest() {
 	tokenizerTestIdentifier();
 	tokenizerTestNum();
-	tokenizerTestChar();
+	tokenizerTestCharConst();
 	tokenizerTestStr();
 	tokenizerTestMacroIf();
 	tokenizerTestMacroElif();
@@ -926,4 +1237,27 @@ void tokenizerTest() {
 	tokenizerTestBitwise();	
 	tokenizerTestInc();
 	tokenizerTestDec();
+	tokenizerTestComma();
+	tokenizerTestAuto();
+	tokenizerTestBreak();
+	tokenizerTestCase();
+	tokenizerTestChar();
+	tokenizerTestConst();
+	tokenizerTestContinue();
+	tokenizerTestDefault();
+	tokenizerTestDo();
+	tokenizerTestDouble();
+	tokenizerTestElse();
+	tokenizerTestEnum();
+	tokenizerTestExtern();
+	tokenizerTestFloat();
+	tokenizerTestFor();
+	tokenizerTestGoto();
+	tokenizerTestIf();
+	tokenizerTestInt();
+	tokenizerTestLong();
+	tokenizerTestRegister();
+	tokenizerTestReturn();
+	tokenizerTestShort();
+	tokenizerTestSigned();
 }
