@@ -603,6 +603,179 @@ static void astSizeofOperation() {
 			});
 }
 
+static void astBinaryOperationTest() {
+	tStartSection("AST Binary operation testing");
+
+	tAstSuccess(
+		"int thing = 5 + 2;",
+		(ASTNodeType[]) {
+			AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_INT_CONSTANT,
+			AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+			"int thing = 5*2+5<<2;",
+			(ASTNodeType[]) {
+				AST_FILE,
+					AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+						AST_BINARY_OPERATION, AST_BINARY_OPERATION, AST_BINARY_OPERATION,
+						AST_INT_CONSTANT, AST_INT_CONSTANT, AST_INT_CONSTANT,
+						AST_INT_CONSTANT, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int thing = false&&hi;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int thing = 5+-2;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+					AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_PREFIX_OPERATION, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+}
+
+static void astUnaryOperationTest() {
+	tStartSection("Unary operator tests");
+
+	tAstSuccess(
+		"int value = thing++;",
+		(ASTNodeType[]) {
+			AST_FILE,
+			AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+			AST_POSTFIX_OPERATION, AST_IDENTIFIER,
+			AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int value = --thing;",
+		(ASTNodeType[]) {
+			AST_FILE,
+			AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+			AST_PREFIX_OPERATION, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int value = !thing();",
+		(ASTNodeType[]) {
+			AST_FILE,
+			AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+			AST_PREFIX_OPERATION, AST_FUNC_OPERATION, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+			"int value = !thing++;",
+			(ASTNodeType[]) {
+				AST_FILE,
+				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
+				AST_PREFIX_OPERATION, AST_POSTFIX_OPERATION, AST_IDENTIFIER,
+				AST_UNKNOWN,
+			});
+}
+
+static void astTestIf() {
+	tStartSection("Test ast if statements");
+
+	tAstSuccess(
+		"int main() {\n"
+		"	if (value) {\n"
+		" 	say_hi();\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, AST_IDENTIFIER_DECL,
+			AST_COMP_STM, AST_STM, AST_IF, AST_IDENTIFIER, AST_STM, AST_COMP_STM, AST_STM,
+			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	if (value) {\n"
+		" 	say_hi();\n"
+		"	} if (value) {\n"
+		" 	thing = 5;\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_IF, AST_IDENTIFIER, AST_STM,
+			AST_COMP_STM, AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER, AST_STM, AST_IF,
+			AST_IDENTIFIER, AST_STM, AST_COMP_STM, AST_STM, AST_BINARY_OPERATION,
+			AST_IDENTIFIER, AST_INT_CONSTANT, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	if (value) {\n"
+		" 	say_hi();\n"
+		"	} else {\n"
+		" 	thing = 5;\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_IF, AST_IDENTIFIER,
+			AST_STM, AST_COMP_STM, AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER,
+			AST_STM, AST_COMP_STM, AST_STM, AST_BINARY_OPERATION, AST_IDENTIFIER,
+			AST_INT_CONSTANT, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	if (value) {\n"
+		" 	say_hi();\n"
+		"	} else if (3) {\n"
+		" 	thing = 5;\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_IF, AST_IDENTIFIER,
+			AST_STM, AST_COMP_STM, AST_STM, AST_FUNC_OPERATION, AST_IDENTIFIER,
+			AST_STM, AST_IF, AST_INT_CONSTANT, AST_STM, AST_COMP_STM, AST_STM,
+			AST_BINARY_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
+			AST_UNKNOWN,
+		});
+}
+
+static void astSwitchTest() {
+	tStartSection("Test ast switch statements");
+
+return;
+	tAstDebug(
+		"int main() {\n"
+		"	switch (thing) {\n"
+		"		case 5: return 4;\n"
+		"		default: return 6;\n"
+		"	}\n"
+		"}");
+
+	tAstDebug(
+		"int main() {\n"
+		"	switch (thing) {\n"
+		"		case 6:\n"
+		"		case 5: return 4;\n"
+		"}");
+
+	tAstDebug(
+		"int main() {\n"
+		"	switch (thing) {\n"
+		"		default: return 6;\n"
+		"}");
+
+}
+
+
 void astTests() {
 	astTestFile();
 	astSimpleDecl();
@@ -614,4 +787,8 @@ void astTests() {
 	astCondOperationTest();
 	astCastOperationTest();
 	astSizeofOperation();
+	astBinaryOperationTest();
+	astUnaryOperationTest();
+	astTestIf();
+	astSwitchTest();
 }
