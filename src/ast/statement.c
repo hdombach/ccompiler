@@ -267,6 +267,102 @@ ASTNode *astGotoGetChild(ASTGoto *node, int index) {
 }
 
 /***********************************************************************
+ * Return Statement
+ ***********************************************************************/
+
+static ASTNodeVTable _returnTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printASTReturn,
+	},
+	(ASTChildCount) astReturnChildCount,
+	(ASTGetChild) astReturnGetChild,
+};
+
+void initASTReturn(ASTReturn *node, const Token *tok) {
+	node->value = NULL;
+	initASTNode((ASTNode *) node, tok, &_returnTable);
+}
+
+void freeASTReturn(ASTReturn *node) {
+	if (node->value) {
+		freeASTNode(node->value);
+		node->value = NULL;
+	}
+}
+
+int parseASTReturn(
+		ASTReturn *node,
+		const Token *tok,
+		struct ASTScope *scope)
+{
+	AST_VALID(ASTReturn);
+	int n = 0, res;
+	ASTNodeBuf tempBuf;
+
+	initASTReturn(node, tok);
+	if (astHasErr()) return 0;
+
+	if (tok[n].type == TT_RETURN) {
+		n++;
+	} else {
+		goto failure;
+	}
+
+	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+		n += res;
+		node->value = dupASTNode((ASTNode *) &tempBuf);
+	}
+
+	if (tok[n].type == TT_SEMI_COLON) {
+		n++;
+	} else {
+		goto failure;
+	}
+
+	node->node.type = AST_RETURN;
+
+	return n;
+
+failure:
+	freeASTReturn(node);
+	return 0;
+}
+
+int printASTReturn(const ASTReturn *node) {
+	int n = 0;
+
+	n += printf("{");
+
+	n += printf("\"node type\": \"%s\"", astNodeTypeStr(node->node.type));
+
+	if (node->value) {
+		n += printf("\"return value\": ");
+		n += printASTNode(node->value);
+	}
+
+	n += printf("}");
+
+	return n;
+}
+
+int astReturnChildCount(ASTReturn *node) {
+	if (node->value) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+ASTNode *astReturnGetChild(ASTReturn *node, int index) {
+	if (index == 0 && node->value) {
+		return node->value;
+	} else {
+		return NULL;
+	}
+}
+
+/***********************************************************************
  * Statement Statement
  ***********************************************************************/
 
@@ -332,6 +428,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTContinue((ASTBreak *) &tempBuf, tok + n, scope))) {
+		node->content = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
+	} else if ((res = parseASTReturn((ASTReturn *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {

@@ -59,7 +59,8 @@
 	X(AST_LBL_CASE, "case label") \
 	X(AST_LBL_DEFAULT, "default label") \
 	X(AST_FOR, "for statement") \
-	X(AST_GOTO, "goto statement")
+	X(AST_GOTO, "goto statement") \
+	X(AST_RETURN, "return statement") \
 
 #define X(NAME, STR) NAME,
 /**
