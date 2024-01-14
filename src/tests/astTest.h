@@ -793,8 +793,45 @@ static void astSwitchTest() {
 			AST_STM, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
 			AST_RETURN, AST_INT_CONSTANT, AST_UNKNOWN,
 		});
+}
 
-return;
+static void astWhileTest() {
+	tStartSection("Testing whiles");
+
+	tAstSuccess(
+		"int main() {\n"
+		"	while (1);\n"
+		"}\n",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_WHILE, AST_INT_CONSTANT,
+			AST_STM, AST_EMPTY_STM, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	while (*c) c++;\n"
+		"}\n",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_WHILE,
+			AST_PREFIX_OPERATION, AST_IDENTIFIER, AST_STM, AST_POSTFIX_OPERATION,
+			AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	while (*c) {\n"
+		"		c++;\n"
+		" }\n"
+		"}\n",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_WHILE,
+			AST_PREFIX_OPERATION, AST_IDENTIFIER, AST_STM, AST_COMP_STM, 
+			AST_STM, AST_POSTFIX_OPERATION, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
 }
 
 
@@ -813,4 +850,5 @@ void astTests() {
 	astUnaryOperationTest();
 	astTestIf();
 	astSwitchTest();
+	astWhileTest();
 }

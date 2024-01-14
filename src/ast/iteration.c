@@ -17,7 +17,7 @@ static ASTNodeVTable _whileVTable = {
 		(PrintFunc) printASTWhile,
 	},
 	(ASTChildCount) astWhileChildCount,
-	(ASTGetChild) astDoWhileGetChild,
+	(ASTGetChild) astWhileGetChild,
 };
 
 void initASTWhile(ASTWhile *node, Token const *tok) {
