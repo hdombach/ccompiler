@@ -5,6 +5,7 @@
 #include "log.h"
 #include "../tok/token.h"
 #include "../util/color.h"
+#include "../ast/astUtil.h"
 
 LogLevel gLogLevel = LL_WARNING | LL_INT_ERROR | LL_CERROR;
 
@@ -48,6 +49,7 @@ CError *_cerrs = NULL;
 void initCerr() {
 	_cerrShouldPrint = 1;
 	freeCerr();
+	astErr(NULL, NULL);
 }
 
 void freeCerr() {

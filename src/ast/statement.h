@@ -243,8 +243,8 @@ ASTNode *astReturnGetChild(ASTReturn *node, int index);
  */
 typedef struct ASTStm {
 	ASTNode node;
+	DList labels;
 	ASTNode *content;
-	ASTNode *label;
 } ASTStm;
 
 /**

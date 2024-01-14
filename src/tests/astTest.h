@@ -751,28 +751,50 @@ static void astTestIf() {
 static void astSwitchTest() {
 	tStartSection("Test ast switch statements");
 
-return;
-	tAstDebug(
+	tAstSuccess(
 		"int main() {\n"
 		"	switch (thing) {\n"
 		"		case 5: return 4;\n"
 		"		default: return 6;\n"
 		"	}\n"
-		"}");
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_SWITCH, AST_IDENTIFIER,
+			AST_STM, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT, AST_RETURN,
+			AST_INT_CONSTANT, AST_STM, AST_LBL_DEFAULT, AST_RETURN, AST_INT_CONSTANT,
+			AST_UNKNOWN
+		});
 
-	tAstDebug(
+	tAstSuccess(
 		"int main() {\n"
 		"	switch (thing) {\n"
 		"		case 6:\n"
 		"		case 5: return 4;\n"
-		"}");
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, 
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_SWITCH, AST_IDENTIFIER, 
+			AST_STM, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
+			AST_LBL_CASE, AST_INT_CONSTANT, AST_RETURN, AST_INT_CONSTANT,
+			AST_UNKNOWN,
+		});
 
-	tAstDebug(
+	tAstSuccess(
 		"int main() {\n"
 		"	switch (thing) {\n"
-		"		default: return 6;\n"
-		"}");
+		"		case 3: return 6;\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_SWITCH, AST_IDENTIFIER,
+			AST_STM, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
+			AST_RETURN, AST_INT_CONSTANT, AST_UNKNOWN,
+		});
 
+return;
 }
 
 

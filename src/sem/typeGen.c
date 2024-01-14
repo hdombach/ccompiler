@@ -17,11 +17,7 @@ void typeTravAddErr(TypeTravCtx *ctx, const char *errName) {
 static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_STM) {
 		ASTStm *stm = (ASTStm *) node;
-		if (stm->label && stm->label->type == AST_LBL_IDENTIFIER) {
-			ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm->label;
-			astScopeAddLabel(ctx->scope, stm);
-			DEBUG_TOK(node->tok, "Added label \"%s\"", lbl->name);
-		}
+		if (astScopeAddLabels(ctx->scope, stm)) TODO("Error handling");
 	}
 	return ASTT_SUCCESS;
 }

@@ -377,7 +377,7 @@ static ASTNodeVTable _stmVTable = {
 
 void initASTStm(ASTStm *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok, &_stmVTable);
-	node->label = NULL;
+	initDListEmpty(&node->labels, AST_NODE_S);
 	node->content = NULL;
 }
 
@@ -386,11 +386,7 @@ void freeASTStm(ASTStm *node) {
 		freeASTNode(node->content);
 		free(node->content);
 	}
-	if (node->label) {
-		freeASTNode(node->label);
-		free(node->label);
-		node->label = NULL;
-	}
+	freeDList(&node->labels, (FreeFunc) freeASTNode);
 }
 
 int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
@@ -404,8 +400,8 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTLabel((ASTNode *) &tempBuf, tok + n, scope))) {
-		node->label = dupASTNode((ASTNode *) &tempBuf);
+	while ((res = parseASTLabel((ASTNode *) &tempBuf, tok + n, scope))) {
+		dlistApp(&node->labels, &tempBuf);
 		n += res;
 	}
 
@@ -456,13 +452,13 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 int printASTStm(ASTStm const *node) {
 	int n = 0;
 
-	if (node->label) {
+	if (node->labels.size) {
 		n += printf("{");
 		n += printf("\"node type\": \"statement\"");
 
-		if (node->label) {
-			n += printf(", \"label\": ");
-			n += printASTNode(node->label);
+		if (node->labels.size) {
+			n += printf(", \"labels\": ");
+			n += printDList(&node->labels, (PrintFunc) printASTNode);
 		}
 
 		n += printf(", \"content\": ");
@@ -472,7 +468,7 @@ int printASTStm(ASTStm const *node) {
 		n += printASTNode(node->content);
 	}
 
-	if (node->label) {
+	if (node->labels.size) {
 		n += printf("}");
 	}
 
@@ -480,12 +476,13 @@ int printASTStm(ASTStm const *node) {
 }
 
 int astStmChildCount(const ASTStm *node) {
-	return 2;
+	return node->labels.size + 1;
 }
 
 ASTNode *astStmGetChild(ASTStm *node, int index) {
-	return (ASTNode *[]) {
-		node->content,
-		node->label,
-	}[index];
+	if (node->labels.size > index) {
+		return dlistGetm(&node->labels, index);
+	} else {
+		return node->content;
+	}
 }

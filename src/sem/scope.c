@@ -140,19 +140,16 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names) {
 	}
 }
 
-ASTScopeErr astScopeAddLabel(ASTScope *scope, struct ASTStm *stm) {
-	if (!stm->label || stm->label->type != AST_LBL_IDENTIFIER) {
-		return SCOPE_INVALID_ARG;
+ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTStm *stm) {
+	for (int i = 0; i < stm->labels.size; i++) {
+		ASTLblIdentifier *lbl = dlistGetm(&stm->labels, i);
+		if (lbl->node.type != AST_LBL_IDENTIFIER) break;
+		if (astScopeGetLabel(scope, lbl->name)) return SCOPE_EXISTS;
+		int index = scope->labels.size;
+		dlistApp(&scope->labels, stm); TODO("pretty sure it should be passing pointer");
+		wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
 	}
 
-	ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm->label;
-	if (astScopeGetLabel(scope, lbl->name)) {
-		return SCOPE_EXISTS;
-	}
-
-	int index = scope->labels.size;
-	dlistApp(&scope->labels, stm);
-	wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
 	return SCOPE_SUCCESS;
 }
 

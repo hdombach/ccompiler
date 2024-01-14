@@ -4,7 +4,7 @@
 #include "../util/util.h"
 #include "../util/dlist.h"
 
-struct ASTStm;
+typedef struct ASTStm ASTStm;
 struct SCompound;
 struct SType;
 struct SEnum;
@@ -56,8 +56,9 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names);
  *
  * @param scope
  * @param stm
+ * @returns Any errors that happened
  */
-ASTScopeErr astScopeAddLabel(ASTScope *scope, struct ASTStm *stm);
+ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTStm *stm);
 /**
  * @brief Searches for label in the current scope
  *
@@ -66,7 +67,7 @@ ASTScopeErr astScopeAddLabel(ASTScope *scope, struct ASTStm *stm);
  *
  * @return Statement containing the label. NULL if not found
  */
-struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName);
+ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName);
 
 int astScopeHasCompound(ASTScope *scope, const char *name);
 
