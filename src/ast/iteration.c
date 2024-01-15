@@ -354,9 +354,11 @@ int parseASTFor(
 			freeASTFor(node);
 			return 0;
 		}
-	} else if ((res = parseASTDeclarator((ASTDeclarator *) &tempBuf, tok + n, scope))) {
+	} else if ((res = parseASTDeclaration((ASTDeclaration *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->initClause = dupASTNode((ASTNode *) &tempBuf);
+	} else if (tok[n].type == TT_SEMI_COLON) {
+		n++;
 	} else {
 		astErr("Expecting expression or declaration following (", tok + n);
 		freeASTFor(node);
@@ -366,10 +368,6 @@ int parseASTFor(
 	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->condExp = dupASTNode((ASTNode *) &tempBuf);
-	} else {
-		astErr("Expecting equation after ;", tok + n);
-		freeASTFor(node);
-		return 0;
 	}
 
 	if (tok[n].type == TT_SEMI_COLON) {
@@ -383,10 +381,6 @@ int parseASTFor(
 	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->iterExp = dupASTNode((ASTNode *) &tempBuf);
-	} else {
-		astErr("Expecting iter expression after ;", tok + n);
-		freeASTFor(node);
-		return 0;
 	}
 
 	if (tok[n].type == TT_C_PARAN) {

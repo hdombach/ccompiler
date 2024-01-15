@@ -834,6 +834,124 @@ static void astWhileTest() {
 
 }
 
+static void astDoWhileTest() {
+	tStartSection("test do while");
+
+	tAstSuccess(
+		"int main() {\n"
+		"	do; while (1);\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_DO_WHILE, AST_STM,
+			AST_EMPTY_STM, AST_INT_CONSTANT, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	do stuff(); while (wait());\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_DO_WHILE, AST_STM,
+			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_FUNC_OPERATION,
+			AST_IDENTIFIER, AST_UNKNOWN,
+		});
+}
+
+static void astEmptyStmTest() {
+	tStartSection("Test empty statements");
+
+	tAstSuccess(
+		"int main() {;;;}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_EMPTY_STM,
+			AST_STM, AST_EMPTY_STM, AST_STM, AST_EMPTY_STM, AST_UNKNOWN,
+		});
+}
+
+static void astGotoTest() {
+	tStartSection("test goto statements");
+
+	tAstSuccess(
+		"int main() {\n"
+		"	start: goto start;\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_LBL_IDENTIFIER,
+			AST_GOTO, AST_UNKNOWN
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	start: start_2: goto start;\n"
+		"	goto start_2;\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_LBL_IDENTIFIER,
+			AST_LBL_IDENTIFIER, AST_GOTO, AST_STM, AST_GOTO, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	case 5: start: goto start;\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
+			AST_LBL_IDENTIFIER, AST_GOTO, AST_UNKNOWN,
+		});
+}
+
+static void astForTest() {
+	tStartSection("Test for loop");
+
+	tAstSuccess(
+		"int main() {\n"
+		"	for (;;);\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_FOR, AST_STM,
+			AST_EMPTY_STM, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	int i = 0;\n"
+		" for (i = 0; i++; i < 10) {\n"
+		"		do_stuff(i);\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_DECLARATION, AST_TYPE_SPEC,
+			AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_INT_CONSTANT, AST_STM,
+			AST_FOR, AST_BINARY_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
+			AST_POSTFIX_OPERATION, AST_IDENTIFIER, AST_BINARY_OPERATION, AST_IDENTIFIER,
+			AST_INT_CONSTANT, AST_STM, AST_COMP_STM, AST_STM, AST_FUNC_OPERATION,
+			AST_IDENTIFIER, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		" for (int i = 0; i++; i < 10) {\n"
+		"		do_stuff(i);\n"
+		"	}\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_FOR, AST_DECLARATION,
+			AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_INT_CONSTANT, 
+			AST_POSTFIX_OPERATION, AST_IDENTIFIER, AST_BINARY_OPERATION,
+			AST_IDENTIFIER, AST_INT_CONSTANT, AST_STM, AST_COMP_STM, AST_STM,
+			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+}
 
 void astTests() {
 	astTestFile();
@@ -851,4 +969,8 @@ void astTests() {
 	astTestIf();
 	astSwitchTest();
 	astWhileTest();
+	astDoWhileTest();
+	astEmptyStmTest();
+	astGotoTest();
+	astForTest();
 }

@@ -420,6 +420,9 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	} else if ((res = parseASTDoWhile((ASTDoWhile *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
+	} else if ((res = parseASTFor((ASTFor *) &tempBuf, tok + n, scope))) {
+		node->content = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
 	} else if ((res = parseASTBreak((ASTBreak *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
