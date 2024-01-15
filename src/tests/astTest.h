@@ -950,7 +950,34 @@ static void astForTest() {
 			AST_IDENTIFIER, AST_INT_CONSTANT, AST_STM, AST_COMP_STM, AST_STM,
 			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER, AST_UNKNOWN,
 		});
+}
 
+static void astReturnTest() {
+	tStartSection("test return things");
+
+	tAstSuccess(
+			"void test() {return;}",
+			(ASTNodeType[]) {
+				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {return 5;}",
+			(ASTNodeType[]) {
+				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_INT_CONSTANT,
+				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int main() {return 4 * 2 >> thing;}",
+			(ASTNodeType[]) {
+				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, 
+				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN,
+				AST_BINARY_OPERATION, AST_BINARY_OPERATION, AST_INT_CONSTANT,
+				AST_INT_CONSTANT, AST_IDENTIFIER, AST_UNKNOWN,
+			});
 }
 
 void astTests() {
@@ -973,4 +1000,5 @@ void astTests() {
 	astEmptyStmTest();
 	astGotoTest();
 	astForTest();
+	astReturnTest();
 }
