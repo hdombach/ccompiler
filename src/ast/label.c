@@ -127,7 +127,7 @@ int parseASTLblCase(
 		n += res;
 	} else {
 		freeASTLblCase(node);
-		astErr("Expected expression following case", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting expression following case");
 		return 0;
 	}
 
@@ -135,7 +135,7 @@ int parseASTLblCase(
 		n++;
 	} else {
 		freeASTLblCase(node);
-		astErr("Expecting : following case", tok + n);
+		logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting : following case");
 		return 0;
 	}
 

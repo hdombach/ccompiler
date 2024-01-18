@@ -10,6 +10,4 @@ typedef struct TypeTravCtx {
 	ASTNode *node;
 } TypeTravCtx;
 
-void typeTravAddErr(TypeTravCtx *ctx, const char *errName);
-
 void typeGen(ASTFile *file);

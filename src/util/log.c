@@ -49,7 +49,6 @@ CError *_cerrs = NULL;
 void initCerr() {
 	_cerrShouldPrint = 1;
 	freeCerr();
-	astErr(NULL, NULL);
 }
 
 void freeCerr() {

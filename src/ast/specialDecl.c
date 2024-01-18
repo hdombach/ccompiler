@@ -179,7 +179,7 @@ int parseASTEnumConst(
 	if ((res = parseASTExp14(decl->exp, tok + n, scope))) {
 		n += res;
 	} else {
-		astErr("Expected expression after enumerator", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting expression after enumerator");
 		free(decl->exp);
 		decl->exp = NULL;
 		freeASTEnumConst(decl);
@@ -302,7 +302,7 @@ int parseASTEnumDecl(
 	if (tok[n].type == TT_C_CURLY) {
 		n++;
 	} else {
-		astErr("Expecting }", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting }");
 		freeASTEnumDecl(decl);
 		return 0;
 	}
@@ -424,7 +424,7 @@ int parseASTStructDecl(
 	if (tok[n].type == TT_C_CURLY) {
 		n++;
 	} else {
-		astErr("Expecting }", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting }");
 		freeASTStructDecl(decl);
 		return 0;
 	}
@@ -551,7 +551,7 @@ int parseASTFuncDecl(
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting )", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting )");
 		freeASTFuncDecl(decl);
 		return 0;
 	}

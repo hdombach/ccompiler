@@ -70,9 +70,6 @@ int main(int argc, char **argv) {
 			freeASTFile(&astFile);
 		} else {
 			printf("not successful\n");
-			if (astHasErr()) {
-				fprintASTErr(stderr);
-			}
 		}
 
 		freeTokList(&tokens);

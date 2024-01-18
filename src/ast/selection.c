@@ -63,7 +63,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
-		astErr("expected (", tok + n);
+		logCerr(CERR_BRACE, tok + n, "expected (");
 		freeASTIf(node);
 		return 0;
 	}
@@ -72,7 +72,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("expected expression", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "expected expression");
 		freeASTIf(node);
 		return 0;
 	}
@@ -80,7 +80,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("expected )", tok + n);
+		logCerr(CERR_BRACE, tok + n, "expected )");
 		freeASTIf(node);
 		return 0;
 	}
@@ -89,7 +89,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		n += res;
 		node->trueStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expected statement", tok + n);
+		logCerr(CERR_EXP_STM, tok + n, "Expecting statement following expression");
 		freeASTIf(node);
 		return 0;
 	}
@@ -105,7 +105,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		n += res;
 		node->falseStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expected statement", tok + n);
+		logCerr(CERR_EXP_STM, tok + n, "Expecting statement following else");
 		freeASTIf(node);
 		return 0;
 	}
@@ -206,7 +206,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ( following switch", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ( following switch");
 		freeASTSwitch(node);
 		return 0;
 	}
@@ -215,7 +215,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expecting expression following switch", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting expression following switch");
 		freeASTSwitch(node);
 		return 0;
 	}
@@ -223,7 +223,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("Expected ) following switch", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expected ) following switch");
 		freeASTSwitch(node);
 		return 0;
 	}
@@ -232,7 +232,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 		n += res;
 		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expecting statement following switch", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting statement following switch");
 		freeASTSwitch(node);
 		return 0;
 	}

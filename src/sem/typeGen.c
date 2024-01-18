@@ -8,12 +8,6 @@
 #include "../ast/astUtil.h"
 #include "../ast/node.h"
 
-void typeTravAddErr(TypeTravCtx *ctx, const char *errName) {
-	char *msg;
-	Token const *tok = ctx->node->tok;
-	astErr((char *) errName, tok);
-}
-
 static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_STM) {
 		ASTStm *stm = (ASTStm *) node;

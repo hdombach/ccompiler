@@ -71,7 +71,7 @@ int parseASTWhile(
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expecting expression after while", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting expression after while");
 		freeASTWhile(node);
 		return 0;
 	}
@@ -79,7 +79,7 @@ int parseASTWhile(
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ) after while", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ) after while");
 		freeASTWhile(node);
 		return 0;
 	}
@@ -88,7 +88,7 @@ int parseASTWhile(
 		n += res;
 		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expecting statement after while", tok + n);
+		logCerr(CERR_EXP_STM, tok + n, "Expecting statement after while");
 		freeASTWhile(node);
 		return 0;
 	}
@@ -190,7 +190,7 @@ int parseASTDoWhile(
 		node->statement = malloc(sizeof(ASTStm));
 		*node->statement = tempStm;
 	} else {
-		astErr("Expecting statement after do statement"	, tok + n);
+		logCerr(CERR_EXP_STM, tok + n, "Expecting statement after do keyword");
 		freeASTDoWhile(node);
 		return 0;
 	}
@@ -213,7 +213,7 @@ int parseASTDoWhile(
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expected expression after do while statement", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expected expression after do while statement");
 		freeASTDoWhile(node);
 		return 0;
 	}
@@ -221,7 +221,7 @@ int parseASTDoWhile(
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ) following do while", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ) following do while");
 		freeASTDoWhile(node);
 		return 0;
 	}
@@ -229,7 +229,7 @@ int parseASTDoWhile(
 	if (tok[n].type == TT_SEMI_COLON) {
 		n++;
 	} else {
-		astErr("Expecting ; following do while", tok + n);
+		logCerr(CERR_MISSING_SEMI, tok + n, "Expecting ; following do while");
 		freeASTDoWhile(node);
 		return 0;
 	}
@@ -338,7 +338,7 @@ int parseASTFor(
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ( after while", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ( after while");
 		freeASTFor(node);
 		return 0;
 	}
@@ -350,7 +350,7 @@ int parseASTFor(
 		if (tok[n].type == TT_SEMI_COLON) {
 			n++;
 		} else {
-			astErr("Expecting ; after equation", tok + n);
+			logCerr(CERR_MISSING_SEMI, tok + n, "Expecting ; after equation");
 			freeASTFor(node);
 			return 0;
 		}
@@ -360,7 +360,7 @@ int parseASTFor(
 	} else if (tok[n].type == TT_SEMI_COLON) {
 		n++;
 	} else {
-		astErr("Expecting expression or declaration following (", tok + n);
+		logCerr(CERR_INV_EXP, tok + n, "Expecting expression or declaration following (");
 		freeASTFor(node);
 		return 0;
 	}
@@ -373,7 +373,7 @@ int parseASTFor(
 	if (tok[n].type == TT_SEMI_COLON) {
 		n++;
 	} else {
-		astErr("Expecting ; after cond expression", tok + n);
+		logCerr(CERR_MISSING_SEMI, tok + n, "Expecting ; after cond expression");
 		freeASTFor(node);
 		return 0;
 	}
@@ -386,7 +386,7 @@ int parseASTFor(
 	if (tok[n].type == TT_C_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ) after iter expression", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ) after iter expression");
 		freeASTFor(node);
 		return 0;
 	}
@@ -395,7 +395,7 @@ int parseASTFor(
 		n += res;
 		node->loopStm = dupASTNode((ASTNode *) &tempBuf);
 	} else {
-		astErr("Expecting statement after )", tok + n);
+		logCerr(CERR_EXP_STM, tok + n, "Expecting statement after )");
 		freeASTFor(node);
 		return 0;
 	}

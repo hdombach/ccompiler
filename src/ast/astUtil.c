@@ -6,34 +6,8 @@
 #include "../tok/token.h"
 #include "../util/log.h"
 
-char astErrMsgBuf[AST_ERR_MSG_S];
-char *_astErrMsg = NULL;
-Token const *_astErrTok;
-
-void astErr(char *msg, const Token *tok) {
-	if (_astErrMsg) {
-		fprintASTErr(stderr);
-	}
-	_astErrMsg = msg;
-	_astErrTok = tok;
-}
-
 int astHasErr() {
-	return _astErrMsg != NULL || cerrCount() > 0;
-}
-
-int fprintASTErr(FILE *fp) {
-	if (_astErrTok) {
-		return fprintf(
-				fp,
-				"%s:%d:%d, %s\n",
-				_astErrTok->filename,
-				_astErrTok->posLine,
-				_astErrTok->posColumn,
-				_astErrMsg);
-	} else {
-		return fprintf(fp, "%s\n", _astErrMsg);
-	}
+	return cerrCount() > 0;
 }
 
 int astMacro(Token const *tok, TokenType type) {

@@ -23,6 +23,8 @@ typedef struct Token Token;
 	X(CERR_STRUCT, "Invalid struct or union") \
 	X(CERR_ENUM, "Invalid enum") \
 	X(CERR_MACRO, "Invalid macro") \
+	X(CERR_INV_EXP, "Invalid expression") \
+	X(CERR_EXP_STM, "Execting statement") \
 
 /**
  * @brief The possible errors that can be thrown by the compile stages

@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "charConstant.h"
 #include "astUtil.h"
 #include "node.h"
