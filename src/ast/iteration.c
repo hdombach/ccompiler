@@ -62,7 +62,7 @@ int parseASTWhile(
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
-		astErr("Expecting ( after while", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ( after while");
 		freeASTWhile(node);
 		return 0;
 	}

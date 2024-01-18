@@ -16,6 +16,13 @@ typedef struct Token Token;
 #define X_CERROR \
 	X(CERR_UNKNOWN, "unknown") \
 	X(CERR_TOKENIZER, "tokenizer error") \
+	X(CERR_IDENTIFIER, "Unexpected identifier") \
+	X(CERR_MISSING_SEMI, "Missing semi colon") \
+	X(CERR_UNKNOWN_TOK, "Unknown token") \
+	X(CERR_BRACE, "Expecting a brace") \
+	X(CERR_STRUCT, "Invalid struct or union") \
+	X(CERR_ENUM, "Invalid enum") \
+	X(CERR_MACRO, "Invalid macro") \
 
 /**
  * @brief The possible errors that can be thrown by the compile stages

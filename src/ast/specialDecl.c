@@ -74,7 +74,7 @@ int parseASTArrayDecl(
 	if (tok[n].type == TT_C_BRACE) {
 		n++;
 	} else {
-		astErr("Expecting ] at end of array declaration", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting ] at end of array declaration");
 		freeASTArrayDecl(decl);
 		return 0;
 	}

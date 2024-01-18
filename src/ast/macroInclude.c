@@ -2,6 +2,7 @@
 #include "astUtil.h"
 #include "../util/dstr.h"
 #include "../util/util.h"
+#include "../util/log.h"
 
 #include <libgen.h>
 #include <stdio.h>
@@ -52,7 +53,7 @@ int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 			} else if (astMacro(tok + n, TT_DIV)) {
 				dstrApp(&currFile, '/');
 			} else {
-				astErr("Invalid file name", tok + n);
+				logCerr(CERR_MACRO, tok + n, "Invalid file name");
 				freeDStr(&currFile);
 				freeASTMacroIncl(node);
 				return 0;
@@ -63,7 +64,7 @@ int parseASTMacroIncl(ASTMacroIncl *node, Token const *tok) {
 		node->type = AST_MIT_LIBRARY;
 	} else {
 		freeASTMacroIncl(node);
-		astErr("Invalid token following #include", tok + n);
+		logCerr(CERR_MACRO, tok + n, "Invalid token following #include");
 		return 0;
 	}
 

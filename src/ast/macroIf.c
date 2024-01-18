@@ -4,6 +4,7 @@
 #include "macroIf.h"
 #include "astUtil.h"
 #include "../util/macroDict.h"
+#include "../util/log.h"
 
 void initASTMacroIf(ASTMacroIf *node) {
 	node->next = NULL;
@@ -71,7 +72,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 			last->end++;
 		}
 		if (tok[n].type == TT_EOF) {
-			astErr("Expecting #endif", tok + n);
+			logCerr(CERR_UNKNOWN, tok + n, "Expecting #endif");
 			freeASTMacroIf(node);
 			return 0;
 		} else if (_isMacroIf(tok[n].type)) {
@@ -81,7 +82,7 @@ int parseASTMacroIf(ASTMacroIf *node, Token const *tok, MacroDict *macros) {
 					last->end++;
 				}
 				if (tok[n].type == TT_EOF) {
-					astErr("Expected #endif", tok + n);
+					logCerr(CERR_UNKNOWN, tok + n, "Expecting #endif");
 					freeASTMacroIf(node);
 					return 0;
 				} else if (tok[n].type == TT_MACRO_ENDIF) {

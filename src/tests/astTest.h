@@ -33,6 +33,10 @@ static void astTestFile() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
 				AST_UNKNOWN
 			});
+
+	tAstSuccess(";", (ASTNodeType[]) {AST_FILE, AST_UNKNOWN});
+
+	tAstFailed("test = 5;", (CError[]) {CERR_IDENTIFIER, CERR_UNKNOWN_TOK, CERR_UNKNOWN});
 }
 
 static void astSimpleDecl() {
@@ -121,6 +125,12 @@ static void astSimpleDecl() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_STRUCT_DECL, AST_DECLARATOR, AST_IDENTIFIER_DECL,
 				AST_UNKNOWN
 			});
+
+	TODO("const;");
+
+	tAstFailed(
+			"const int thing = 2",
+			(CError[]) {CERR_MISSING_SEMI, CERR_UNKNOWN_TOK, CERR_UNKNOWN});
 }
 
 static void astDeclaratorTest() {
@@ -207,6 +217,8 @@ static void astDeclaratorTest() {
 					AST_PARAM, AST_TYPE_SPEC, AST_POINTER_DECL, AST_IDENTIFIER_DECL,
 				AST_UNKNOWN
 			});
+
+	tAstFailed("[];", (CError[]) {CERR_UNKNOWN_TOK, CERR_UNKNOWN});
 }
 
 static void astInitializersTest() {

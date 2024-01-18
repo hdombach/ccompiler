@@ -8,6 +8,7 @@
 #include "../util/util.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
+#include "../util/log.h"
 
 void _initASTMacroDefNode(ASTMacroDefNode *node) {
 	node->token = NULL;
@@ -73,14 +74,14 @@ int _parseParam(ASTMacroDef *def, Token const *tok) {
 		dlistApp(&def->paramNames, &tempStr);
 		n++;
 	} else {
-		astErr("Expected param name", tok + n);
+		logCerr(CERR_IDENTIFIER, tok + n, "Expected param name");
 		return 0;
 	}
 
 	while (1) {
 		int subN = n;
 		if (!tok[subN].isMacro) {
-			astErr("Expected )", tok + n);
+			logCerr(CERR_BRACE, tok + n, "Expecting )");
 			return 0;
 		}
 		if (tok[subN].type != TT_COMMA) {
@@ -89,7 +90,7 @@ int _parseParam(ASTMacroDef *def, Token const *tok) {
 		subN++;
 
 		if (!astMacro(tok + subN, TT_IDENTIFIER)) {
-			astErr("Expected macro param name", tok + n);
+			logCerr(CERR_IDENTIFIER, tok + n, "Expecting macro param name");
 			return 0;
 		}
 		tempStr = strdup(tok[subN].contents);
@@ -162,7 +163,7 @@ int parseASTMacroDef(ASTMacroDef *def, Token const *tok) {
 		def->name = strdup(tok[n].contents);
 		n++;
 	} else {
-		astErr("Expected name after macro definition", tok + n);
+		logCerr(CERR_IDENTIFIER, tok + n, "Expecting macro definition");
 		freeASTMacroDef(def);
 		return 0;
 	}

@@ -64,17 +64,16 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 			n += res;
 			dlistApp(&file->items, &tempBuf);
 
-		} else if (tok[n].type == TT_NEWLINE) {
+		} else if (tok[n].type == TT_NEWLINE || tok[n].type == TT_SEMI_COLON) {
 			n++;
 		} else if (tok[n].type == TT_EOF) {
 			n++;
 			break;
 		} else {
-			break;
+			logCerr(CERR_UNKNOWN_TOK, tok + n, "Unexpected token");
+			freeASTFile(file);
+			return 0;
 		}
-	}
-	if (astHasErr()) {
-		fprintASTErr(stderr);
 	}
 
 	file->node.type = AST_FILE;

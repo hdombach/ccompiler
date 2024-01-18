@@ -61,7 +61,7 @@ int parseASTInitializerList(
 	if (tok[n].type == TT_C_CURLY) {
 		n++;
 	} else {
-		astErr("Expecting }", tok + n);
+		logCerr(CERR_BRACE, tok + n, "Expecting }");
 		freeASTInitializerList(list);
 		return 0;
 	}

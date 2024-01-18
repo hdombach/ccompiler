@@ -427,7 +427,7 @@ int parseASTTypeSpec(
 		if (tok[n].type == TT_VOID) {
 			//Void type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				astErr("Multiple types in type specifier", tok + n);
+				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -442,7 +442,7 @@ int parseASTTypeSpec(
 			} else if (typeSpec->typeSpecType == AST_TST_ARITH) {
 				n +=  parseASTArithType(&typeSpec->arith, tok + n);
 			} else {
-				astErr("Multiple types in type specifier", tok + n);
+				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -455,14 +455,14 @@ int parseASTTypeSpec(
 				n += res;
 				typeSpec->typeSpecType = AST_TST_TYPEDEF;
 			} else {
-				astErr("Unexpected identifier 1", tok + n);
+				logCerr(CERR_IDENTIFIER, tok + n, "Invalid typedef type spec");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
 		} else if (tok[n].type == TT_STRUCT || tok[n].type == TT_UNION) {
 			//struct or union type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				astErr("Multiple types in type specifier", tok + n);
+				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -473,14 +473,14 @@ int parseASTTypeSpec(
 				typeSpec->typeSpecType = AST_TST_STRUCT;
 			} else {
 				if (!astHasErr()) {
-					astErr("Invalid struct declaration", tok + n);
+					logCerr(CERR_STRUCT, tok + n, "Invalid struct declaration");
 				}
 				return 0;
 			}
 		} else if (tok[n].type == TT_ENUM) {
 			//enum type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				astErr("Unexpected identifier 2", tok + n);
+				logCerr(CERR_UNKNOWN_TOK, tok + n, "Unexpected identifier 2");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -491,7 +491,7 @@ int parseASTTypeSpec(
 				typeSpec->typeSpecType = AST_TST_ENUM;
 			} else {
 				if (!astHasErr()) {
-					astErr("Invalid enum declaration", tok + n);
+					logCerr(CERR_ENUM, tok + n, "Invalid enum declaration");
 				}
 				return 0;
 			}
@@ -667,7 +667,7 @@ int parseASTDeclarator(
 			n += res;
 			declarator->initializer = dupASTNode((ASTNode *) &tempBuf);
 		} else {
-			astErr("Expecting expression following =", tok + n);
+			logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting expression following =");
 			free(declarator->initializer);
 			declarator->initializer = NULL;
 			freeASTDeclarator(declarator);
@@ -679,7 +679,7 @@ int parseASTDeclarator(
 		if ((res = parseASTExp(declarator->bitField, tok + n, scope))) {
 			n += res;
 		} else {
-			astErr("Expecting bitfield expression following =", tok + n);
+			logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting bitfield expression following =");
 			free(declarator->bitField);
 			declarator->bitField = NULL;
 			freeASTDeclarator(declarator);
@@ -811,7 +811,7 @@ int parseASTDeclaration(
 	}
 
 	if (tok[n].type != TT_SEMI_COLON) {
-		astErr("Expected ; at end of statmeent", tok + n);
+		logCerr(CERR_MISSING_SEMI, tok + n, "");
 		freeASTDeclaration(declaration);
 		return 0;
 	}
