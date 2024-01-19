@@ -18,7 +18,7 @@ typedef struct Token Token;
 	X(CERR_TOKENIZER, "tokenizer error") \
 	X(CERR_IDENTIFIER, "Unexpected identifier") \
 	X(CERR_MISSING_SEMI, "Missing semi colon") \
-	X(CERR_UNKNOWN_TOK, "Unknown token") \
+	X(CERR_TOK, "Unknown token") \
 	X(CERR_BRACE, "Expecting a brace") \
 	X(CERR_STRUCT, "Invalid struct or union") \
 	X(CERR_ENUM, "Invalid enum") \

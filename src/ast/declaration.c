@@ -427,7 +427,7 @@ int parseASTTypeSpec(
 		if (tok[n].type == TT_VOID) {
 			//Void type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
+				logCerr(CERR_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -442,7 +442,7 @@ int parseASTTypeSpec(
 			} else if (typeSpec->typeSpecType == AST_TST_ARITH) {
 				n +=  parseASTArithType(&typeSpec->arith, tok + n);
 			} else {
-				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
+				logCerr(CERR_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -462,7 +462,7 @@ int parseASTTypeSpec(
 		} else if (tok[n].type == TT_STRUCT || tok[n].type == TT_UNION) {
 			//struct or union type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				logCerr(CERR_UNKNOWN_TOK, tok + n, "Multiple types in type specifier");
+				logCerr(CERR_TOK, tok + n, "Multiple types in type specifier");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -480,7 +480,7 @@ int parseASTTypeSpec(
 		} else if (tok[n].type == TT_ENUM) {
 			//enum type
 			if (typeSpec->typeSpecType != AST_TST_UNKNOWN) {
-				logCerr(CERR_UNKNOWN_TOK, tok + n, "Unexpected identifier 2");
+				logCerr(CERR_TOK, tok + n, "Unexpected identifier 2");
 				freeASTTypeSpec(typeSpec);
 				return 0;
 			}
@@ -667,7 +667,7 @@ int parseASTDeclarator(
 			n += res;
 			declarator->initializer = dupASTNode((ASTNode *) &tempBuf);
 		} else {
-			logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting expression following =");
+			logCerr(CERR_TOK, tok + n, "Expecting expression following =");
 			free(declarator->initializer);
 			declarator->initializer = NULL;
 			freeASTDeclarator(declarator);
@@ -679,7 +679,7 @@ int parseASTDeclarator(
 		if ((res = parseASTExp(declarator->bitField, tok + n, scope))) {
 			n += res;
 		} else {
-			logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting bitfield expression following =");
+			logCerr(CERR_TOK, tok + n, "Expecting bitfield expression following =");
 			free(declarator->bitField);
 			declarator->bitField = NULL;
 			freeASTDeclarator(declarator);

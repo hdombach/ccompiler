@@ -135,7 +135,7 @@ int parseASTLblCase(
 		n++;
 	} else {
 		freeASTLblCase(node);
-		logCerr(CERR_UNKNOWN_TOK, tok + n, "Expecting : following case");
+		logCerr(CERR_TOK, tok + n, "Expecting : following case");
 		return 0;
 	}
 

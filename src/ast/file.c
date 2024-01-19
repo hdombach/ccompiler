@@ -70,7 +70,7 @@ int parseASTFile(ASTFile *file, const Token *tok) {
 			n++;
 			break;
 		} else {
-			logCerr(CERR_UNKNOWN_TOK, tok + n, "Unexpected token");
+			logCerr(CERR_TOK, tok + n, "Unexpected token");
 			freeASTFile(file);
 			return 0;
 		}

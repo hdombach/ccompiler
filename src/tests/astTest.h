@@ -36,7 +36,7 @@ static void astTestFile() {
 
 	tAstSuccess(";", (ASTNodeType[]) {AST_FILE, AST_UNKNOWN});
 
-	tAstFailed("test = 5;", (CError[]) {CERR_IDENTIFIER, CERR_UNKNOWN_TOK, CERR_UNKNOWN});
+	tAstFailed("test = 5;", (CError[]) {CERR_IDENTIFIER, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astSimpleDecl() {
@@ -130,7 +130,7 @@ static void astSimpleDecl() {
 
 	tAstFailed(
 			"const int thing = 2",
-			(CError[]) {CERR_MISSING_SEMI, CERR_UNKNOWN_TOK, CERR_UNKNOWN});
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astDeclaratorTest() {
@@ -218,7 +218,9 @@ static void astDeclaratorTest() {
 				AST_UNKNOWN
 			});
 
-	tAstFailed("[];", (CError[]) {CERR_UNKNOWN_TOK, CERR_UNKNOWN});
+	tAstFailed("[];", (CError[]) {CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed("[]int test;", (CError[]) {CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astInitializersTest() {
@@ -246,6 +248,26 @@ static void astInitializersTest() {
 						AST_INITIALIZER_LIST, AST_INT_CONSTANT, AST_INT_CONSTANT, AST_PREFIX_OPERATION, AST_IDENTIFIER,
 				AST_UNKNOWN,
 			});
+
+	tAstFailed(
+			"struct position = {1, 4;\n",
+			(CError[]) {CERR_BRACE, CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"struct position = {1 4};\n",
+			(CError[]) {CERR_BRACE, CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"struct position =;\n",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"struct position = [1, 4];\n",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"struct struct position = {};\n",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astConstantTest() {
