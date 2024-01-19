@@ -178,3 +178,20 @@ void logInfo(const char *fmt, ...);
  * Used by the tests internally
  */
 void logTestFailed(const char *file, int line, const char *section, const char *msg, const char *exp);
+
+/**
+ * @brief Throw an internal error
+ * @param[in, opt] file
+ * @param[in, opt] line
+ * @param[in] fmt, args similar to fprint
+ *
+ * @note Suggested you use INT_ERROR as it will autofill several paramters for you
+ */
+void logIntError(const char *file, int line, const char *fmt, ...);
+
+/**
+ * @brief Throw an internal error
+ * @param[in] fmt Format string similar to printf
+ */
+#define INT_ERROR(msg, ...) \
+	logIntError(__FILE__, __LINE__, msg __VA_OPT__(,) __VA_ARGS__)

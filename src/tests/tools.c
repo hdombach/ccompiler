@@ -107,6 +107,15 @@ void tAstDebug(const char *code) {
 		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _debugNode, NULL, NULL);
 		printf("\n");
 	} else {
-		tAssert(NULL, -1, "parseASTFile failed", 0, NULL);
+		INT_ERROR("parseASTFile failed");
+		int i = 0;
+		fprintf(stdout, "Errors: [");
+		while (1) {
+			fprintf(stdout, "%s", cerrStr(getCerr()[i]));
+			i++;
+			if (i >= cerrCount()) break;
+			fprintf(stdout, ", ");
+		}
+		fprintf(stdout, "]\n");
 	}
 }

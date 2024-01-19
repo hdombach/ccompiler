@@ -5,7 +5,6 @@
 #include "log.h"
 #include "../tok/token.h"
 #include "../util/color.h"
-#include "../ast/astUtil.h"
 
 LogLevel gLogLevel = LL_WARNING | LL_INT_ERROR | LL_CERROR;
 
@@ -182,5 +181,22 @@ void logInfo(const char *fmt, ...) {
 		va_end(args);
 
 		fprintf(stdout, "\n");
+	}
+}
+
+void logIntError(const char *file, int line, const char *fmt, ...) {
+	if (gLogLevel & LL_INT_ERROR) {
+		if (file) {
+			logErrHead(stderr, "INTERNAL ERROR %s:%d", file, line);
+		} else {
+			logErrHead(stderr, "INTERNAL ERROR");
+		}
+
+		va_list args;
+		va_start(args, fmt);
+		vfprintf(stderr, fmt, args);
+		va_end(args);
+
+		fprintf(stderr, "\n");
 	}
 }
