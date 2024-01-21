@@ -21,8 +21,6 @@ static void tokenizerTestNum() {
 		"143 hello 000",
 		(TokenType[]) {TT_NUMB_CONSTANT, TT_IDENTIFIER, TT_NUMB_CONSTANT, TT_EOF});
 
-	TODO("test things like 143Invalid");
-
 	tTokensSuccess(
 		"hello192 hel1o 123",
 		(TokenType[]) {TT_IDENTIFIER, TT_IDENTIFIER, TT_NUMB_CONSTANT, TT_EOF});

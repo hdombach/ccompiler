@@ -12,13 +12,13 @@
 #include "stringConstant.h"
 
 int parseASTExp(ASTNode *node, Token const *tok, ASTScope *scope) {
+	DEBUG_MSG("parsing expression");
 	return parseASTExp15(node, tok, scope);
 }
 
 int parseASTExpSing(ASTNode *node, Token const *tok, ASTScope *scope) {
 	//AST_VALID(ASTExp);
 	int res, n = 0;
-
 	initASTNode(node, tok, NULL);
 
 	if (astHasErr()) {

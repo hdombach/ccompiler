@@ -467,10 +467,12 @@ void freeASTOperation(ASTOperation *node) {
 	if (node->lhs) {
 		freeASTNode(node->lhs);
 		free(node->lhs);
+		node->lhs = NULL;
 	}
 	if (node->rhs) {
 		freeASTNode(node->rhs);
 		free(node->rhs);
+		node->rhs = NULL;
 	}
 	node->node.type = AST_UNKNOWN;
 }

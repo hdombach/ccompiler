@@ -340,6 +340,14 @@ static void astConstantTest() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_STRUCT_DECL, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_IDENTIFIER,
 				AST_UNKNOWN,
 			});
+
+	TODO("char c = 'hi';");
+
+	TODO("int value = 523hi;");
+
+	tAstFailed(
+			"int value = 5 4;\n",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astFuncOperationTest() {
@@ -410,6 +418,23 @@ static void astFuncOperationTest() {
 					AST_STM, AST_FUNC_OPERATION, AST_SUBS_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT, AST_IDENTIFIER,
 				AST_UNKNOWN
 			});
+
+	tAstFailed(
+			"int test = func(;\n",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = func(5,);\n",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = func(,5);\n",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = func);\n",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
 }
 
 static void astSubsOperationTest() {
@@ -477,6 +502,22 @@ static void astSubsOperationTest() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL, AST_SUBS_OPERATION, AST_STR_CONSTANT, AST_INT_CONSTANT,
 				AST_UNKNOWN,
 			});
+
+	tAstFailed(
+			"int test = list[];",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = list[5;",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = list];",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = list[;]",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astCondOperationTest() {
@@ -514,6 +555,17 @@ static void astCondOperationTest() {
 				AST_UNKNOWN,
 			});
 
+	tAstFailed(
+			"int test = var1 : var2;",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = var1 ? var2;",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = var1 ? var2 : var3",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astCastOperationTest() {
