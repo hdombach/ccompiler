@@ -3,10 +3,10 @@
 #include "node.h"
 #include "statement.h"
 #include "compStatement.h"
-#include "expression.h"
 #include "astUtil.h"
 #include "label.h"
 #include "../sem/scope.h"
+#include "operation.h"
 #include "selection.h"
 #include "iteration.h"
 
@@ -309,7 +309,7 @@ int parseASTReturn(
 		goto failure;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->value = dupASTNode((ASTNode *) &tempBuf);
 	}
@@ -438,7 +438,7 @@ int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
 	} else if ((res = parseASTGoto((ASTGoto *) &tempBuf, tok + n, scope))) {
 		node->content = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
-	} else if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	} else if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
 			freeASTStm(node);

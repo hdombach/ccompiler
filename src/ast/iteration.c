@@ -3,7 +3,7 @@
 #include "declaration.h"
 #include "iteration.h"
 #include "node.h"
-#include "expression.h"
+#include "operation.h"
 #include "statement.h"
 #include "astUtil.h"
 
@@ -67,7 +67,7 @@ int parseASTWhile(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
@@ -198,6 +198,7 @@ int parseASTDoWhile(
 	if (tok[n].type == TT_WHILE) {
 		n++;
 	} else {
+		logCerr(CERR_WHILE, tok + n, "Expecting while after do statement");
 		freeASTDoWhile(node);
 		return 0;
 	}
@@ -205,11 +206,12 @@ int parseASTDoWhile(
 	if (tok[n].type == TT_O_PARAN) {
 		n++;
 	} else {
+		logCerr(CERR_BRACE, tok + n, "Expecting ( after do while");
 		freeASTDoWhile(node);
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
@@ -343,7 +345,7 @@ int parseASTFor(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->initClause = dupASTNode((ASTNode *) &tempBuf);
 
@@ -365,7 +367,7 @@ int parseASTFor(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->condExp = dupASTNode((ASTNode *) &tempBuf);
 	}
@@ -378,7 +380,7 @@ int parseASTFor(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->iterExp = dupASTNode((ASTNode *) &tempBuf);
 	}

@@ -25,6 +25,7 @@ typedef struct Token Token;
 	X(CERR_MACRO, "Invalid macro") \
 	X(CERR_INV_EXP, "Invalid expression") \
 	X(CERR_EXP_STM, "Execting statement") \
+	X(CERR_WHILE, "Expecting while") \
 
 /**
  * @brief The possible errors that can be thrown by the compile stages

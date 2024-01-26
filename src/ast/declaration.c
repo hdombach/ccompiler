@@ -4,11 +4,11 @@
 
 #include "astUtil.h"
 #include "declaration.h"
-#include "expression.h"
 #include "identifier.h"
 #include "initializer.h"
 #include "../sem/scope.h"
 #include "node.h"
+#include "operation.h"
 #include "specialDecl.h"
 
 /* =========================================================================
@@ -676,7 +676,7 @@ int parseASTDeclarator(
 	} else if (tok[n].type == TT_COLON) {
 		n++;
 		declarator->bitField = malloc(AST_NODE_S);
-		if ((res = parseASTExp(declarator->bitField, tok + n, scope))) {
+		if ((res = parseASTOperation((ASTOperation *) declarator->bitField, tok + n, scope))) {
 			n += res;
 		} else {
 			logCerr(CERR_TOK, tok + n, "Expecting bitfield expression following =");

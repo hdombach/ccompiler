@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "label.h"
-#include "expression.h"
 #include "astUtil.h"
-#include "expression.h"
 #include "node.h"
+#include "../util/log.h"
+#include "operation.h"
 
 static ASTNodeVTable _lblIdentifierVTable = {
 	{
@@ -122,7 +123,7 @@ int parseASTLblCase(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {

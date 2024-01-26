@@ -624,6 +624,22 @@ static void astCastOperationTest() {
 						AST_PREFIX_OPERATION, AST_SUBS_OPERATION, AST_STR_CONSTANT, AST_INT_CONSTANT,
 				AST_UNKNOWN,
 			});
+
+	tAstFailed(
+			"int test = ((int)) 4.5f;",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = int 4.5f;",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = (int 4.5;",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = int) 4.5;",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astSizeofOperation() {
@@ -637,8 +653,6 @@ static void astSizeofOperation() {
 					AST_SIZEOF_TYPE_OPERATION, AST_PARAM, AST_TYPE_SPEC,
 				AST_UNKNOWN,
 			});
-
-	TODO("Add test for \"sizeof float\"");
 
 	tAstSuccess(
 			"int test = sizeof 4;",
@@ -687,6 +701,18 @@ static void astSizeofOperation() {
 						AST_INT_CONSTANT,
 				AST_UNKNOWN,
 			});
+
+	tAstFailed(
+			"int test = sizeof float",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = sizeof(float)",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = sizeof (int) 3.4;",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astBinaryOperationTest() {
@@ -729,6 +755,14 @@ static void astBinaryOperationTest() {
 					AST_BINARY_OPERATION, AST_INT_CONSTANT, AST_PREFIX_OPERATION, AST_INT_CONSTANT,
 				AST_UNKNOWN,
 			});
+
+	tAstFailed(
+			"int test = c++c;",
+			(CError[]) {CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN});
+
+	tAstFailed(
+			"int test = c>>>c;",
+			(CError[]) {CERR_TOK, CERR_TOK, CERR_UNKNOWN});
 }
 
 static void astUnaryOperationTest() {
@@ -766,6 +800,14 @@ static void astUnaryOperationTest() {
 				AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR, AST_IDENTIFIER_DECL,
 				AST_PREFIX_OPERATION, AST_POSTFIX_OPERATION, AST_IDENTIFIER,
 				AST_UNKNOWN,
+			});
+
+	tAstSuccess(
+			"int test = -++c;",
+			(ASTNodeType[]) {
+				AST_FILE, AST_DECLARATION, AST_TYPE_SPEC, AST_DECLARATOR,
+				AST_IDENTIFIER_DECL, AST_PREFIX_OPERATION, AST_PREFIX_OPERATION,
+				AST_IDENTIFIER, AST_UNKNOWN,
 			});
 }
 
@@ -832,6 +874,24 @@ static void astTestIf() {
 			AST_BINARY_OPERATION, AST_IDENTIFIER, AST_INT_CONSTANT,
 			AST_UNKNOWN,
 		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	if (value) int value;\n"
+		"}",
+		(CError[]) {
+			CERR_EXP_STM, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	if (value);\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_IF, AST_IDENTIFIER,
+			AST_STM, AST_EMPTY_STM, AST_UNKNOWN,
+		});
 }
 
 static void astSwitchTest() {
@@ -879,6 +939,50 @@ static void astSwitchTest() {
 			AST_STM, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
 			AST_RETURN, AST_INT_CONSTANT, AST_UNKNOWN,
 		});
+
+	tAstSuccess(
+		"int main() {\n"
+		"	switch (test);\n"
+		"}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_SWITCH, AST_IDENTIFIER,
+			AST_STM, AST_EMPTY_STM, AST_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	switch (test)\n"
+		"}",
+		(CError[]) {
+			CERR_INV_EXP, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	switch test);\n"
+		"}",
+		(CError[]) {
+			CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	switch (test;\n"
+		"}",
+		(CError[]) {
+			CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	switch (test {\n"
+		"		return 0;"
+		"	}\n"
+		"}",
+		(CError[]) {
+			CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
 }
 
 static void astWhileTest() {
@@ -918,6 +1022,47 @@ static void astWhileTest() {
 			AST_STM, AST_POSTFIX_OPERATION, AST_IDENTIFIER, AST_UNKNOWN,
 		});
 
+	tAstFailed(
+		"int main() {\n"
+		"	while (1)\n"
+		"}\n",
+		(CError[]) {
+			CERR_EXP_STM, CERR_TOK, CERR_UNKNOWN
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	while (1;\n"
+		"}\n",
+		(CError[]) {
+			CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	while 1);\n"
+		"}\n",
+		(CError[]) {
+		CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	while test);\n"
+		"}\n",
+		(CError[]) {
+		CERR_BRACE, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	while (test) int value;\n"
+		"}\n",
+		(CError[]) {
+		CERR_EXP_STM, CERR_TOK, CERR_UNKNOWN,
+		});
+
+
 }
 
 static void astDoWhileTest() {
@@ -942,6 +1087,14 @@ static void astDoWhileTest() {
 			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_DO_WHILE, AST_STM,
 			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_FUNC_OPERATION,
 			AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	do;\n"
+		"}",
+		(CError[]) {
+			CERR_WHILE, CERR_TOK, CERR_UNKNOWN,
 		});
 }
 
@@ -990,6 +1143,25 @@ static void astGotoTest() {
 			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_LBL_CASE, AST_INT_CONSTANT,
 			AST_LBL_IDENTIFIER, AST_GOTO, AST_UNKNOWN,
 		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	start;"
+		"	goto;"
+		"}",
+		(CError[]) {
+			CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	start;"
+		"	goto start"
+		"}",
+		(CError[]) {
+			CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN,
+		});
+
 }
 
 static void astForTest() {
@@ -1036,37 +1208,75 @@ static void astForTest() {
 			AST_IDENTIFIER, AST_INT_CONSTANT, AST_STM, AST_COMP_STM, AST_STM,
 			AST_FUNC_OPERATION, AST_IDENTIFIER, AST_IDENTIFIER, AST_UNKNOWN,
 		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	for (;;)\n"
+		"}",
+		(CError[]) {
+			CERR_EXP_STM, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	for ();\n"
+		"}",
+		(CError[]) {
+			CERR_INV_EXP, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {\n"
+		"	for (;);\n"
+		"}",
+		(CError[]) {
+			CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN,
+		});
 }
 
 static void astReturnTest() {
 	tStartSection("test return things");
 
 	tAstSuccess(
-			"void test() {return;}",
-			(ASTNodeType[]) {
-				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
-				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_UNKNOWN,
-			});
+		"void test() {return;}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_UNKNOWN,
+		});
 
 	tAstSuccess(
-			"int main() {return 5;}",
-			(ASTNodeType[]) {
-				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
-				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_INT_CONSTANT,
-				AST_UNKNOWN,
-			});
+		"int main() {return 5;}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL,
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN, AST_INT_CONSTANT,
+			AST_UNKNOWN,
+		});
 
 	tAstSuccess(
-			"int main() {return 4 * 2 >> thing;}",
-			(ASTNodeType[]) {
-				AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, 
-				AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN,
-				AST_BINARY_OPERATION, AST_BINARY_OPERATION, AST_INT_CONSTANT,
-				AST_INT_CONSTANT, AST_IDENTIFIER, AST_UNKNOWN,
-			});
+		"int main() {return 4 * 2 >> thing;}",
+		(ASTNodeType[]) {
+			AST_FILE, AST_FUNC_DEF, AST_TYPE_SPEC, AST_DECLARATOR, AST_FUNC_DECL, 
+			AST_IDENTIFIER_DECL, AST_COMP_STM, AST_STM, AST_RETURN,
+			AST_BINARY_OPERATION, AST_BINARY_OPERATION, AST_INT_CONSTANT,
+			AST_INT_CONSTANT, AST_IDENTIFIER, AST_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {return 5}",
+		(CError[]) {
+			CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN,
+		});
+
+	tAstFailed(
+		"int main() {return 5;",
+		(CError[]) {
+			CERR_MISSING_SEMI, CERR_TOK, CERR_UNKNOWN,
+		});
 }
 
 void astTests() {
+	DEBUG_MSG("Starting AST tests");
+
 	astTestFile();
 	astSimpleDecl();
 	astDeclaratorTest();

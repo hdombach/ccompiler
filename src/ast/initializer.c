@@ -1,8 +1,9 @@
 #include "initializer.h"
 #include "astUtil.h"
-#include "expression.h"
 #include "../sem/scope.h"
 #include "node.h"
+#include "operation.h"
+#include "../util/log.h"
 
 static ASTNodeVTable _vtable = {
 	{
@@ -92,6 +93,6 @@ int parseASTInitializer(
 	if ((res = parseASTInitializerList((ASTInitializerList *) node, tok, scope))) {
 		return res;
 	} else {
-		return parseASTExp14(node, tok, scope);
+		return parseASTOperation14((ASTOperation *) node, tok, scope);
 	}
 }

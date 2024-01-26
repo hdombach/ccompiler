@@ -33,7 +33,9 @@ int parseASTIdentifier(
 		node->name = strdup(tok->contents);
 		node->node.type = AST_IDENTIFIER;
 		return 1;
-	} else return 0;
+	} else {
+		return 0;
+	}
 }
 
 int printASTIdentifier(ASTIdentifier const *node) {

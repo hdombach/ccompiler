@@ -2,10 +2,10 @@
 
 #include "node.h"
 
-struct ASTStm;
-struct Token;
-struct ASTScope;
-struct ASTNode;
+typedef struct ASTStm ASTStm;
+typedef struct Token Token;
+typedef struct ASTScope ASTScope;
+typedef struct ASTNode ASTNode;
 
 /************************************************************
  * If 

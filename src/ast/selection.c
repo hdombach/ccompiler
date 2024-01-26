@@ -2,11 +2,12 @@
 #include <stdlib.h>
 
 #include "astUtil.h"
-#include "expression.h"
 #include "selection.h"
 #include "node.h"
+#include "operation.h"
 #include "statement.h"
 #include "../tok/token.h"
+#include "../util/log.h"
 
 static ASTNodeVTable _ifVTable = {
 	{
@@ -68,7 +69,7 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {
@@ -211,7 +212,7 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->expression = dupASTNode((ASTNode *) &tempBuf);
 	} else {

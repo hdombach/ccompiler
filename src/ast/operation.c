@@ -5,11 +5,69 @@
 #include "declaration.h"
 #include "node.h"
 #include "operation.h"
-#include "expression.h"
 #include "astUtil.h"
 #include "../util/util.h"
 #include "../tok/token.h"
 #include "param.h"
+#include "intConstant.h"
+#include "floatConst.h"
+#include "stringConstant.h"
+#include "charConstant.h"
+
+
+/**
+ * @brief Parses constants or identifiers
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
+static int _parseASTExpSing(
+		ASTNode *node,
+		Token const *tok,
+		struct ASTScope *scope)
+{
+	int res, n = 0;
+	initASTNode(node, tok, NULL);
+
+	if (astHasErr()) {
+		return 0;
+	}
+
+	if ((res = parseASTIntConstant((ASTIntConstant *) node, tok))) {
+		return res;
+	} else if ((res = parseASTFloatConstant((ASTFloatConstant *) node, tok))) {
+		return res;
+	} else if ((res = parseASTCharConstant((ASTCharConstant *) node, tok))) {
+		return res;
+	} else if ((res = parseASTStringConstant((ASTStringConstant *) node, tok))) {
+		return res;
+	} else if ((res = parseASTIdentifier((ASTIdentifier *) node, tok, scope))) {
+		return res;
+	} else if (tok[n].type == TT_O_PARAN) {
+		n++;
+		if ((res = parseASTOperation((ASTOperation *) node, tok + n, scope))) {
+			n += res;
+		} else {
+			freeASTNode(node);
+			return 0;
+		}
+
+		if (tok[n].type == TT_C_PARAN) {
+			n++;
+		} else {
+			freeASTNode(node);
+			return 0;
+		}
+	} else {
+		freeASTNode(node);
+		return 0;
+	}
+
+	return n;
+}
+
+
 
 /*************************************************************
  * Func Operation
@@ -63,7 +121,7 @@ int parseASTFuncOperation(
 	if (tok[n].type != TT_C_PARAN) {
 		while (1) {
 			ASTNodeBuf tempBuf;
-			if ((res = parseASTExp14((ASTNode *) &tempBuf, tok + n, scope))) {
+			if ((res = parseASTOperation14((ASTOperation *) &tempBuf, tok + n, scope))) {
 				dlistApp(&node->params, (ASTNode *) &tempBuf);
 				n += res;
 			} else {
@@ -151,7 +209,7 @@ static int _parseASTSubscriptOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		node->rhs = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
@@ -227,7 +285,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation12((ASTOperation *) &tempBuf, tok + n, scope))) {
 		node->condition = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
@@ -242,7 +300,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation12((ASTOperation *) &tempBuf, tok + n, scope))) {
 		node->trueExp = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
@@ -257,7 +315,7 @@ int parseASTCondOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp12((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation12((ASTOperation *) &tempBuf, tok + n, scope))) {
 		node->falseExp = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	} else {
@@ -344,7 +402,7 @@ static int _parseASTCastOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp2((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation2((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->rhs = dupASTNode((ASTNode *) &tempBuf);
 	} else {
@@ -431,7 +489,7 @@ static int _parseASTSizeofExpOperation(
 		return 0;
 	}
 
-	if ((res = parseASTExp2((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation2((ASTOperation *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->rhs = dupASTNode((ASTNode *) &tempBuf);
 	} else {
@@ -475,6 +533,14 @@ void freeASTOperation(ASTOperation *node) {
 		node->rhs = NULL;
 	}
 	node->node.type = AST_UNKNOWN;
+}
+
+int parseASTOperation(
+		ASTOperation *node,
+		const Token *tok,
+		struct ASTScope *scope)
+{
+	return parseASTOperation15(node, tok, scope);
 }
 
 TokenType operation15Types[] = {
@@ -624,6 +690,8 @@ int _parseASTOperationBin(
 	} else {
 		//makes code faster by not redoing work
 		ASTNode *tempLhs = node->lhs;
+		node->lhs = NULL;
+		freeASTNode((ASTNode *) node);
 		mvASTNode((ASTNode *) node, tempLhs);
 		free(tempLhs);
 		return n;
@@ -683,6 +751,13 @@ int _parseASTOperationPref(
 	return n;
 }
 
+/** 
+ * @brief Parses `,` operations
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation15(
 		ASTOperation *node,
 		const Token *tok,
@@ -693,10 +768,21 @@ int parseASTOperation15(
 			tok,
 			scope,
 			operation15Types,
-			(_ParseOperationFunc) parseASTExp14,
-			(_ParseOperationFunc) parseASTExp15);
+			(_ParseOperationFunc) parseASTOperation14,
+			(_ParseOperationFunc) parseASTOperation15);
 }
 
+/**
+ * @brief Parses operations with precedence 14
+ * @param[out] node
+ * @param[in] tok
+ * @parma[in] scope
+ * @returns The number of tokens parsed
+ *
+ * Parses the following operators:
+ *
+ * `=`, `+=`, `-=`, `*=`, `/=`, `%=`, `<<=`, `>>=`, `&=`, `^=`, `|=`
+ */
 int parseASTOperation14(
 		ASTOperation *node,
 		const Token *tok,
@@ -707,10 +793,17 @@ int parseASTOperation14(
 			tok,
 			scope,
 			operation14Types,
-			(_ParseOperationFunc) parseASTExp13,
-			(_ParseOperationFunc) parseASTExp14);
+			(_ParseOperationFunc) parseASTOperation13,
+			(_ParseOperationFunc) parseASTOperation14);
 }
 
+/**
+ * @brief Parses ternary conditions
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation13(
 		ASTOperation *node,
 		const Token *tok,
@@ -727,6 +820,8 @@ int parseASTOperation13(
 
 	if ((res = parseASTCondOperation((ASTCondOperation *) node, tok + n, scope))) {
 		n += res;
+	} else if ((res = parseASTOperation12((ASTOperation *) node, tok + n, scope))) {
+		n += res;
 	} else {
 		freeASTOperation(node);
 		return 0;
@@ -735,6 +830,13 @@ int parseASTOperation13(
 	return n;
 }
 
+/**
+ * @brief Parses the `||` operators
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation12(
 		ASTOperation *node,
 		const Token *tok,
@@ -745,10 +847,17 @@ int parseASTOperation12(
 			tok, 
 			scope,
 			operation12Types, 
-			(_ParseOperationFunc) parseASTExp11,
-			(_ParseOperationFunc) parseASTExp12);
+			(_ParseOperationFunc) parseASTOperation11,
+			(_ParseOperationFunc) parseASTOperation12);
 }
 
+/**
+ * @brief Parses the `&&` operators
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation11(
 		ASTOperation *node,
 		const Token *tok,
@@ -759,10 +868,17 @@ int parseASTOperation11(
 			tok,
 			scope,
 			operation11Types,
-			(_ParseOperationFunc) parseASTExp10,
-			(_ParseOperationFunc) parseASTExp11);
+			(_ParseOperationFunc) parseASTOperation10,
+			(_ParseOperationFunc) parseASTOperation11);
 }
 
+/**
+ * @brief Parses the `|` operators
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation10(
 		ASTOperation *node,
 		const Token *tok,
@@ -773,10 +889,17 @@ int parseASTOperation10(
 			tok, 
 			scope,
 			operation10Types, 
-			(_ParseOperationFunc) parseASTExp9,
-			(_ParseOperationFunc) parseASTExp10);
+			(_ParseOperationFunc) parseASTOperation9,
+			(_ParseOperationFunc) parseASTOperation10);
 }
 
+/**
+ * @brief Parses the `^` operator
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation9(
 		ASTOperation *node,
 		const Token *tok,
@@ -787,10 +910,17 @@ int parseASTOperation9(
 			tok,
 			scope,
 			operation9Types,
-			(_ParseOperationFunc) parseASTExp8,
-			(_ParseOperationFunc) parseASTExp9);
+			(_ParseOperationFunc) parseASTOperation8,
+			(_ParseOperationFunc) parseASTOperation9);
 }
 
+/**
+ * @brief Parses the `&` operator
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation8(
 		ASTOperation *node,
 		const Token *tok,
@@ -801,10 +931,18 @@ int parseASTOperation8(
 			tok,
 			scope,
 			operation8Types,
-			(_ParseOperationFunc) parseASTExp7,
-			(_ParseOperationFunc) parseASTExp8);
+			(_ParseOperationFunc) parseASTOperation7,
+			(_ParseOperationFunc) parseASTOperation8);
 }
 
+/**
+ * @brief Parses the `==`, `!=` operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation7(
 		ASTOperation *node,
 		const Token *tok,
@@ -815,10 +953,18 @@ int parseASTOperation7(
 			tok,
 			scope,
 			operation7Types,
-			(_ParseOperationFunc) parseASTExp6,
-			(_ParseOperationFunc) parseASTExp7);
+			(_ParseOperationFunc) parseASTOperation6,
+			(_ParseOperationFunc) parseASTOperation7);
 }
 
+/**
+ * @brief Parses the `<`, `<=`, `>`, `>=` operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation6(
 		ASTOperation *node,
 		const Token *tok,
@@ -829,10 +975,18 @@ int parseASTOperation6(
 			tok,
 			scope,
 			operation6Types,
-			(_ParseOperationFunc) parseASTExp5,
-			(_ParseOperationFunc) parseASTExp6);
+			(_ParseOperationFunc) parseASTOperation5,
+			(_ParseOperationFunc) parseASTOperation6);
 }
 
+/**
+ * @brief Parses the `<<`, `>>` operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation5(
 		ASTOperation *node,
 		const Token *tok,
@@ -843,10 +997,18 @@ int parseASTOperation5(
 			tok,
 			scope,
 			operation5Types,
-			(_ParseOperationFunc) parseASTExp4,
-			(_ParseOperationFunc) parseASTExp5);
+			(_ParseOperationFunc) parseASTOperation4,
+			(_ParseOperationFunc) parseASTOperation5);
 }
 
+/**
+ * @brief Parses the `+`, `-` operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation4(
 		ASTOperation *node,
 		const Token *tok,
@@ -857,10 +1019,18 @@ int parseASTOperation4(
 			tok,
 			scope,
 			operation4Types,
-			(_ParseOperationFunc) parseASTExp3,
-			(_ParseOperationFunc) parseASTExp4);
+			(_ParseOperationFunc) parseASTOperation3,
+			(_ParseOperationFunc) parseASTOperation4);
 }
 
+/**
+ * @brief Parses the `*`, `/`, `%` operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ */
 int parseASTOperation3(
 		ASTOperation *node,
 		const Token *tok,
@@ -871,10 +1041,22 @@ int parseASTOperation3(
 			tok,
 			scope,
 			operation3Types,
-			(_ParseOperationFunc) parseASTExp2,
-			(_ParseOperationFunc) parseASTExp3);
+			(_ParseOperationFunc) parseASTOperation2,
+			(_ParseOperationFunc) parseASTOperation3);
 }
 
+/**
+ * @brief Parses prefix operators
+ * @param[out] node
+ * @param[in] node
+ * @param[in] tok
+ * @param[in] scope
+ * @returns The number of tokens parsed
+ *
+ * Parses the following operators:
+ *
+ * `++`, `--`, `+`, `-`, `!`, `~`, typecast, `*`, `&`, sizeof
+ */
 int parseASTOperation2(
 		ASTOperation *node,
 		const Token *tok,
@@ -887,7 +1069,7 @@ int parseASTOperation2(
 		tok + n,
 		scope,
 		operation2Types,
-		(_ParseOperationFunc) parseASTExp2)))
+		(_ParseOperationFunc) parseASTOperation2)))
 	{
 		n += res;
 	} else if ((res = _parseASTCastOperation(node, tok + n, scope))) {
@@ -896,6 +1078,8 @@ int parseASTOperation2(
 		n += res;
 	} else if ((res = _parseASTSizeofExpOperation(node, tok + n, scope))) {
 		n += res;
+	} else if ((res = parseASTOperation1(node, tok + n, scope))) {
+		n += res;
 	} else {
 		return 0;
 	}
@@ -903,7 +1087,7 @@ int parseASTOperation2(
 	return n;
 }
 
-int parseASTOperation1(
+int _parseASTOperation1Chained(
 		ASTOperation *node,
 		const Token *tok,
 		ASTScope *scope,
@@ -926,7 +1110,7 @@ int parseASTOperation1(
 		ASTNodeBuf tempBuf;
 		node->tokType = tok[n].type;
 		n++;
-		if ((res = parseASTExpSing((ASTNode *) &tempBuf, tok + n, scope))) {
+		if ((res = _parseASTExpSing((ASTNode *) &tempBuf, tok + n, scope))) {
 			node->node.type = AST_BINARY_OPERATION;
 			node->lhs = dupASTNode(lhs);
 			node->rhs = dupASTNode((ASTNode *) &tempBuf);
@@ -955,6 +1139,45 @@ int parseASTOperation1(
 	}
 
 	return n;
+}
+
+/**
+ * @brief Parses postfix operators
+ * @param[out] node
+ * @param[in] tok
+ * @param[in] scope
+ * @param[in, opt] 
+ * @returns The number of tokens parsed
+ *
+ * Parses the following operators:
+ *
+ * `++`, `--`, `()`, `[]`, `.`, `->`
+ */
+int parseASTOperation1(ASTOperation *node, Token const *tok, ASTScope *scope) {
+	int n = 0, res;
+	ASTNodeBuf tempBuf;
+
+	initASTNode((ASTNode *) node, tok, NULL);
+	if (astHasErr()) {
+		freeASTNode((ASTNode *) node);
+		return 0;
+	}
+
+	if ((res = _parseASTExpSing((ASTNode *) node, tok + n, scope))) {
+		n += res;
+	} else {
+		freeASTNode((ASTNode *) node);
+		return 0;
+	}
+
+	while (1) {
+		if ((res = _parseASTOperation1Chained((ASTOperation *) &tempBuf, tok + n, scope, (ASTNode *) node))) {
+			mvASTNode((ASTNode *) node, (ASTNode *) &tempBuf);
+			n += res;
+		} else {
+			return n;
+		}
+	}
 }
 
 int printASTOperation(ASTOperation const *node) {

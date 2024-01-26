@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
 #include "specialDecl.h"
+#include "operation.h"
 #include "param.h"
 #include "declaration.h"
-#include "expression.h"
 #include "astUtil.h"
 #include "node.h"
 #include "../sem/scope.h"
@@ -66,7 +66,7 @@ int parseASTArrayDecl(
 
 	ASTNodeBuf tempBuf;
 
-	if ((res = parseASTExp((ASTNode *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
 		decl->exp = dupASTNode((ASTNode *) &tempBuf);
 		n += res;
 	}
@@ -176,7 +176,7 @@ int parseASTEnumConst(
 	}
 
 	decl->exp = malloc(AST_NODE_S);
-	if ((res = parseASTExp14(decl->exp, tok + n, scope))) {
+	if ((res = parseASTOperation14((ASTOperation *) decl->exp, tok + n, scope))) {
 		n += res;
 	} else {
 		logCerr(CERR_INV_EXP, tok + n, "Expecting expression after enumerator");

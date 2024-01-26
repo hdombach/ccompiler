@@ -1,10 +1,10 @@
 #pragma once
 
 #include "iteration.h"
-#include "expression.h"
 #include "selection.h"
 #include "label.h"
 #include "node.h"
+#include "../util/dlist.h"
 
 /**
  * @brief Tools for basic statements
@@ -18,6 +18,8 @@
  * @brief Just a semi colon
  */
 typedef ASTNode ASTEmptyStm;
+
+typedef struct Token Token;
 
 /**
  * @param[in] node

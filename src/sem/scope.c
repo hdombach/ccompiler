@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../ast/astUtil.h"
 #include "scope.h"
 #include "../ast/statement.h"
 #include "type.h"
+#include "../util/log.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);

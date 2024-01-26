@@ -5,23 +5,15 @@
 #include "specialDecl.h"
 #include "compStatement.h"
 #include "declaration.h"
-#include "expression.h"
 #include "file.h"
 #include "funcDef.h"
 #include "identifier.h"
 #include "selection.h"
 #include "iteration.h"
-#include "initializer.h"
-#include "intConstant.h"
-#include "floatConst.h"
-#include "charConstant.h"
 #include "label.h"
 #include "node.h"
-#include "operation.h"
 #include "param.h"
-#include "statement.h"
 #include "../util/log.h"
-#include "stringConstant.h"
 
 void initASTNode(
 		ASTNode *node,

@@ -3,7 +3,6 @@
 #include "../tok/token.h"
 #include "../util/dlist.h"
 #include "specialDecl.h"
-#include "expression.h"
 #include "identifier.h"
 #include "initializer.h"
 #include "node.h"

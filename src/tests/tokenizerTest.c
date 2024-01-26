@@ -1311,7 +1311,7 @@ static void tokenizerTestVolatile() {
 }
 
 static void tokenizerTestWhile() {
-	tStartSection("tokenizer test volatile");
+	tStartSection("tokenizer test while");
 
 	tTokensSuccess("while", (TokenType[]) {TT_WHILE, TT_EOF});
 	tTokensSuccess("dowhile", (TokenType[]) {TT_IDENTIFIER, TT_EOF});
