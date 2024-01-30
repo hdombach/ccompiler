@@ -33,7 +33,7 @@ void freeASTWhile(ASTWhile *node) {
 	}
 
 	if (node->statement) {
-		freeASTStm(node->statement);
+		freeASTNode(node->statement);
 		free(node->statement);
 	}
 }
@@ -84,9 +84,9 @@ int parseASTWhile(
 		return 0;
 	}
 
-	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
+		node->statement = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		logCerr(CERR_EXP_STM, tok + n, "Expecting statement after while");
 		freeASTWhile(node);
@@ -112,7 +112,7 @@ int printASTWhile(const ASTWhile *node) {
 
 	if (node->statement) {
 		n += printf(", \"statement\": ");
-		n += printASTStm(node->statement);
+		n += printASTNode(node->statement);
 	}
 
 	n += printf("}");
@@ -157,7 +157,7 @@ void freeASTDoWhile(ASTDoWhile *node) {
 	}
 
 	if (node->statement) {
-		freeASTStm(node->statement);
+		freeASTNode(node->statement);
 		free(node->statement);
 	}
 }
@@ -170,7 +170,6 @@ int parseASTDoWhile(
 	AST_VALID(ASTDoWhile);
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	ASTStm tempStm;
 
 	initASTDoWhile(node, tok);
 	if (astHasErr()) {
@@ -185,10 +184,9 @@ int parseASTDoWhile(
 		return 0;
 	}
 
-	if ((res = parseASTStm(&tempStm, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->statement = malloc(sizeof(ASTStm));
-		*node->statement = tempStm;
+		node->statement = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		logCerr(CERR_EXP_STM, tok + n, "Expecting statement after do keyword");
 		freeASTDoWhile(node);
@@ -249,7 +247,7 @@ int printASTDoWhile(const ASTDoWhile *node) {
 
 	if (node->statement) {
 		n += printf(", \"statement\": ");
-		n += printASTStm(node->statement);
+		n += printASTNode(node->statement);
 	}
 
 	if (node->expression) {
@@ -393,7 +391,7 @@ int parseASTFor(
 		return 0;
 	}
 
-	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
 		node->loopStm = dupASTNode((ASTNode *) &tempBuf);
 	} else {

@@ -2,7 +2,6 @@
 
 #include "node.h"
 
-typedef struct ASTStm ASTStm;
 typedef struct Token Token;
 typedef struct ASTScope ASTScope;
 typedef struct ASTNode ASTNode;
@@ -14,8 +13,8 @@ typedef struct ASTNode ASTNode;
 typedef struct ASTIf {
 	ASTNode node;
 	struct ASTNode *expression;
-	struct ASTStm *trueStatement;
-	struct ASTStm *falseStatement;
+	ASTNode *trueStatement;
+	ASTNode *falseStatement;
 } ASTIf;
 
 void initASTIf(ASTIf *node, Token const *tok);
@@ -32,7 +31,7 @@ ASTNode *astIfGetChild(ASTIf *node, int index);
 typedef struct ASTSwitch {
 	ASTNode node;
 	struct ASTNode *expression;
-	struct ASTStm *statement;
+	ASTNode *statement;
 } ASTSwitch;
 
 void initASTSwitch(ASTSwitch *node, struct Token const *tok);

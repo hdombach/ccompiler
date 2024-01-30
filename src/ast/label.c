@@ -7,6 +7,24 @@
 #include "node.h"
 #include "../util/log.h"
 #include "operation.h"
+#include "statement.h"
+
+int parseASTLbl(
+		ASTNode *node,
+		struct Token const *tok,
+		struct ASTScope *scope)
+{
+	int res;
+
+	if ((res = parseASTLblIdentifier((ASTLblIdentifier *) node, tok, scope))) {
+		return res;
+	} else if ((res = parseASTLblCase((ASTLblCase *) node, tok, scope))) {
+		return res;
+	} else if ((res = parseASTLblDefault((ASTLblDefault *) node, tok, scope))) {
+		return res;
+	}
+	return 0;
+}
 
 static ASTNodeVTable _lblIdentifierVTable = {
 	{
@@ -20,11 +38,17 @@ static ASTNodeVTable _lblIdentifierVTable = {
 void initASTLblIdentifier(ASTLblIdentifier *node, Token const *tok) {
 	initASTNode((ASTNode *) node, tok, &_lblIdentifierVTable);
 	node->name = NULL;
+	node->stm = NULL;
 }
 
 void freeASTLblIdentifier(ASTLblIdentifier *node) {
 	if (node->name) {
 		free(node->name);
+		node->name = NULL;
+	}
+	if (node->stm) {
+		freeASTNode(node->stm);
+		node->stm = NULL;
 	}
 }
 
@@ -34,7 +58,7 @@ int parseASTLblIdentifier(
 		struct ASTScope *scope)
 {
 	int n = 0, res;
-	char *tempIdentifier;
+	ASTNodeBuf tempBuf;
 	initASTLblIdentifier(node, tok);
 	if (astHasErr()) {
 		freeASTLblIdentifier(node);
@@ -42,7 +66,7 @@ int parseASTLblIdentifier(
 	}
 
 	if (tok[n].type == TT_IDENTIFIER) {
-		tempIdentifier = tok[n].contents;
+		node->name = strdup(tok[n].contents);
 		n++;
 	} else {
 		freeASTLblIdentifier(node);
@@ -55,7 +79,15 @@ int parseASTLblIdentifier(
 		freeASTLblIdentifier(node);
 		return 0;
 	}
-	node->name = strdup(tempIdentifier);
+
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
+		n += res;
+		node->stm = dupASTNode((ASTNode *) &tempBuf);
+	} else {
+		freeASTLblIdentifier(node);
+		return 0;
+	}
+
 	node->node.type = AST_LBL_IDENTIFIER;
 	return n;
 }
@@ -69,17 +101,21 @@ int printASTLblIdentifier(const ASTLblIdentifier *node) {
 
 	n += printf(", \"identifier\": \"%s\"", node->name);
 
+	n += printf(", \"statement\": ");
+
+	n += printASTNode(node->stm);
+
 	n += printf("}");
 
 	return n;
 }
 
 int astLblIdentifierChildCount(const ASTLblIdentifier *node) {
-	return 0;
+	return 1;
 }
 
 ASTNode *astLblIdentifierGetChild(ASTLblIdentifier *node, int index) {
-	return NULL;
+	return node->stm;
 }
 
 static ASTNodeVTable _lblCaseVTable = {
@@ -100,6 +136,13 @@ void freeASTLblCase(ASTLblCase *node) {
 	if (node->expression) {
 		freeASTNode(node->expression);
 		free(node->expression);
+		node->expression = NULL;
+	}
+
+	if (node->stm) {
+		freeASTNode(node->stm);
+		free(node->stm);
+		node->stm = NULL;
 	}
 }
 
@@ -140,6 +183,14 @@ int parseASTLblCase(
 		return 0;
 	}
 
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
+		node->stm = dupASTNode((ASTNode *) &tempBuf);
+		n += res;
+	} else {
+		freeASTLblCase(node);
+		return 0;
+	}
+
 	node->node.type = AST_LBL_CASE;
 
 	return n;
@@ -157,17 +208,25 @@ int printASTLblCase(const ASTLblCase *node) {
 		n += printASTNode(node->expression);
 	}
 
+	if (node->stm) {
+		n += printf(", \"statement\": ");
+		n += printASTNode(node->stm);
+	}
+
 	n += printf("}");
 
 	return n;
 }
 
 int astLblCaseChildCount(ASTLblCase const *node) {
-	return 1;
+	return 2;
 }
 
 ASTNode *astLblCaseGetChild(ASTLblCase *node, int index) {
-	return node->expression;
+	return (ASTNode *[]){
+		(ASTNode *) node->expression,
+		(ASTNode *) node->stm,
+	}[index];
 }
 
 static ASTNodeVTable _defaultVTable = {
@@ -179,63 +238,67 @@ static ASTNodeVTable _defaultVTable = {
 	(ASTGetChild) astLblDefaultGetChild,
 };
 
+void initASTLblDefault(ASTLblDefault *node, const Token *tok) {
+	initASTNode((ASTNode *) node, tok, &_defaultVTable);
+	node->stm = NULL;
+}
+
+void freeASTLblDefault(ASTLblDefault *node, const Token *tok) {
+	if (node->stm) {
+		freeASTNode(node->stm);
+		free(node->stm);
+		node->stm = NULL;
+	}
+}
+
 int parseASTLblDefault(
-		ASTNode *node,
+		ASTLblDefault *node,
 		const struct Token *tok,
 		struct ASTScope *scope)
 {
 	int n = 0, res;
 	ASTNodeBuf tempBuf;
-	initASTNode(node, tok, &_defaultVTable);
+	initASTNode((ASTNode *) node, tok, &_defaultVTable);
 	if (astHasErr()) {
-		freeASTNode(node);
+		freeASTNode((ASTNode *) node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_DEFAULT) {
 		n++;
 	} else {
-		freeASTNode(node);
+		freeASTNode((ASTNode *) node);
 		return 0;
 	}
 
 	if (tok[n].type == TT_COLON) {
 		n++;
 	} else {
-		freeASTNode(node);
+		freeASTNode((ASTNode *) node);
 		return 0;
 	}
 
-	node->type = AST_LBL_DEFAULT;
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
+		n += res;
+		node->stm = dupASTNode((ASTNode *) &tempBuf);
+	} else {
+		freeASTNode((ASTNode *) node);
+		return 0;
+	}
+
+	node->node.type = AST_LBL_DEFAULT;
 
 	return n;
 }
 
-int printASTLblDefault(const ASTNode *node) {
-	return printf("\"%s\"", astNodeTypeStr(node->type));
+int printASTLblDefault(ASTLblDefault const *node) {
+	return printf("\"%s\"", astNodeTypeStr(node->node.type));
 }
 
-int parseASTLabel(
-		ASTNode *node,
-		struct Token const *tok,
-		struct ASTScope *scope)
-{
-	int res;
-
-	if ((res = parseASTLblIdentifier((ASTLblIdentifier *) node, tok, scope))) {
-		return res;
-	} else if ((res = parseASTLblCase((ASTLblCase *) node, tok, scope))) {
-		return res;
-	} else if ((res = parseASTLblDefault(node, tok, scope))) {
-		return res;
-	}
-	return 0;
+int astLblDefaultChildCount(ASTLblDefault const *node) {
+	return 1;
 }
 
-int astLblDefaultChildCount(ASTNode const *node) {
-	return 0;
-}
-
-ASTNode *astLblDefaultGetChild(ASTNode *node, int index) {
-	return NULL;
+ASTNode *astLblDefaultGetChild(ASTLblDefault *node, int index) {
+	return node->stm;
 }

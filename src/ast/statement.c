@@ -366,126 +366,41 @@ ASTNode *astReturnGetChild(ASTReturn *node, int index) {
  * Statement Statement
  ***********************************************************************/
 
-static ASTNodeVTable _stmVTable = {
-	{
-		(FreeFunc) freeASTStm,
-		(PrintFunc) printASTStm,
-	},
-	(ASTChildCount) astStmChildCount,
-	(ASTGetChild) astStmGetChild,
-};
-
-void initASTStm(ASTStm *node, Token const *tok) {
-	initASTNode((ASTNode *) node, tok, &_stmVTable);
-	initDListEmpty(&node->labels, AST_NODE_S);
-	node->content = NULL;
-}
-
-void freeASTStm(ASTStm *node) {
-	if (node->content) {
-		freeASTNode(node->content);
-		free(node->content);
-	}
-	freeDList(&node->labels, (FreeFunc) freeASTNode);
-}
-
-int parseASTStm(ASTStm *node, const Token *tok, ASTScope *scope) {
-	AST_VALID(ASTStm);
+int parseASTStm(ASTNode *node, const Token *tok, ASTScope *scope) {
 	int res, n = 0;
-	ASTNodeBuf tempBuf;
 
-	initASTStm(node, tok);
-	if (astHasErr()) {
-		freeASTStm(node);
-		return 0;
-	}
-
-	while ((res = parseASTLabel((ASTNode *) &tempBuf, tok + n, scope))) {
-		dlistApp(&node->labels, &tempBuf);
-		n += res;
-	}
-
-	if ((res = parseASTCompStm((ASTCompStm *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTIf((ASTIf *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTSwitch((ASTSwitch *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTWhile((ASTWhile *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTDoWhile((ASTDoWhile *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTFor((ASTFor *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTBreak((ASTBreak *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTContinue((ASTBreak *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTReturn((ASTReturn *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTGoto((ASTGoto *) &tempBuf, tok + n, scope))) {
-		node->content = dupASTNode((ASTNode *) &tempBuf);
-		n += res;
-	} else if ((res = parseASTOperation((ASTOperation *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTLbl(node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTCompStm((ASTCompStm *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTIf((ASTIf *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTSwitch((ASTSwitch *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTWhile((ASTWhile *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTDoWhile((ASTDoWhile *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTFor((ASTFor *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTBreak((ASTBreak *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTContinue((ASTBreak *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTReturn((ASTReturn *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTEmptyStm((ASTEmptyStm *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTGoto((ASTGoto *) node, tok + n, scope))) {
+		return res;
+	} else if ((res = parseASTOperation((ASTOperation *) node, tok + n, scope))) {
 		n += res;
 		if (tok[n].type != TT_SEMI_COLON) {
-			freeASTStm(node);
+			freeASTNode(node);
 			return 0;
 		}
 		n++;
-		node->content = dupASTNode((ASTNode *) &tempBuf);
+		return n;
 	}
-
-	node->node.type = AST_STM;
-	return n;
-}
-
-int printASTStm(ASTStm const *node) {
-	int n = 0;
-
-	if (node->labels.size) {
-		n += printf("{");
-		n += printf("\"node type\": \"statement\"");
-
-		if (node->labels.size) {
-			n += printf(", \"labels\": ");
-			n += printDList(&node->labels, (PrintFunc) printASTNode);
-		}
-
-		n += printf(", \"content\": ");
-	}
-
-	if (node->content) {
-		n += printASTNode(node->content);
-	}
-
-	if (node->labels.size) {
-		n += printf("}");
-	}
-
-	return n;
-}
-
-int astStmChildCount(const ASTStm *node) {
-	return node->labels.size + 1;
-}
-
-ASTNode *astStmGetChild(ASTStm *node, int index) {
-	if (node->labels.size > index) {
-		return dlistGetm(&node->labels, index);
-	} else {
-		return node->content;
-	}
+	return 0;
 }

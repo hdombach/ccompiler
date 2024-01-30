@@ -2,15 +2,15 @@
 #include <string.h>
 
 #include "scope.h"
-#include "../ast/statement.h"
 #include "type.h"
 #include "../util/log.h"
+#include "../ast/label.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);
 	scope->parent = NULL;
 	initWordDict(&scope->labelDict);
-	initDList(&scope->labels, sizeof(ASTStm *));
+	initDList(&scope->labels, AST_NODE_S);
 	initWordDict(&scope->tagDict);
 	initDList(&scope->tags, sizeof(STypeBuf));
 	initWordDict(&scope->identifierDict);
@@ -140,20 +140,42 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names) {
 	}
 }
 
-ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTStm *stm) {
-	for (int i = 0; i < stm->labels.size; i++) {
-		ASTLblIdentifier *lbl = dlistGetm(&stm->labels, i);
-		if (lbl->node.type != AST_LBL_IDENTIFIER) break;
-		if (astScopeGetLabel(scope, lbl->name)) return SCOPE_EXISTS;
-		int index = scope->labels.size;
-		dlistApp(&scope->labels, stm); TODO("pretty sure it should be passing pointer");
-		wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
-	}
+static int _labelChild(ASTNode **node) {
+	switch ((**node).type) {
+		case AST_LBL_IDENTIFIER:
+			*node = ((ASTLblIdentifier *) *node)->stm;
+			return 1;
 
+		case AST_LBL_CASE:
+			*node = ((ASTLblCase *) *node)->stm;
+			return 1;
+
+		case AST_LBL_DEFAULT:
+			*node = ((ASTLblDefault *) *node)->stm;
+			return 1;
+
+		default:
+			return 0;
+	}
+}
+
+ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTNode *stm) {
+	ASTNode *actStm = stm;
+	while (_labelChild(&actStm));
+	while (stm != actStm) {
+		if (stm->type == AST_LBL_IDENTIFIER) {
+			ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm;
+			if (astScopeGetLabel(scope, lbl->name)) return SCOPE_EXISTS;
+			int index = scope->labels.size;
+			dlistApp(&scope->labels, &stm);
+			wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
+		}
+		_labelChild(&stm);
+	}
 	return SCOPE_SUCCESS;
 }
 
-struct ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName) {
+struct ASTNode *astScopeGetLabel(ASTScope *scope, const char *labelName) {
 	int const *index = wordDictGet(&scope->labelDict, labelName);
 	if (!index) {
 		if (scope->parent) {

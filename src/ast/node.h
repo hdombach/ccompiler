@@ -43,7 +43,6 @@
 	X(AST_STRUCT_DECL, "struct declaration") \
 	X(AST_ENUM_DECL, "enum declaration") \
 	X(AST_ENUM_CONST, "enumerator declaration const") \
-	X(AST_STM, "statement") \
 	X(AST_COMP_STM, "compound statement") \
 	X(AST_IF, "if statement") \
 	X(AST_SWITCH, "switch statement") \

@@ -4,7 +4,6 @@
 #include "selection.h"
 #include "label.h"
 #include "node.h"
-#include "../util/dlist.h"
 
 /**
  * @brief Tools for basic statements
@@ -22,7 +21,7 @@ typedef ASTNode ASTEmptyStm;
 typedef struct Token Token;
 
 /**
- * @param[in] node
+ * @param[out] node
  * @param[in] tok
  */
 void initASTEmptyStm(ASTEmptyStm *node, Token const *tok);
@@ -241,46 +240,9 @@ ASTNode *astReturnGetChild(ASTReturn *node, int index);
  ***********************************************************************/
 
 /**
- * @brief A wrapper class for any statement
- */
-typedef struct ASTStm {
-	ASTNode node;
-	DList labels;
-	ASTNode *content;
-} ASTStm;
-
-/**
- * @param[out] node
- * @param[in] tok
- */
-void initASTStm(ASTStm *node, Token const *tok);
-/**
- * @param[in] node
- */
-void freeASTStm(ASTStm *node);
-/**
  * @param[out] node
  * @param[in] tok
  * @param[in] scope
  * @returns The number of tokens parsed
  */
-int parseASTStm(ASTStm *node, Token const *tok, struct ASTScope *scope);
-/**
- * @brief Debug print a statement
- * @param[in] node
- * @returns The number of characters printed
- */
-int printASTStm(ASTStm const *node);
-/**
- * @brief Impliments astChildCount for ASTStm
- * @param[in] node
- * @returns The number of children
- */
-int astStmChildCount(ASTStm const *node);
-/**
- * @brief Impliments astGetChild for ASTStm
- * @param[in] node
- * @param[in] index
- * @returns The corresponding node
- */
-ASTNode *astStmGetChild(ASTStm *node, int index);
+int parseASTStm(ASTNode *node, Token const *tok, struct ASTScope *scope);

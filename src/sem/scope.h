@@ -1,10 +1,9 @@
 #pragma once
 
 #include "../util/wordDict.h"
-#include "../util/util.h"
 #include "../util/dlist.h"
 
-typedef struct ASTStm ASTStm;
+typedef struct ASTNode ASTNode;
 struct SCompound;
 struct SType;
 struct SEnum;
@@ -58,7 +57,7 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names);
  * @param stm
  * @returns Any errors that happened
  */
-ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTStm *stm);
+ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTNode *stm);
 /**
  * @brief Searches for label in the current scope
  *
@@ -67,7 +66,7 @@ ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTStm *stm);
  *
  * @return Statement containing the label. NULL if not found
  */
-ASTStm *astScopeGetLabel(ASTScope *scope, const char *labelName);
+ASTNode *astScopeGetLabel(ASTScope *scope, const char *labelName);
 
 int astScopeHasCompound(ASTScope *scope, const char *name);
 

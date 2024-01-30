@@ -32,12 +32,12 @@ void freeASTIf(ASTIf *node) {
 	}
 
 	if (node->trueStatement) {
-		freeASTStm(node->trueStatement);
+		freeASTNode(node->trueStatement);
 		free(node->trueStatement);
 	}
 
 	if (node->falseStatement) {
-		freeASTStm(node->falseStatement);
+		freeASTNode(node->falseStatement);
 		free(node->falseStatement);
 	}
 }
@@ -86,9 +86,9 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->trueStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
+		node->trueStatement = dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		logCerr(CERR_EXP_STM, tok + n, "Expecting statement following expression");
 		freeASTIf(node);
@@ -102,9 +102,9 @@ int parseASTIf(ASTIf *node, struct Token const *tok, struct ASTScope *scope) {
 		return n;
 	}
 
-	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->falseStatement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
+		node->falseStatement = (ASTNode *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		logCerr(CERR_EXP_STM, tok + n, "Expecting statement following else");
 		freeASTIf(node);
@@ -130,12 +130,12 @@ int printASTIf(ASTIf const *node) {
 
 	if (node->trueStatement) {
 		n += printf(", \"true statement\": ");
-		n += printASTStm(node->trueStatement);
+		n += printASTNode(node->trueStatement);
 	}
 
 	if (node->falseStatement) {
 		n += printf(", \"false statement\": ");
-		n += printASTStm(node->falseStatement);
+		n += printASTNode(node->falseStatement);
 	}
 
 	n += printf("}");
@@ -181,7 +181,7 @@ void freeASTSwitch(ASTSwitch *node) {
 	}
 
 	if (node->statement) {
-		freeASTStm(node->statement);
+		printASTNode(node->statement);
 		free(node->statement);
 	}
 }
@@ -229,9 +229,9 @@ int parseASTSwitch(ASTSwitch *node, Token const *tok, struct ASTScope *scope) {
 		return 0;
 	}
 
-	if ((res = parseASTStm((ASTStm *) &tempBuf, tok + n, scope))) {
+	if ((res = parseASTStm((ASTNode *) &tempBuf, tok + n, scope))) {
 		n += res;
-		node->statement = (ASTStm *) dupASTNode((ASTNode *) &tempBuf);
+		node->statement = (ASTNode *) dupASTNode((ASTNode *) &tempBuf);
 	} else {
 		logCerr(CERR_INV_EXP, tok + n, "Expecting statement following switch");
 		freeASTSwitch(node);
@@ -257,7 +257,7 @@ int printASTSwitch(const ASTSwitch *node) {
 
 	if (node->statement) {
 		n += printf(", \"statement\": ");
-		n += printASTStm(node->statement);
+		n += printASTNode(node->statement);
 	}
 
 	n += printf("}");

@@ -18,7 +18,7 @@ int parseASTCompItem(
 		return 0;
 	}
 
-	if ((res = parseASTStm((ASTStm *) node, tok + n, scope))) {
+	if ((res = parseASTStm(node, tok + n, scope))) {
 		n += res;
 	} else if ((res = parseASTDeclaration((ASTDeclaration *) node, tok + n, scope))) {
 		n += res;

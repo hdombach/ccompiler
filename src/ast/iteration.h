@@ -3,7 +3,6 @@
 #include "node.h"
 
 struct ASTNode;
-struct ASTStm;
 struct Token;
 struct ASTScope;
 
@@ -14,7 +13,7 @@ struct ASTScope;
 typedef struct ASTWhile {
 	ASTNode node;
 	struct ASTNode *expression;
-	struct ASTStm *statement;
+	ASTNode *statement;
 } ASTWhile;
 
 void initASTWhile(ASTWhile *node, struct Token const *tok);
@@ -30,7 +29,7 @@ ASTNode *astWhileGetChild(ASTWhile *node, int index);
 typedef struct ASTDoWhile {
 	ASTNode node;
 	struct ASTNode *expression;
-	struct ASTStm *statement;
+	ASTNode *statement;
 } ASTDoWhile;
 
 /************************************************************

@@ -3,16 +3,11 @@
 #include "type.h"
 #include "typeGen.h"
 #include "scope.h"
-#include "../util/wordList.h"
 #include "../util/log.h"
-#include "../ast/astUtil.h"
 #include "../ast/node.h"
 
 static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
-	if (node->type == AST_STM) {
-		ASTStm *stm = (ASTStm *) node;
-		if (astScopeAddLabels(ctx->scope, stm)) TODO("Error handling");
-	}
+	TODO("Call astScopeAddLabels");
 	return ASTT_SUCCESS;
 }
 
