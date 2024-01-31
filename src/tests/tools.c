@@ -20,6 +20,8 @@ void tTokensSuccess(const char *code, TokenType *types) {
 		sprintf(msg, "%s != %s: \"%s\"", tokTypeStr(t), tokTypeStr(types[i]), code);
 		T_ASSERT(msg, types[i] == t);
 	}
+
+	freeDList(&tokens, (FreeFunc) freeToken);
 }
 
 void tTokensFailed(const char *code, CError *errors) {
@@ -34,6 +36,8 @@ void tTokensFailed(const char *code, CError *errors) {
 		T_ASSERT(msg, errors[i] == getCerr()[i]);
 		if (getCerr()[i] == CERR_UNKNOWN || errors[i] == CERR_UNKNOWN) break;
 	}
+
+	freeDList(&tokens, (FreeFunc) freeToken);
 }
 
 void tTokensDebug(const char *code) {
@@ -73,6 +77,8 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 	} else {
 		tAssert(NULL, -1, "parseASTFile failed", 0, NULL);
 	}
+	freeDList(&tokens, (FreeFunc) freeToken);
+	freeASTFile(&astFile);
 }
 
 void tAstFailed(const char *code, CError *errors) {
@@ -89,6 +95,9 @@ void tAstFailed(const char *code, CError *errors) {
 		T_ASSERT(msg, errors[i] == getCerr()[i]);
 		if (getCerr()[i] == CERR_UNKNOWN || errors[i] == CERR_UNKNOWN) break;
 	}
+
+	freeDList(&tokens, (FreeFunc) freeToken);
+	freeASTFile(&file);
 }
 
 static void _debugNode(ASTNode *node, ASTTravCtx *ctx) {

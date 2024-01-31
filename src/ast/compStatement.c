@@ -50,6 +50,7 @@ void freeASTCompStm(ASTCompStm *node) {
 	freeDList(&node->items, (FreeFunc) freeASTNode);
 	freeASTScope(node->scope);
 	free(node->scope);
+	node->scope = NULL;
 }
 
 int parseASTCompStm(

@@ -2,6 +2,7 @@
 
 #include "dict.h"
 #include "util.h"
+#include <stdlib.h>
 
 /*
  * Maps a word to an int
@@ -71,12 +72,15 @@ static void wordDictDelete(WordDict *dict, char const *key) {
 }
 
 static int wordDictRemove(WordDict *dict, char const *key) {
-	return *(int *) dictRemove(
+	int *buf = dictRemove(
 			dict,
 			&key,
 			(HashFunc) hashStrp,
 			(CmpFunc) cmpStrp,
 			(FreeFunc) freeStr);
+	int result = *buf;
+	free(buf);
+	return result;
 }
 
 static int printWordDict(WordDict const *dict) {

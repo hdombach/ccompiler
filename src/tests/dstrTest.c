@@ -81,6 +81,7 @@ void dstrTestRemAll() {
 	dstrRemAll(&str);
 	T_ASSERT("check 2", strcmp(str.data, "") == 0);
 
+	freeDStr(&str);
 }
 
 void dstrTest() {

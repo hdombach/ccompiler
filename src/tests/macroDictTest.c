@@ -133,12 +133,14 @@ void macroDictTestRemove() {
 	T_ASSERT("present 2", 0 == macroDictPresent(&macros, "key 2"));
 	T_ASSERT("test value 1", 0 == strcmp("value 2", tempMacro->name));
 	freeASTMacroDef(tempMacro);
+	free(tempMacro);
 
 	T_ASSERT("present 3", 1 == macroDictPresent(&macros, "key 1"));
 	tempMacro = macroDictRemove(&macros, "key 1");
 	T_ASSERT("present 4", 0 == macroDictPresent(&macros, "key 1"));
 	T_ASSERT("test value 2", 0 == strcmp("value 1", tempMacro->name));
 	freeASTMacroDef(tempMacro);
+	free(tempMacro);
 
 
 	freeMacroDict(&macros);

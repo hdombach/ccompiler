@@ -48,6 +48,7 @@ void freeASTLblIdentifier(ASTLblIdentifier *node) {
 	}
 	if (node->stm) {
 		freeASTNode(node->stm);
+		free(node->stm);
 		node->stm = NULL;
 	}
 }
@@ -231,7 +232,7 @@ ASTNode *astLblCaseGetChild(ASTLblCase *node, int index) {
 
 static ASTNodeVTable _defaultVTable = {
 	{
-		(FreeFunc) NULL,
+		(FreeFunc) freeASTLblDefault,
 		(PrintFunc) printASTLblDefault,
 	},
 	(ASTChildCount) astLblDefaultChildCount,

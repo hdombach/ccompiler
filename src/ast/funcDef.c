@@ -35,8 +35,9 @@ void freeASTFuncDef(ASTFuncDef *def) {
 		def->funcDecl = NULL;
 	}
 	if (def->compoundStm) {
+		freeASTCompStm(def->compoundStm);
 		freeASTNode((ASTNode *) def->compoundStm);
-		free(def->compoundStm);
+		def->compoundStm = NULL;
 	}
 }
 

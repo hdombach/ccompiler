@@ -228,6 +228,7 @@ void *dictRemove(
 			if (freeKeyFunc) {
 				freeKeyFunc(temp->key);
 			}
+			free(temp->key);
 			tempValue = temp->value;
 			free(temp);
 			dict->elementCount--;
