@@ -48,9 +48,11 @@ void initASTCompStm(ASTCompStm *node, Token const *tok) {
 
 void freeASTCompStm(ASTCompStm *node) {
 	freeDList(&node->items, (FreeFunc) freeASTNode);
-	freeASTScope(node->scope);
-	free(node->scope);
-	node->scope = NULL;
+	if (node->scope) {
+		freeASTScope(node->scope);
+		free(node->scope);
+		node->scope = NULL;
+	}
 }
 
 int parseASTCompStm(

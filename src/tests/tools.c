@@ -74,11 +74,11 @@ void tAstSuccess(const char *code, ASTNodeType *types) {
 	ASTNodeType **curType = &types;
 	if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 		astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tNode, NULL, curType);
+		freeASTFile(&astFile);
 	} else {
 		tAssert(NULL, -1, "parseASTFile failed", 0, NULL);
 	}
 	freeDList(&tokens, (FreeFunc) freeToken);
-	freeASTFile(&astFile);
 }
 
 void tAstFailed(const char *code, CError *errors) {
@@ -87,7 +87,9 @@ void tAstFailed(const char *code, CError *errors) {
 	initStreamStr(&stream, code);
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile file;
-	parseASTFile(&file, tokListGetm(&tokens, 0));
+	if (parseASTFile(&file, tokListGetm(&tokens, 0))) {
+		freeASTFile(&file);
+	}
 
 	char msg[256];
 	for (int i = 0; i < cerrCount(); i++) {
@@ -97,7 +99,6 @@ void tAstFailed(const char *code, CError *errors) {
 	}
 
 	freeDList(&tokens, (FreeFunc) freeToken);
-	freeASTFile(&file);
 }
 
 static void _debugNode(ASTNode *node, ASTTravCtx *ctx) {

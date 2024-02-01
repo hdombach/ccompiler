@@ -181,7 +181,7 @@ void freeASTSwitch(ASTSwitch *node) {
 	}
 
 	if (node->statement) {
-		printASTNode(node->statement);
+		freeASTNode(node->statement);
 		free(node->statement);
 	}
 }

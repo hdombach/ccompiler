@@ -40,6 +40,10 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
+	if (g_args.verbose) {
+		gLogLevel = LL_DEBUG | LL_INFO | LL_WARNING | LL_INT_ERROR | LL_CERROR;
+	}
+
 	for (int i = 0; i < g_args.files.size; i++) {
 		char *file;
 		FILE *fp;
