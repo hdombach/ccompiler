@@ -21,6 +21,18 @@ int parseASTLbl(
 		struct ASTScope *scope);
 
 /**
+ * @param[in] node
+ * @returns Whether the node is a label
+ */
+int astNodeIsLbl(ASTNode *node);
+
+/**
+ * @param[in] node
+ * @returns The next statement
+ */
+ASTNode *astLblNextStm(ASTNode *node);
+
+/**
  * @extends ASTNode
  */
 typedef struct ASTLblIdentifier {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "test.h"
 #include "tools.h"
 #include "../ast/node.h"
@@ -1275,7 +1277,6 @@ static void astReturnTest() {
 }
 
 void astTests() {
-	DEBUG_MSG("Starting AST tests");
 
 	astTestFile();
 	astSimpleDecl();

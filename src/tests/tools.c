@@ -7,6 +7,7 @@
 #include "../tok/token.h"
 #include "../ast/file.h"
 #include "test.h"
+#include "../sem/typeGen.h"
 
 void tTokensSuccess(const char *code, TokenType *types) {
 	Stream stream;
@@ -128,4 +129,61 @@ void tAstDebug(const char *code) {
 		}
 		fprintf(stdout, "]\n");
 	}
+}
+
+static ASTTravRes _tLabel(ASTNode *node, ASTTravCtx *ctx) {
+	if (!astNodeHasScope(node)) {
+		return ASTT_SUCCESS;
+	}
+
+	char **labels = (char **) ctx->customCtx;
+	WordDict *labelDict = &ctx->scope->labelDict;
+	for (int i = 0; i < labelDict->elementCount; i++) {
+		char msg[256];
+		snprintf(msg, sizeof(msg), "missing label: \"%s\"", *labels);
+		T_ASSERT(msg, wordDictPresent(labelDict, *labels));
+		(labels)++;
+	}
+	ctx->customCtx = labels;
+	return ASTT_SUCCESS;
+}
+
+void tTypeGenLabels(const char *code, const char **labels) {
+	Stream stream;
+	initCerr();
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	ASTFile astFile;
+
+	T_ASSERT("parseASTFile failed", parseASTFile(&astFile, tokListGetm(&tokens, 0)));
+
+	typeGen(&astFile);
+
+	astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tLabel, NULL, labels);
+
+	T_ASSERT("no errors", cerrCount() == 0);
+
+	freeDList(&tokens, (FreeFunc) freeToken);
+	freeASTFile(&astFile);
+}
+
+void tTypeGenFailed(const char *code, CError *errors) {
+	Stream stream;
+	initCerr();
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	ASTFile astFile;
+
+	T_ASSERT("parseASTFile failed", parseASTFile(&astFile, tokListGetm(&tokens, 0)));
+
+	typeGen(&astFile);
+
+	char msg[256];
+	for (int i = 0; i < cerrCount(); i++) {
+		snprintf(msg, sizeof(msg), "%s != %s: %s", cerrStr(errors[i]), cerrStr(getCerr()[i]), code);
+		T_ASSERT(msg, errors[i] == getCerr()[i]);
+		if (getCerr()[i] == CERR_UNKNOWN || errors[i] == CERR_UNKNOWN) break;
+	}
+
+	freeDList(&tokens, (FreeFunc) freeToken);
 }

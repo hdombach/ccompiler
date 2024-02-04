@@ -41,3 +41,18 @@ void tAstFailed(const char *code, CError *error);
  * It does a pre-order traversal and prints out the node types
  */
 void tAstDebug(const char *code);
+
+/**
+ * @brief Tests the labels in generated scopes
+ * @param[in] code to parse
+ * @param[in] labels to expect
+ * @note Sometimes, duplicated labels in list won't be tested correctly for
+ */
+void tTypeGenLabels(const char *code, const char **labels);
+
+/**
+ * @brief Tests if typegen fails
+ * @param[in] code t parse
+ * @param[in] errors to expect
+ */
+void tTypeGenFailed(const char *code, CError *error);

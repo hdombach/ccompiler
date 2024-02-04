@@ -1,4 +1,5 @@
 #include "dstrTest.h"
+#include "typeGenTest.h"
 #include <stdio.h>
 #define TESTS_MAIN
 
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
 	wordListTest();
 	tokenizerTest();
 	astTests();
+	typeGenTests();
 
 	tPrintResult();
 

@@ -8,6 +8,7 @@ struct SCompound;
 struct SType;
 struct SEnum;
 typedef struct STypeRef STypeRef;
+typedef struct ASTLblIdentifier ASTLblIdentifier;
 
 typedef struct ASTScope {
 	/**
@@ -35,12 +36,6 @@ typedef struct ASTScope {
 	struct ASTScope *parent;
 } ASTScope;
 
-typedef enum ASTScopeErr {
-	SCOPE_SUCCESS,
-	SCOPE_EXISTS,
-	SCOPE_INVALID_ARG,
-} ASTScopeErr;
-
 void initASTScope(ASTScope *scope);
 void freeASTScope(ASTScope *scope);
 int printASTScope(ASTScope const *scope);
@@ -55,9 +50,9 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names);
  *
  * @param scope
  * @param stm
- * @returns Any errors that happened
+ * @returns Whether the scope was successfully added
  */
-ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTNode *stm);
+int astScopeAddLabel(ASTScope *scope, ASTLblIdentifier *lbl);
 /**
  * @brief Searches for label in the current scope
  *

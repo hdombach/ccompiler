@@ -50,10 +50,6 @@ static int loadDecl(
 		mvSType(type, internal);
 		return 1;
 	}
-	DEBUG_MSG(
-			"load decl %s (%s)",
-			astNodeTypeStr(node->type),
-			astDeclaratorName(node));
 	switch (node->type) {
 		case AST_DECLARATOR: return loadDecl(
 			 type,

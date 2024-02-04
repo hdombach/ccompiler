@@ -7,7 +7,9 @@
 #include "../ast/node.h"
 
 static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
-	TODO("Call astScopeAddLabels");
+	if (node->type == AST_LBL_IDENTIFIER) {
+		astScopeAddLabel(ctx->scope, (ASTLblIdentifier *) node);
+	}
 	return ASTT_SUCCESS;
 }
 
@@ -15,7 +17,7 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_GOTO) {
 		ASTGoto *stm = (ASTGoto *) node;
 		if (!astScopeGetLabel(ctx->scope, stm->name)) {
-			logCerr(CERR_UNKNOWN, node->tok, "No corresponding label \"%s\"", stm->name);
+			logCerr(CERR_LBL, node->tok, "No corresponding label \"%s\"", stm->name);
 		}
 	}
 	return ASTT_SUCCESS;
@@ -24,7 +26,7 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 static int checkIdentifier(ASTIdentifier *identifier, ASTScope *scope) {
 	STypeRef ref;
 	if (!astScopeGetIdentifier(&ref, scope, identifier->name)) {
-		logCerr(CERR_UNKNOWN, identifier->node.tok, "Identifier %s is not defined.", identifier->name);
+		//logCerr(CERR_UNKNOWN, identifier->node.tok, "Identifier %s is not defined.", identifier->name);
 		return 0;
 	}
 	return 1;
@@ -63,5 +65,5 @@ void typeGen(ASTFile *file) {
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
 
-	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
+	//astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
 }

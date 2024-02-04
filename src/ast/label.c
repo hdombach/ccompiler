@@ -26,6 +26,30 @@ int parseASTLbl(
 	return 0;
 }
 
+int astNodeIsLbl(ASTNode *node) {
+	switch (node->type) {
+		case AST_LBL_CASE:
+		case AST_LBL_DEFAULT:
+		case AST_LBL_IDENTIFIER:
+			return 1;
+		default:
+			return 0;
+	}
+}
+
+ASTNode *astLblNextStm(ASTNode *node) {
+	switch (node->type) {
+		case AST_LBL_CASE:
+			return ((ASTLblCase *) node)->stm;
+		case AST_LBL_DEFAULT:
+			return ((ASTLblDefault *) node)->stm;
+		case AST_LBL_IDENTIFIER:
+			return ((ASTLblIdentifier *) node)->stm;
+		default:
+			return NULL;
+	}
+}
+
 static ASTNodeVTable _lblIdentifierVTable = {
 	{
 		(FreeFunc) freeASTLblIdentifier,

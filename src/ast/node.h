@@ -164,6 +164,12 @@ int astNodeChildCount(ASTNode const *node);
  */
 ASTNode *astNodeGetChild(ASTNode *node, int index);
 /**
+ * @brief Returns if the current node owns a scope
+ * @param[in] node
+ * @returns Whether there is a scope
+ */
+int astNodeHasScope(ASTNode *node);
+/**
  * @brief If node contains scope, return it
  * @param[in] node
  * @param[in] defaultScope The scope to return if node doesn't contain one

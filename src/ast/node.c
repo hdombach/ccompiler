@@ -87,6 +87,18 @@ ASTNode *astNodeGetChild(ASTNode *node, int index) {
 	}
 }
 
+int astNodeHasScope(ASTNode *node) {
+	switch (node->type) {
+		case AST_COMP_STM:
+		case AST_FILE:
+		case AST_FUNC_DECL:
+		case AST_FUNC_DEF:
+		case AST_STRUCT_DECL:
+			return 1;
+		default: return 0;
+	}
+}
+
 ASTScope *astNodeScope(ASTNode *node, ASTScope *defaultScope) {
 	switch (node->type) {
 		case AST_COMP_STM:

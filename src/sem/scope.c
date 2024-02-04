@@ -140,39 +140,21 @@ void astScopeAddTypedefNames(ASTScope *scope, DList names) {
 	}
 }
 
-static int _labelChild(ASTNode **node) {
-	switch ((**node).type) {
-		case AST_LBL_IDENTIFIER:
-			*node = ((ASTLblIdentifier *) *node)->stm;
-			return 1;
-
-		case AST_LBL_CASE:
-			*node = ((ASTLblCase *) *node)->stm;
-			return 1;
-
-		case AST_LBL_DEFAULT:
-			*node = ((ASTLblDefault *) *node)->stm;
-			return 1;
-
-		default:
-			return 0;
+int astScopeAddLabel(ASTScope *scope, ASTLblIdentifier *lbl) {
+	ASTNode *curStm = (ASTNode *) lbl, *tempStm;
+	ASSERT(lbl->node.type == AST_LBL_IDENTIFIER);
+	while ((tempStm = astLblNextStm(curStm))) {
+		curStm = tempStm;
 	}
-}
 
-ASTScopeErr astScopeAddLabels(ASTScope *scope, ASTNode *stm) {
-	ASTNode *actStm = stm;
-	while (_labelChild(&actStm));
-	while (stm != actStm) {
-		if (stm->type == AST_LBL_IDENTIFIER) {
-			ASTLblIdentifier *lbl = (ASTLblIdentifier *) stm;
-			if (astScopeGetLabel(scope, lbl->name)) return SCOPE_EXISTS;
-			int index = scope->labels.size;
-			dlistApp(&scope->labels, &stm);
-			wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
-		}
-		_labelChild(&stm);
-	}
-	return SCOPE_SUCCESS;
+	if (astScopeGetLabel(scope, lbl->name)) {
+		logCerr(CERR_LBL, lbl->node.tok, "Label with name %s already exists", lbl->name);
+		return 0;
+	};
+	int index = scope->labels.size;
+	dlistApp(&scope->labels, &curStm);
+	wordDictInsert(&scope->labelDict, strdup(lbl->name), index);
+	return 1;
 }
 
 struct ASTNode *astScopeGetLabel(ASTScope *scope, const char *labelName) {
