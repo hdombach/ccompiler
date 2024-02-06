@@ -27,14 +27,11 @@ typedef struct SType SType;
 	X(STT_PRIM, "primitive") \
 	X(STT_ARRAY, "array") \
 	X(STT_STRUCT, "struct") \
-	X(STT_STRUCT_REF, "struct ref") \
 	X(STT_UNION, "union") \
-	X(STT_UNION_REF, "union ref") \
 	X(STT_FUNC, "function") \
 	X(STT_POINTER, "pointer") \
 	X(STT_TYPEDEF_REF, "typedef ref") \
 	X(STT_ENUM, "enum") \
-	X(STT_ENUM_REF, "enum ref") \
 	X(STT_ENUM_CONST, "enum const") \
 
 #define X(NAME, STR) NAME,
@@ -46,14 +43,11 @@ typedef enum STypeT {
 } STypeT;
 #undef X
 
-typedef SType* (*STypeDeref)(SType *type);
-
 /**
  * @extends VTable
  */
 typedef struct STypeVTable {
 	VTable table;
-	STypeDeref deref;
 } STypeVTable;
 
 /**
@@ -86,7 +80,7 @@ typedef struct STypeBuf {
 /**
  * @param[out] type
  */
-void initSType(SType *type);
+void initSType(SType *type, STypeVTable *vtable);
 /**
  * @param[in] type
  */

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 
 #include "type.h"
 #include "../util/log.h"
@@ -11,7 +12,8 @@
  * Semantic Type
  *************************************************************/
 
-void initSType(SType *type) {
+void initSType(SType *type, STypeVTable *vtable) {
+	type->vtable = *vtable;
 	type->type = STT_UNKNOWN;
 	type->isConst = 0;
 	type->isVolatile = 0;
@@ -19,21 +21,8 @@ void initSType(SType *type) {
 }
 
 void destroySType(SType *type) {
-	switch (type->type) {
-		case STT_VOID: break;
-		case STT_PRIM: break;
-		case STT_ARRAY: destroySArray((SArray *) type); break;
-		case STT_STRUCT: break;
-		case STT_STRUCT_REF: break;
-		case STT_UNION: break;
-		case STT_UNION_REF: break;
-		case STT_FUNC: destroySFunction((SFunction *) type); break;
-		case STT_POINTER: destroySPointer((SPointer *) type); break;
-		case STT_TYPEDEF_REF: break;
-		case STT_ENUM: break;
-		case STT_ENUM_REF: break;
-		case STT_ENUM_CONST: break;
-		case STT_UNKNOWN: break;
+	if (type->vtable.table.freeFunc) {
+		type->vtable.table.freeFunc(type);
 	}
 	type->type = STT_UNKNOWN;
 }
@@ -219,27 +208,25 @@ const char *sttStr(STypeT t) {
 }
 
 int printSType(SType const *type) {
-	switch (type->type) {
-		case STT_PRIM: return printSPrim((SPrim *) type);
-		case STT_ARRAY: return printSArray((SArray *) type);
-		case STT_STRUCT:
-		case STT_UNION: return printSCompound((SCompound *) type);
-		case STT_STRUCT_REF:
-		case STT_UNION_REF: return printSCompoundRef((SCompoundRef *) type);
-		case STT_FUNC: return printSFunction((SFunction *) type);
-		case STT_POINTER: return printSPointer((SPointer *) type);
-		case STT_TYPEDEF_REF: return printSTypeRef((STypeRef *) type);
-		case STT_ENUM_CONST: return printSPrim((SPrim *) type);
-		default: return printf("{\"type\": \"%s\"}", sttStr(type->type)); 
+	if (type->vtable.table.printFunc) {
+		return type->vtable.table.printFunc(type);
 	}
+	return printf("\"unknown\"");
 }
 
 /*************************************************************
  * Semantic Primitive Type
  *************************************************************/
 
+static STypeVTable _primVTable = {
+	{
+		NULL,
+		(PrintFunc) printSPrim,
+	}
+};
+
 void initSPrim(SPrim *type) {
-		initSType((SType *) type);
+		initSType((SType *) type, &_primVTable);
 		type->primType = SPT_UNKNOWN;
 }
 
@@ -339,8 +326,16 @@ int printSPrim(const SPrim *type) {
  * Semantic Array Type
  *************************************************************/
 
+static STypeVTable _arrayVTable = {
+	{
+		(FreeFunc) destroySArray,
+		(PrintFunc) printSArray,
+	}
+};
+
+
 void initSArray(SArray *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_arrayVTable);
 
 	type->elType = NULL;
 	type->size = -1;
@@ -403,8 +398,15 @@ int printSArray(const SArray *type) {
  * Used for both unions and structs
  *************************************************************/
 
+static STypeVTable _compoundVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printSCompound,
+	}
+};
+
 void initSCompound(SCompound *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_compoundVTable);
 	type->scope = NULL;
 	type->isUnion = 0;
 }
@@ -428,7 +430,6 @@ int loadSCompound(SCompound *type, ASTStructDecl *decl) {
 }
 
 void initSCompoundRef(SCompoundRef *type) {
-	initSType((SType *) type);
 	type->index = -1;
 	type->parentScope = NULL;
 }
@@ -481,6 +482,13 @@ SCompound *scompoundDeref(struct SCompoundRef *ref) {
  * Semantic Pointer Type
  *************************************************************/
 
+static STypeVTable _spointerVTable = {
+	{
+		(FreeFunc) destroySPointer,
+		(PrintFunc) printSPointer
+	}
+};
+
 SPointer *newSPointer() {
 	SPointer *result = malloc(STYPE_S);
 	initSPointer(result);
@@ -488,7 +496,7 @@ SPointer *newSPointer() {
 }
 
 void initSPointer(SPointer *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_spointerVTable);
 	type->internal = NULL;
 }
 
@@ -539,8 +547,15 @@ int printSPointer(const SPointer *type) {
  * Semantic Function Type
  *************************************************************/
 
+static STypeVTable _functionVTable = {
+	{
+		(FreeFunc) destroySFunction,
+		(PrintFunc) printSFunction,
+	}
+};
+
 void initSFunction(SFunction *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_functionVTable);
 	type->returnType = NULL;
 	type->paramScope = NULL;
 }
@@ -593,8 +608,13 @@ int printSFunction(const SFunction *func) {
 	return n;
 }
 
+static STypeVTable _typerefVTable = {
+	(FreeFunc) NULL,
+	(PrintFunc) printSTypeRef,
+};
+
 void initSTypeRef(STypeRef *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_typerefVTable);
 	type->index = -1;
 	type->parentScope = NULL;
 }
@@ -630,8 +650,15 @@ int printSTypeRef(const STypeRef *type) {
 	return n;
 }
 
+static STypeVTable _enumVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printSEnum,
+	}
+};
+
 void initSEnum(SEnum *type) {
-	initSType((SType *) type);
+	initSType((SType *) type, &_enumVTable);
 	type->scope = NULL;
 }
 
@@ -652,7 +679,6 @@ int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
 }
 
 void initSEnumRef(SEnumRef *type) {
-	initSType((SType *) type);
 	type->index = -1;
 	type->parentScope = NULL;
 }
