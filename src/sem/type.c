@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -209,23 +208,14 @@ SType *movaSType(SType const *src) {
 	return result;
 }
 
+#define X(NAME, STR) STR,
+const char *_sttStr[] = {
+	X_STYPE_TYPE
+};
+#undef X
+
 const char *sttStr(STypeT t) {
-	switch(t) {
-		case STT_VOID: return "void";
-		case STT_PRIM: return "primitive";
-		case STT_ARRAY: return "array";
-		case STT_STRUCT: return "structure";
-		case STT_STRUCT_REF: return "structure ref";
-		case STT_UNION: return "union";
-		case STT_UNION_REF: return "union ref";
-		case STT_FUNC: return "function";
-		case STT_POINTER: return "pointer";
-		case STT_TYPEDEF_REF: return "typedef ref";
-		case STT_ENUM: return "enum";
-		case STT_ENUM_REF: return "enum ref";
-		case STT_ENUM_CONST: return "enumerator constant";
-		default: return "(unknown)";
-	}
+	return _sttStr[t];
 }
 
 int printSType(SType const *type) {
@@ -469,13 +459,11 @@ int loadSCompoundRef(
 }
 
 int printSCompoundRef(const SCompoundRef *ref) {
-	if (!ASSERT(ref->type.type == STT_STRUCT_REF || ref->type.type == STT_UNION_REF))
-		return 0;
 	int n = 0;
 
 	n += printf("{");
 
-	n += printf("\"type\": \"%s\"", sttStr(ref->type.type));
+	n += printf("\"type\": \"Compound Ref\"");
 
 	n += printf(", \"content\": ");
 	n += printSCompound(scompoundDeref((SCompoundRef*) ref));
@@ -691,12 +679,11 @@ int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 }
 
 int printSEnumRef(const SEnumRef *ref) {
-	if (!ASSERT(ref->type.type == STT_ENUM_REF)) return 0;
 	int n = 0;
 
 	n += printf("{");
 
-	n += printf("\"type\": \"%s\"", sttStr(ref->type.type));
+	n += printf("\"type\": \"Enum Ref\"");
 
 	n += printASTScope(senumDeref(ref)->scope);
 

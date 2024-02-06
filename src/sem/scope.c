@@ -184,13 +184,6 @@ struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name) {
 	result.index = *wordDictGet(&scope->tagDict, name);
 	result.parentScope = scope;
 
-	
-	SCompound *comp = dlistGetm(&scope->tags, result.index);
-	if (comp->isUnion) {
-		result.type.type = STT_UNION_REF;
-	} else {
-		result.type.type = STT_STRUCT_REF;
-	}
 	return result;
 }
 
@@ -199,12 +192,6 @@ SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 	result.index = scope->tags.size;
 	result.parentScope = scope;
 	dlistApp(&scope->tags, new);
-
-	if (new->isUnion) {
-		result.type.type = STT_UNION_REF;
-	} else {
-		result.type.type = STT_STRUCT_REF;
-	}
 
 	return result;
 }
@@ -246,7 +233,6 @@ struct SEnumRef astScopeGetEnum(ASTScope *scope, const char *name) {
 	SEnumRef result;
 	result.index = *wordDictGet(&scope->tagDict, name);
 	result.parentScope = scope;
-	result.type.type = STT_ENUM_REF;
 
 	return result;
 }
@@ -256,7 +242,6 @@ struct SEnumRef astScopeAddAnonEnum(ASTScope *scope, struct SEnum *new) {
 	result.index = scope->tags.size;
 	result.parentScope = scope;
 	dlistApp(&scope->tags, new);
-	result.type.type = STT_ENUM_REF;
 
 	return result;
 }
