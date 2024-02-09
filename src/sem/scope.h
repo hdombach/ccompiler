@@ -4,7 +4,7 @@
 #include "../util/dlist.h"
 
 typedef struct ASTNode ASTNode;
-struct SCompound;
+typedef struct SCompound SCompound;
 struct SType;
 struct SEnum;
 typedef struct STypeRef STypeRef;
@@ -29,9 +29,17 @@ typedef struct ASTScope {
 	 * @brief used for structs, unions, and enums
 	 */
 	WordDict tagDict;
+	/**
+	 * Contains SEnum or SCompound
+	 * Is mainly used to determain if new struct can be added.
+	 */
 	DList tags;
 
 	WordDict identifierDict;
+	/**
+	 * @brief List of identifier types
+	 * Contains SType
+	 */
 	DList identifiers;
 	struct ASTScope *parent;
 } ASTScope;

@@ -10,6 +10,7 @@
 #include "node.h"
 #include "operation.h"
 #include "specialDecl.h"
+#include "../util/log.h"
 
 /* =========================================================================
  * ASTTypeQualifier

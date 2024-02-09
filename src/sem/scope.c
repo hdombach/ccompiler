@@ -5,6 +5,9 @@
 #include "type.h"
 #include "../util/log.h"
 #include "../ast/label.h"
+#include "../sem/scompound.h"
+#include "../sem/styperef.h"
+#include "../sem/senum.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);

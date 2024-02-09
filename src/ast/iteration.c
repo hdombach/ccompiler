@@ -1,11 +1,14 @@
+#include "iteration.h"
+
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "declaration.h"
-#include "iteration.h"
 #include "node.h"
 #include "operation.h"
 #include "statement.h"
 #include "astUtil.h"
+#include "../util/log.h"
 
 /************************************************************
  * While

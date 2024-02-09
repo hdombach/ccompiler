@@ -1,11 +1,13 @@
+#include <stdio.h>
+
 #include "file.h"
 #include "declaration.h"
 #include "funcDef.h"
 #include "../sem/scope.h"
 #include "astUtil.h"
 #include "../util/callbacks.h"
+#include "../util/log.h"
 #include "node.h"
-#include <stdio.h>
 
 int parseASTFileItem(
 		ASTNode *item,

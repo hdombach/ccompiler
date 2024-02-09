@@ -5,6 +5,8 @@
 #include "scope.h"
 #include "../util/log.h"
 #include "../ast/node.h"
+#include "sprim.h"
+#include "senum.h"
 
 static ASTTravRes addLabels(ASTNode *node, ASTTravCtx *ctx) {
 	if (node->type == AST_LBL_IDENTIFIER) {

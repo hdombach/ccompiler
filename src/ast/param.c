@@ -1,7 +1,9 @@
+#include "param.h"
+
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "node.h"
-#include "param.h"
 #include "astUtil.h"
 #include "declaration.h"
 #include "../tok/token.h"

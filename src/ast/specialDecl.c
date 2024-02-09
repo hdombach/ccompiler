@@ -1,12 +1,16 @@
-#include <stdlib.h>
-
 #include "specialDecl.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
 #include "operation.h"
 #include "param.h"
 #include "declaration.h"
 #include "astUtil.h"
 #include "node.h"
 #include "../sem/scope.h"
+#include "../util/log.h"
 
 
 /************************************************************

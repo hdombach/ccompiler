@@ -1,4 +1,8 @@
 #include "identifier.h"
+
+#include <string.h>
+#include <stdio.h>
+
 #include "node.h"
 
 struct ASTNodeVTable _vtable = {

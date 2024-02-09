@@ -1,13 +1,9 @@
 #pragma once
 
-#include <string.h>
-#include <stdio.h>
-
 #include "node.h"
 #include "../tok/token.h"
-#include "../util/util.h"
 #include "../sem/type.h"
-#include "../util/log.h"
+#include "../sem/styperef.h"
 
 /**
  * @file

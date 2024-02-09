@@ -1,7 +1,10 @@
+#include "statement.h"
+
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "node.h"
-#include "statement.h"
 #include "compStatement.h"
 #include "astUtil.h"
 #include "label.h"
