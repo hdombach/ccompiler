@@ -27,6 +27,7 @@ int printSCompound(const SCompound *ref) {
 
 int loadSCompound(SCompound *type, ASTStructDecl *decl) {
 	if (!ASSERT(decl->node.type == AST_STRUCT_DECL)) return 0;
+	initSCompound(type);
 	type->isUnion = decl->isUnion;
 	type->scope = decl->scope;
 	if (type->isUnion) {

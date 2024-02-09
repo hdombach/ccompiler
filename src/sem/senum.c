@@ -31,6 +31,7 @@ int printSEnum(SEnum *type) {
 int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
 	if (!ASSERT(decl->node.type == AST_ENUM_DECL)) return 0;
 	STYPE_VALID(SEnum);
+	initSEnum(type);
 	type->type.type = STT_ENUM;
 	return 1;
 }

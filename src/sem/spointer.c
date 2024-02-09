@@ -37,6 +37,7 @@ int loadSPointer(
 		ASTScope *scope)
 {
 	STypeBuf pointer;
+	initSPointer((SPointer *) &pointer);
 	pointer.type.type = STT_POINTER;
 	((SPointer *) &pointer)->internal = movaSType(internal);
 

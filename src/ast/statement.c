@@ -275,7 +275,7 @@ ASTNode *astGotoGetChild(ASTGoto *node, int index) {
 
 static ASTNodeVTable _returnTable = {
 	{
-		(FreeFunc) NULL,
+		(FreeFunc) freeASTReturn,
 		(PrintFunc) printASTReturn,
 	},
 	(ASTChildCount) astReturnChildCount,
@@ -290,6 +290,7 @@ void initASTReturn(ASTReturn *node, const Token *tok) {
 void freeASTReturn(ASTReturn *node) {
 	if (node->value) {
 		freeASTNode(node->value);
+		free(node->value);
 		node->value = NULL;
 	}
 }

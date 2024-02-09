@@ -56,7 +56,7 @@ typedef struct STypeVTable {
  */
 typedef struct SType {
 	STypeT type;
-	STypeVTable vtable;
+	STypeVTable const *vtable;
 	unsigned char isConst: 1;
 	unsigned char isVolatile: 1;
 	unsigned char isTypedef: 1;

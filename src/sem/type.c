@@ -20,7 +20,7 @@
  *************************************************************/
 
 void initSType(SType *type, STypeVTable *vtable) {
-	type->vtable = *vtable;
+	type->vtable = vtable;
 	type->type = STT_UNKNOWN;
 	type->isConst = 0;
 	type->isVolatile = 0;
@@ -28,8 +28,8 @@ void initSType(SType *type, STypeVTable *vtable) {
 }
 
 void destroySType(SType *type) {
-	if (type->vtable.table.freeFunc) {
-		type->vtable.table.freeFunc(type);
+	if (type->vtable->table.freeFunc) {
+		type->vtable->table.freeFunc(type);
 	}
 	type->type = STT_UNKNOWN;
 }
@@ -215,8 +215,8 @@ const char *sttStr(STypeT t) {
 }
 
 int printSType(SType const *type) {
-	if (type->vtable.table.printFunc) {
-		return type->vtable.table.printFunc(type);
+	if (type->vtable->table.printFunc) {
+		return type->vtable->table.printFunc(type);
 	}
 	return printf("\"unknown\"");
 }

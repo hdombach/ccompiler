@@ -21,6 +21,8 @@ int loadSTypeRef(STypeRef *type, ASTIdentifier *identifier, ASTScope *scope) {
 
 	if (!ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
 
+	initSTypeRef(type);
+
 	if (!astScopeGetIdentifier(type, scope, identifier->name)) return 0;
 
 	type->type.type = STT_TYPEDEF_REF;

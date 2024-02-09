@@ -186,4 +186,5 @@ void tTypeGenFailed(const char *code, CError *errors) {
 	}
 
 	freeDList(&tokens, (FreeFunc) freeToken);
+	freeASTFile(&astFile);
 }
