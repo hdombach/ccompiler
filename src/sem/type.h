@@ -29,10 +29,13 @@ typedef struct SPrim SPrim;
 	X(STT_ARRAY, "array") \
 	X(STT_STRUCT, "struct") \
 	X(STT_UNION, "union") \
+	X(STT_STRUCT_REF, "struct ref") \
+	X(STT_UNION_REF, "union ref") \
 	X(STT_FUNC, "function") \
 	X(STT_POINTER, "pointer") \
 	X(STT_TYPEDEF_REF, "typedef ref") \
 	X(STT_ENUM, "enum") \
+	X(STT_ENUM_REF, "enum ref") \
 	X(STT_ENUM_CONST, "enum const") \
 
 #define X(NAME, STR) NAME,

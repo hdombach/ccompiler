@@ -9,6 +9,8 @@ struct SType;
 struct SEnum;
 typedef struct STypeRef STypeRef;
 typedef struct ASTLblIdentifier ASTLblIdentifier;
+typedef struct SCompoundRef SCompoundRef;
+typedef struct SEnumRef SEnumRef;
 
 typedef struct ASTScope {
 	/**
@@ -71,13 +73,34 @@ int astScopeAddLabel(ASTScope *scope, ASTLblIdentifier *lbl);
  */
 ASTNode *astScopeGetLabel(ASTScope *scope, const char *labelName);
 
-int astScopeHasCompound(ASTScope *scope, const char *name);
 
-int astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name);
+/**
+ * @brief Checks whether the scope contains a tag
+ * @param[in] scope
+ * @param[in] name
+ * @returns If the scope containes the compound
+ */
+int astScopeHasTag(ASTScope *scope, const char *name);
 
-struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name);
+/**
+ * @brief Gets enum, union, or struct
+ * @param[in] scope
+ * @param[in] name
+ * @returns Returns SCompoundRef or SEnumRef
+ */
+ASTNode *astScopeGetTag(ASTScope *scope, const char *name);
 
-struct SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
+/**
+ * @brief Adds a compound to the scope
+ * @param[in] scope
+ * @param[in] compound
+ * @param[in] name
+ * @returns Where the compound is stored
+ * @note Takes ownership of name, caller takes ownership of result
+ */
+SCompoundRef *astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name);
+
+SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
 
 /**
  * @brief Adds an identifier
@@ -110,6 +133,6 @@ int astScopeHasEnum(ASTScope *scope, const char *name);
 
 int astScopeAddEnum(ASTScope *scope, struct SEnum *type, char *name);
 
-struct SEnumRef astScopeGetEnum(ASTScope *scope, const char *name);
+SEnumRef *astScopeGetEnum(ASTScope *scope, const char *name);
 
-struct SEnumRef astScopeAddAnonEnum(ASTScope *scope, struct SEnum*);
+SEnumRef *astScopeAddAnonEnum(ASTScope *scope, struct SEnum*);

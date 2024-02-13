@@ -16,16 +16,11 @@ static STypeVTable _enumVTable = {
 
 void initSEnum(SEnum *type) {
 	initSType((SType *) type, &_enumVTable);
-	type->scope = NULL;
 }
 
 int printSEnum(SEnum *type) {
 	if (!ASSERT(type->type.type == STT_ENUM)) return 0;
-	if (type->scope) {
-		return printASTScope(type->scope);
-	} else {
-		return 0;
-	}
+	return printf("\"enum\"");
 }
 
 int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
@@ -36,7 +31,15 @@ int loadSEnum(SEnum *type, ASTEnumDecl *decl) {
 	return 1;
 }
 
+static STypeVTable _enumRefVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printSEnumRef,
+	}
+};
+
 void initSEnumRef(SEnumRef *type) {
+	initSType((SType *) type, &_enumRefVTable);
 	type->index = -1;
 	type->parentScope = NULL;
 }
@@ -53,27 +56,17 @@ int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 			if (!loadSEnum(&tempEnum, declaration)) return 0;
 			if (!astScopeAddEnum(scope, &tempEnum, strdup(declaration->name))) return 0;
 		}
-		*type = astScopeGetEnum(scope, declaration->name);
+		*type = *astScopeGetEnum(scope, declaration->name);
 		return 1;
 	}
 
 	if (!loadSEnum(&tempEnum, declaration)) return 0;
-	*type = astScopeAddAnonEnum(scope, &tempEnum);
+	*type = *astScopeAddAnonEnum(scope, &tempEnum);
 	return 1;
 }
 
 int printSEnumRef(const SEnumRef *ref) {
-	int n = 0;
-
-	n += printf("{");
-
-	n += printf("\"type\": \"Enum Ref\"");
-
-	n += printASTScope(senumDeref(ref)->scope);
-
-	n += printf("}");
-
-	return n;
+	return printf("\"enum ref\"");
 }
 
 SEnum *senumDeref(SEnumRef const *ref) {
@@ -83,6 +76,7 @@ SEnum *senumDeref(SEnumRef const *ref) {
 int loadSEnumConst(SPrim *type, ASTEnumConst *decl, ASTScope *scope) {
 	STYPE_VALID(SPrim);
 	if (!ASSERT(decl->node.type == AST_ENUM_CONST)) return 0;
+	initSPrim(type);
 
 	type->type.type = STT_ENUM_CONST;
 	type->primType = SPT_INT;

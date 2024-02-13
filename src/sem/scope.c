@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "scope.h"
@@ -8,6 +9,7 @@
 #include "../sem/scompound.h"
 #include "../sem/styperef.h"
 #include "../sem/senum.h"
+#include "../sem/type.h"
 
 void initASTScope(ASTScope *scope) {
 	initWordDict(&scope->typedefNames);
@@ -172,30 +174,51 @@ struct ASTNode *astScopeGetLabel(ASTScope *scope, const char *labelName) {
 	return dlistGetm(&scope->labels, *index);
 }
 
-int astScopeHasCompound(ASTScope *scope, const char *name) {
+int astScopeHasTag(ASTScope *scope, const char *name) {
 	return wordDictPresent(&scope->tagDict, name);
 }
 
-int astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name) {
-	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) return 0;
+ASTNode *astScopeGetTag(ASTScope *scope, const char *name) {
+	SCompoundRef *result = malloc(STYPE_S);
+	initSCompoundRef(result);
+
+	result->index = *wordDictGet(&scope->tagDict, name);
+	result->parentScope = scope;
+	TODO("not just struct ref");
+	result->type.type = STT_STRUCT_REF;
+	return (ASTNode *) result;
+}
+
+SCompoundRef *astScopeAddCompound(
+		ASTScope *scope,
+		struct SCompound *compound,
+		char *name)
+{
+	SCompoundRef *result = malloc(STYPE_S);
+	initSCompoundRef(result);
+	result->index = scope->tags.size;
+	result->parentScope = scope;
+
+	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) goto failure;
 	dlistApp(&scope->tags, compound);
-	return 1;
-}
 
-struct SCompoundRef astScopeGetCompound(ASTScope *scope, const char *name) {
-	SCompoundRef result;
-	result.index = *wordDictGet(&scope->tagDict, name);
-	result.parentScope = scope;
-
+	result->type.type = STT_STRUCT_REF;
 	return result;
+
+failure:
+	destroySType((SType *) result);
+	return NULL;
 }
 
-SCompoundRef astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
-	SCompoundRef result;
-	result.index = scope->tags.size;
-	result.parentScope = scope;
+SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
+	SCompoundRef *result = malloc(STYPE_S);
+	initSCompoundRef(result);
+	result->index = scope->tags.size;
+
+	result->parentScope = scope;
 	dlistApp(&scope->tags, new);
 
+	result->type.type = STT_STRUCT_REF;
 	return result;
 }
 
@@ -232,18 +255,20 @@ int astScopeAddEnum(ASTScope *scope, struct SEnum *type, char *name) {
 	return 1;
 }
 
-struct SEnumRef astScopeGetEnum(ASTScope *scope, const char *name) {
-	SEnumRef result;
-	result.index = *wordDictGet(&scope->tagDict, name);
-	result.parentScope = scope;
-
+SEnumRef *astScopeGetEnum(ASTScope *scope, const char *name) {
+	SEnumRef *result = malloc(STYPE_S);
+	initSEnumRef(result);
+	result->index = *wordDictGet(&scope->tagDict, name);
+	result->parentScope = scope;
 	return result;
 }
 
-struct SEnumRef astScopeAddAnonEnum(ASTScope *scope, struct SEnum *new) {
-	SEnumRef result;
-	result.index = scope->tags.size;
-	result.parentScope = scope;
+SEnumRef *astScopeAddAnonEnum(ASTScope *scope, struct SEnum *new) {
+	SEnumRef *result = malloc(STYPE_S);
+	initSEnumRef(result);
+
+	result->index = scope->tags.size;
+	result->parentScope = scope;
 	dlistApp(&scope->tags, new);
 
 	return result;

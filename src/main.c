@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 		initStreamFile(&stream, fp);
 		tokens = tokenize(&stream, file);
 
-		printDList(&tokens, (PrintFunc) printToken);
+		//printDList(&tokens, (PrintFunc) printToken);
 
 		preprocessor(&tokens);
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 		ASTFile astFile;
 		if (parseASTFile(&astFile, tokListGetm(&tokens, 0))) {
 			typeGen(&astFile);
-			printASTFile(&astFile);
+			//printASTFile(&astFile);
 			printASTScope(astFile.scope);
 			freeASTFile(&astFile);
 		} else {

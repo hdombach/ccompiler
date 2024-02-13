@@ -9,7 +9,6 @@
 #include "type.h"
 
 /**
- * @extends SType
  * @brief The underlying struct or union type that other variable types reference
  */
 typedef struct SCompound {
@@ -39,9 +38,11 @@ int printSCompound(SCompound const *ref);
 int loadSCompound(SCompound *type, ASTStructDecl *decl);
 
 /**
+ * @extends SType
  * @brief Reference to the struct type
  */
 typedef struct SCompoundRef {
+	SType type;
 	/* index into structs */
 	int index;
 	ASTScope *parentScope;

@@ -38,7 +38,15 @@ int loadSCompound(SCompound *type, ASTStructDecl *decl) {
 	return 1;
 }
 
+static STypeVTable _compoundRefVTable = {
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printSCompoundRef,
+	}
+};
+
 void initSCompoundRef(SCompoundRef *type) {
+	initSType((SType *) type, &_compoundRefVTable);
 	type->index = -1;
 	type->parentScope = NULL;
 }
@@ -54,17 +62,18 @@ int loadSCompoundRef(
 	SCompound tempComp;
 
 	initSCompoundRef(type);
+	if (!loadSCompound(&tempComp, structDecl)) return 0;
 	if (structDecl->name) {
-		if (!astScopeHasCompound(scope, structDecl->name)) {
-			if (!loadSCompound(&tempComp, structDecl)) return 0;
+		if (!astScopeHasTag(scope, structDecl->name)) {
 			if (!astScopeAddCompound(scope, &tempComp, strdup(structDecl->name))) return 0;
 		}
-		*type = astScopeGetCompound(scope, structDecl->name);
+		*type = *(SCompoundRef *) astScopeGetTag(scope, structDecl->name);
+		ASSERT(type->type.type == STT_STRUCT_REF || type->type.type == STT_UNION_REF);
 		return 1;
 	}
 
-	if (!loadSCompound(&tempComp, structDecl)) return 0;
-	*type = astScopeAddAnonCompound(scope, &tempComp);
+	*type = *(SCompoundRef *) astScopeAddAnonCompound(scope, &tempComp);
+	ASSERT(type->type.type == STT_STRUCT_REF || type->type.type == STT_UNION_REF);
 	return 1;
 }
 

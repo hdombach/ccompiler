@@ -9,11 +9,10 @@
 #include "type.h"
 
 /**
- * @extends SType
+ * @brief The underlying enum that other variable types reference
  */
 typedef struct SEnum {
 	SType type;
-	ASTScope *scope;
 } SEnum;
 /**
  * @param[out] type
@@ -32,9 +31,11 @@ int printSEnum(SEnum *type);
 int loadSEnum(SEnum *type, ASTEnumDecl *decl);
 
 /**
+ * @extends SType
  * A reference to an enum
  */
 typedef struct SEnumRef {
+	SType type;
 	int index;
 	ASTScope *parentScope;
 } SEnumRef;
