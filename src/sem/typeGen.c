@@ -26,7 +26,7 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 }
 
 static int checkIdentifier(ASTIdentifier *identifier, ASTScope *scope) {
-	STypeRef ref;
+	STypedef ref;
 	if (!astScopeGetIdentifier(&ref, scope, identifier->name)) {
 		//logCerr(CERR_UNKNOWN, identifier->node.tok, "Identifier %s is not defined.", identifier->name);
 		return 0;

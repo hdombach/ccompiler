@@ -12,36 +12,36 @@
  * @extends SType
  * @note A typedef that references another type
  */
-typedef struct STypeRef {
+typedef struct STypedef {
 	SType type;
 	/* Does not own this */
 	ASTScope *parentScope;
 	int index;
-} STypeRef;
+} STypedef;
 
 /**
  * @param[out] type
  */
-void initSTypeRef(STypeRef *type);
+void initSTypedef(STypedef *type);
 /**
  * @param[out] type
  * @param[in] typeSpec
  * @param[in] scope
  * @returns Whether it succeeds
  */
-int loadSTypeRef(STypeRef *type, ASTIdentifier *typeSpec, ASTScope *scope);
+int loadSTypedef(STypedef *type, ASTIdentifier *typeSpec, ASTScope *scope);
 /**
  * @brief Gets the underlying stype from scope
  * @param[in] ref
  * @returns The underlying type
  */
-SType *stypeDeref(STypeRef *ref);
+SType *stypedefDeref(STypedef *ref);
 /**
- * @brief Debug print the STypeRef
+ * @brief Debug print the STypedef
  * @param[in] type
  * @returns The number of characters printed
  */
-int printSTypeRef(STypeRef const *type);
+int printSTypedef(STypedef const *type);
 
 /**
  * @param[in] lhs

@@ -7,7 +7,7 @@
 #include "../util/log.h"
 #include "../ast/label.h"
 #include "../sem/scompound.h"
-#include "../sem/styperef.h"
+#include "../sem/stypedef.h"
 #include "../sem/senum.h"
 #include "../sem/type.h"
 
@@ -237,7 +237,7 @@ int astScopeAddAnonIdent(ASTScope *scope, struct SType *type) {
 	return index;
 }
 
-int astScopeGetIdentifier(STypeRef *ref, ASTScope *scope, char *name) {
+int astScopeGetIdentifier(STypedef *ref, ASTScope *scope, char *name) {
 	const int *index = wordDictGet(&scope->identifierDict, name);
 	if (!index) return 0;
 	ref->index = *index;

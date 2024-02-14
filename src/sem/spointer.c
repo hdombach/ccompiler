@@ -9,7 +9,8 @@ static STypeVTable _spointerVTable = {
 	{
 		(FreeFunc) destroySPointer,
 		(PrintFunc) printSPointer
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 SPointer *newSPointer() {

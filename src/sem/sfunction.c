@@ -9,7 +9,8 @@ static STypeVTable _functionVTable = {
 	{
 		(FreeFunc) destroySFunction,
 		(PrintFunc) printSFunction,
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 void initSFunction(SFunction *type) {

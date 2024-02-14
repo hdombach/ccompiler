@@ -10,7 +10,8 @@ static STypeVTable _arrayVTable = {
 	{
 		(FreeFunc) destroySArray,
 		(PrintFunc) printSArray,
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 

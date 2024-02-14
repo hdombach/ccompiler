@@ -10,7 +10,8 @@ static STypeVTable _compoundVTable = {
 	{
 		(FreeFunc) NULL,
 		(PrintFunc) printSCompound,
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 void initSCompound(SCompound *type) {
@@ -42,7 +43,8 @@ static STypeVTable _compoundRefVTable = {
 	{
 		(FreeFunc) NULL,
 		(PrintFunc) printSCompoundRef,
-	}
+	},
+	(STypeDerefFunc) scompoundDeref,
 };
 
 void initSCompoundRef(SCompoundRef *type) {

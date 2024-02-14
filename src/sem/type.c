@@ -12,7 +12,7 @@
 #include "scompound.h"
 #include "spointer.h"
 #include "sfunction.h"
-#include "styperef.h"
+#include "stypedef.h"
 #include "senum.h"
 
 /*************************************************************
@@ -94,8 +94,8 @@ static int loadTypespec(SType *type, ASTTypeSpec *spec, ASTScope *scope) {
 		case AST_TST_ARITH:
 			return loadSPrim((SPrim *) type, spec);
 		case AST_TST_TYPEDEF:
-			return loadSTypeRef(
-				(STypeRef *) type,
+			return loadSTypedef(
+				(STypedef *) type,
 				(ASTIdentifier *) spec->content,
 				scope);
 		case AST_TST_UNKNOWN:
@@ -219,4 +219,12 @@ int printSType(SType const *type) {
 		return type->vtable->table.printFunc(type);
 	}
 	return printf("\"unknown\"");
+}
+
+SType *stypeDeref(SType *type) {
+	if (type->vtable->deref) {
+		return type->vtable->deref(type);
+	} else {
+		return NULL;
+	}
 }

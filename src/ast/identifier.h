@@ -3,7 +3,7 @@
 #include "node.h"
 #include "../tok/token.h"
 #include "../sem/type.h"
-#include "../sem/styperef.h"
+#include "../sem/stypedef.h"
 
 /**
  * @file
@@ -13,7 +13,7 @@
 
 struct Token;
 struct ASTScope;
-typedef struct STypeRef STypeRef;
+typedef struct STypedef STypedef;
 
 /**
  * @extends ASTNode
@@ -23,7 +23,7 @@ typedef struct ASTIdentifier {
 	/** @note Is owned by ASTIdentifier */
 	char *name;
 	/** @brief A type object populated by the semantic analysis stage*/
-	STypeRef typeRef;
+	STypedef stypedef;
 } ASTIdentifier;
 
 /**

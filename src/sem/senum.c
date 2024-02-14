@@ -11,7 +11,8 @@ static STypeVTable _enumVTable = {
 	{
 		(FreeFunc) NULL,
 		(PrintFunc) printSEnum,
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 void initSEnum(SEnum *type) {
@@ -35,7 +36,8 @@ static STypeVTable _enumRefVTable = {
 	{
 		(FreeFunc) NULL,
 		(PrintFunc) printSEnumRef,
-	}
+	},
+	(STypeDerefFunc) senumDeref,
 };
 
 void initSEnumRef(SEnumRef *type) {

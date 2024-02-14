@@ -1,4 +1,4 @@
-#include "styperef.h"
+#include "stypedef.h"
 
 #include <stdio.h>
 
@@ -6,22 +6,25 @@
 #include "../ast/identifier.h"
 
 static STypeVTable _typerefVTable = {
-	(FreeFunc) NULL,
-	(PrintFunc) printSTypeRef,
+	{
+		(FreeFunc) NULL,
+		(PrintFunc) printSTypedef,
+	},
+	(STypeDerefFunc) stypedefDeref,
 };
 
-void initSTypeRef(STypeRef *type) {
+void initSTypedef(STypedef *type) {
 	initSType((SType *) type, &_typerefVTable);
 	type->index = -1;
 	type->parentScope = NULL;
 }
 
-int loadSTypeRef(STypeRef *type, ASTIdentifier *identifier, ASTScope *scope) {
-	STYPE_VALID(STypeRef);
+int loadSTypedef(STypedef *type, ASTIdentifier *identifier, ASTScope *scope) {
+	STYPE_VALID(STypedef);
 
 	if (!ASSERT(identifier->node.type == AST_IDENTIFIER_TS)) return 0;
 
-	initSTypeRef(type);
+	initSTypedef(type);
 
 	if (!astScopeGetIdentifier(type, scope, identifier->name)) return 0;
 
@@ -29,11 +32,11 @@ int loadSTypeRef(STypeRef *type, ASTIdentifier *identifier, ASTScope *scope) {
 	return 1;
 }
 
-SType *stypdefDeref(STypeRef *ref) {
+SType *stypedefDeref(STypedef *ref) {
 	return dlistGetm(&ref->parentScope->identifiers, ref->index);
 }
 
-int printSTypeRef(const STypeRef *type) {
+int printSTypedef(const STypedef *type) {
 	if (!ASSERT(type->type.type == STT_TYPEDEF_REF)) return 0;
 	int n = 0;
 
@@ -42,7 +45,7 @@ int printSTypeRef(const STypeRef *type) {
 	n += printf("\"type\": \"%s\"", sttStr(type->type.type));
 
 	n += printf(", \"content\": ");
-	n += printSType(stypdefDeref((STypeRef *) type));
+	n += printSType(stypedefDeref((STypedef *) type));
 
 	n += printf("}");
 

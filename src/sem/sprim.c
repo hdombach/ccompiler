@@ -10,7 +10,8 @@ static STypeVTable _primVTable = {
 	{
 		NULL,
 		(PrintFunc) printSPrim,
-	}
+	},
+	(STypeDerefFunc) NULL,
 };
 
 void initSPrim(SPrim *type) {

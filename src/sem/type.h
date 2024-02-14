@@ -47,11 +47,14 @@ typedef enum STypeT {
 } STypeT;
 #undef X
 
+typedef SType *(*STypeDerefFunc)(SType *);
+
 /**
  * @extends VTable
  */
 typedef struct STypeVTable {
 	VTable table;
+	STypeDerefFunc deref;
 } STypeVTable;
 
 /**
@@ -138,3 +141,5 @@ const char *sttStr(STypeT t);
  * @returns The number of characters printed
  */
 int printSType(SType const *type);
+
+SType *stypeDeref(SType *type);

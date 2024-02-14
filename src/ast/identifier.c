@@ -18,7 +18,7 @@ void initASTIdentifier(ASTIdentifier *node) {
 	initASTNode((ASTNode *) node, node->node.tok, &_vtable);
 	node->name = NULL;
 	node->node.type = AST_IDENTIFIER;
-	initSTypeRef(&node->typeRef);
+	initSTypedef(&node->stypedef);
 }
 
 void freeASTIdentifier(ASTIdentifier *node) {
