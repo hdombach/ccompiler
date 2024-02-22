@@ -5,7 +5,7 @@
 
 typedef struct ASTNode ASTNode;
 typedef struct SCompound SCompound;
-struct SType;
+typedef struct SType SType;
 struct SEnum;
 typedef struct STypedef STypedef;
 typedef struct ASTLblIdentifier ASTLblIdentifier;
@@ -15,6 +15,7 @@ typedef struct SEnumRef SEnumRef;
 typedef struct ASTScope {
 	/**
 	 * @brief Used while building AST to keep track of typedefs`
+	 * Only the keys in this dict matter
 	 */
 	WordDict typedefNames;
 
@@ -37,6 +38,9 @@ typedef struct ASTScope {
 	 */
 	DList tags;
 
+	/**
+	 * @brief Maps names to types in identifiers list
+	 */
 	WordDict identifierDict;
 	/**
 	 * @brief List of identifier types
@@ -119,15 +123,24 @@ int astScopeAddIdent(ASTScope *scope, struct SType *type, char *name);
 int astScopeAddAnonIdent(ASTScope *scope, struct SType *type);
 
 /**
- * @brief Gets an identifier
+ * @brief Gets the type for an identifier
  *
- * @param[out] ref
  * @param[in] scope
  * @param[in] name
  *
- * @returns 1 on success, 0 on failure
+ * @returns Reference to type of identifier or NULL if not found
  */
-int astScopeGetIdentifier(STypedef *ref, ASTScope *scope, char *name);
+SType *astScopeGetIdentifier(ASTScope *scope, char *name);
+
+/**
+ * @brief Gets the type for the corresponding identifier
+ *
+ * @param[in] scope
+ * @param[in] name
+ *
+ * @returns The reference to underlying type or NULL if not found
+ */
+SType *astScopeGetTypedef(ASTScope *scope, char *name);
 
 int astScopeHasEnum(ASTScope *scope, const char *name);
 

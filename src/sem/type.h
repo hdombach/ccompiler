@@ -14,6 +14,8 @@ typedef struct ASTIdentifier ASTIdentifier;
 typedef struct ASTDeclaration ASTDeclaration;
 typedef struct SType SType;
 typedef struct SPrim SPrim;
+typedef enum ASTTypeQualifier ASTTypeQualifier;
+typedef enum ASTStorageClassSpec ASTStorageClassSpec;
 
 /*************************************************************
  * Semantic Type
@@ -48,6 +50,7 @@ typedef enum STypeT {
 #undef X
 
 typedef SType *(*STypeDerefFunc)(SType *);
+typedef SType *(*STypeInternFunc)(SType *);
 
 /**
  * @extends VTable
@@ -55,6 +58,7 @@ typedef SType *(*STypeDerefFunc)(SType *);
 typedef struct STypeVTable {
 	VTable table;
 	STypeDerefFunc deref;
+	STypeInternFunc internal;
 } STypeVTable;
 
 /**
@@ -66,6 +70,9 @@ typedef struct SType {
 	unsigned char isConst: 1;
 	unsigned char isVolatile: 1;
 	unsigned char isTypedef: 1;
+	unsigned char isRegister: 1;
+	unsigned char isStatic: 1;
+	unsigned char isExtern: 1;
 } SType;
 
 #define STYPE_S 64
@@ -143,3 +150,17 @@ const char *sttStr(STypeT t);
 int printSType(SType const *type);
 
 SType *stypeDeref(SType *type);
+
+SType *stypeDerefMult(SType *type);
+
+/**
+ * @brief Checks if two types are compatible and combine pertinent info
+ * @returns 1 on success, 0 on failure
+ */
+int stypeCombine(SType *main, SType *next);
+
+void stypeLoadTypeQualifier(SType *type, ASTTypeQualifier qualifier);
+
+void stypeLoadStorageClass(SType *type, ASTStorageClassSpec spec);
+
+SType *stypeGetIntern(SType *type);

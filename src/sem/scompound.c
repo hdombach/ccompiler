@@ -12,6 +12,7 @@ static STypeVTable _compoundVTable = {
 		(PrintFunc) printSCompound,
 	},
 	(STypeDerefFunc) NULL,
+	(STypeInternFunc) NULL,
 };
 
 void initSCompound(SCompound *type) {

@@ -4,6 +4,7 @@
 
 #include "../ast/declaration.h"
 #include "../util/log.h"
+#include "type.h"
 
 static STypeVTable _spointerVTable = {
 	{
@@ -11,6 +12,7 @@ static STypeVTable _spointerVTable = {
 		(PrintFunc) printSPointer
 	},
 	(STypeDerefFunc) NULL,
+	(STypeInternFunc) spointerGetIntern
 };
 
 SPointer *newSPointer() {
@@ -68,4 +70,6 @@ int printSPointer(const SPointer *type) {
 	return n;
 }
 
-
+SType *spointerGetIntern(SPointer *type) {
+	return type->internal;
+}

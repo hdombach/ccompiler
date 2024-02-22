@@ -25,6 +25,7 @@ void initSType(SType *type, STypeVTable *vtable) {
 	type->isConst = 0;
 	type->isVolatile = 0;
 	type->isTypedef = 0;
+	type->isExtern = 0;
 }
 
 void destroySType(SType *type) {
@@ -46,6 +47,18 @@ int loadDecl(
 		return 1;
 	}
 	switch (node->type) {
+		{
+			ASTDeclarator *decl = (ASTDeclarator *) node;
+			int res = loadDecl(
+					type, 
+					internal, 
+					decl->encl, 
+					scope);
+			if (res) {
+				stypeLoadTypeQualifier(type, decl->qualifiers);
+			}
+			return res;
+		}
 		case AST_DECLARATOR: return loadDecl(
 			 type,
 			 internal,
@@ -132,13 +145,15 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 			return 0;
 		}
 
+		stypeLoadStorageClass((SType *) &tempType, declaration->typeSpec->storage);
+
 		if (!astScopeAddIdent(
 				scope,
 				(SType *) &tempType,
 				strdup(astDeclaratorName((ASTNode *) declarator))))
 		{
 			logCerr(
-					CERR_UNKNOWN,
+					CERR_TYPE,
 					declaration->node.tok,
 					"Couldn't add identifier %s",
 					astDeclaratorName((ASTNode *) declarator));
@@ -227,4 +242,114 @@ SType *stypeDeref(SType *type) {
 	} else {
 		return NULL;
 	}
+}
+
+SType *stypeDerefMult(SType *type) {
+	while (1) {
+		SType *next = stypeDeref(type);
+		if (!next) {
+			return type;
+		}
+		type = next;
+	}
+}
+
+static int _sprimCombine(SPrim *main, SPrim *next) {
+	DEBUG_MSG("combining a sprin");
+	return main->primType == next->primType;
+}
+
+static int _sarrayCombine(SArray *main, SArray *next) {
+	if (!stypeCombine(main->elType, next->elType)) {
+		return 0;
+	}
+
+	if (main->hasSize && next->hasSize) {
+		return main->size == next->size;
+	} else if (next->hasSize) {
+		main->size = next->size;
+	}
+	return 1;
+}
+
+static int _scompoundCombine(SCompound *main, SCompound *next) {
+	return 1;
+}
+
+static int _sfuncCombine(SFunction *main, SFunction *next) {
+	return 1;
+}
+
+static int _spointerCombine(SPointer *main, SPointer *next) {
+	return stypeCombine(main->internal, next->internal);
+}
+
+static int _senumCombine(SEnum *main, SEnum *next) {
+	return 1;
+}
+
+int stypeCombine(SType *main, SType *next) {
+	SType *lhs = stypeDerefMult(main);
+	SType *rhs = stypeDerefMult(next);
+
+	if (!lhs || !rhs) {
+		INT_ERROR("invalid arg to stypeCombine");
+		return 0;
+	}
+
+	if (lhs->type != rhs->type) {
+		logCerr(CERR_TYPE, NULL, "Incompatible types");
+		return 0;
+	}
+
+	if (!lhs->isExtern && !rhs->isExtern) {
+		logCerr(CERR_TYPE, NULL, "Can't both be not extern");
+		return 0;
+	}
+
+	lhs->isExtern = lhs->isExtern && rhs->isExtern;
+
+	switch (lhs->type) {
+		case STT_PRIM: return _sprimCombine((SPrim *) main, (SPrim *) next);
+		case STT_ARRAY: return _sarrayCombine((SArray *) main, (SArray *) next);
+		case STT_STRUCT:
+		case STT_UNION: return _scompoundCombine((SCompound *) main, (SCompound *) next);
+		case STT_FUNC: return _sfuncCombine((SFunction *) main, (SFunction *) next);
+		case STT_POINTER: return _spointerCombine((SPointer *) main, (SPointer *) next);
+		case STT_ENUM: return _senumCombine((SEnum *) main, (SEnum *) next);
+		default: INT_ERROR("Trying to combine invalid type \"%s\"", sttStr(lhs->type));
+	}
+	DEBUG_MSG("about to exit");
+	return 1;
+}
+
+void stypeLoadTypeQualifier(SType *type, ASTTypeQualifier qualifier) {
+	if (qualifier & AST_TQ_CONST) {
+		type->isConst = 1;
+	}
+	if (qualifier & AST_TQ_VOLATILE) {
+		type->isVolatile = 1;
+	}
+}
+
+void stypeLoadStorageClass(SType *type, ASTStorageClassSpec spec) {
+	if (spec & AST_SC_TYPEDEF) {
+		type->isTypedef = 1;
+	}
+	if (spec & AST_SC_REGISTER) {
+		type->isRegister = 1;
+	}
+	if (spec & AST_SC_STATIC) {
+		type->isStatic = 1;
+	}
+	if (spec & AST_SC_EXTERN) {
+		type->isExtern = 1;
+	}
+}
+
+SType *stypeGetIntern(SType *type) {
+	if (type->vtable->internal) {
+		return type->vtable->internal(type);
+	}
+	return NULL;
 }

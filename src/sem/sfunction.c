@@ -11,6 +11,7 @@ static STypeVTable _functionVTable = {
 		(PrintFunc) printSFunction,
 	},
 	(STypeDerefFunc) NULL,
+	(STypeInternFunc) sfunctionGetIntern
 };
 
 void initSFunction(SFunction *type) {
@@ -67,4 +68,6 @@ int printSFunction(const SFunction *func) {
 	return n;
 }
 
-
+SType *sfunctionGetIntern(SFunction *type) {
+	return type->returnType;
+}

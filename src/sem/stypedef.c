@@ -26,7 +26,13 @@ int loadSTypedef(STypedef *type, ASTIdentifier *identifier, ASTScope *scope) {
 
 	initSTypedef(type);
 
-	if (!astScopeGetIdentifier(type, scope, identifier->name)) return 0;
+	const int *index = wordDictGet(&scope->identifierDict, identifier->name);
+	if (!index) {
+		logCerr(CERR_IDENTIFIER, identifier->node.tok, "Unknown typedef identifier \"%s\"", identifier->name);
+	}
+
+	type->parentScope = scope;
+	type->index = *index;
 
 	type->type.type = STT_TYPEDEF_REF;
 	return 1;

@@ -46,4 +46,7 @@ int loadSPointer(
  */
 int printSPointer(SPointer const *type);
 
-
+/**
+ * @brief Impliments stypeGetIntern for SPointer
+ */
+SType *spointerGetIntern(SPointer *type);

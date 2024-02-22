@@ -50,9 +50,11 @@ void initASTFile(ASTFile *file, Token const *tok) {
 
 void freeASTFile(ASTFile *file) {
 	freeDList(&file->items, (FreeFunc) freeASTNode);
-	freeASTScope(file->scope);
-	free(file->scope);
-	file->scope = NULL;
+	if (file->scope) {
+		freeASTScope(file->scope);
+		free(file->scope);
+		file->scope = NULL;
+	}
 }
 
 int parseASTFile(ASTFile *file, const Token *tok) {

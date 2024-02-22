@@ -12,6 +12,7 @@ static STypeVTable _arrayVTable = {
 		(PrintFunc) printSArray,
 	},
 	(STypeDerefFunc) NULL,
+	(STypeInternFunc) sarrayGetIntern
 };
 
 
@@ -74,4 +75,6 @@ int printSArray(const SArray *type) {
 	return n;
 }
 
-
+SType *sarrayGetIntern(SArray *type) {
+	return type->elType;
+}

@@ -48,4 +48,7 @@ int printSFunction(SFunction const *func);
  * Semantic Typedef Ref
  *************************************************************/
 
-
+/**
+ * @brief Impliments stypeGetIntern for SFunction
+ */
+SType *sfunctionGetIntern(SFunction *type);

@@ -39,3 +39,10 @@ int loadSArray(SArray *type, SType *internal, ASTArrayDecl *arrayDecl, ASTScope 
  * @returns The number of characters printed
  */
 int printSArray(SArray const *type);
+
+/**
+ * @brief Impliments stypeGetIntern for SArray
+ * @param[in] type
+ * @returns The internal func
+ */
+SType *sarrayGetIntern(SArray *type);

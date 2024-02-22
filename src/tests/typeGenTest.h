@@ -53,9 +53,34 @@ static void typeGenLabels() {
 			"goto main;"
 			"}\n",
 			(CError[]) {CERR_LBL, CERR_UNKNOWN});
+}
 
+static void typeGenTypes() {
+	tStartSection("Test type gen types");
+
+	tTypeGenSuccess(
+			"int num;"
+			"int *ptr1;"
+			"int *ptr2;",
+			(STypeT[]) {STT_PRIM, STT_POINTER, STT_PRIM, STT_POINTER, STT_PRIM, STT_UNKNOWN});
+
+	tTypeGenFailed(
+			"int test;\n"
+			"int test;",
+			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
+
+	tTypeGenFailed(
+			"int *test;\n"
+			"int *test;",
+			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
+
+	tTypeGenFailed(
+			"int *test;\n"
+			"int test;",
+			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
 }
 
 static void typeGenTests() {
 	typeGenLabels();
+	typeGenTypes();
 }

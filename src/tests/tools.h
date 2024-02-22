@@ -4,6 +4,7 @@
 #include "../ast/node.h"
 #include "../tok/token.h"
 #include "../ast/node.h"
+#include "../sem/type.h"
 
 /**
  * @file
@@ -56,3 +57,11 @@ void tTypeGenLabels(const char *code, const char **labels);
  * @param[in] errors to expect
  */
 void tTypeGenFailed(const char *code, CError *error);
+
+/**
+ * @param[in] code
+ * @param[in] types
+ */
+void tTypeGenSuccess(const char *code, STypeT *types);
+
+void tTypeGenDebug(const char *code);

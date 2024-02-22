@@ -188,3 +188,80 @@ void tTypeGenFailed(const char *code, CError *errors) {
 	freeDList(&tokens, (FreeFunc) freeToken);
 	freeASTFile(&astFile);
 }
+
+static ASTTravRes _tType(ASTNode *node, ASTTravCtx *ctx) {
+	STypeT **types = (STypeT **) ctx->customCtx;
+	ASTScope *scope = astNodeScope(node, NULL);
+	if (!scope) {
+		return ASTT_SUCCESS;
+	}
+	for (int i = 0; i < scope->identifiers.size; i++) {
+		char msg[256];
+		SType *actualType = dlistGetm(&scope->identifiers, i);
+
+		while (actualType) {
+			snprintf(msg, sizeof(msg), "%s != %s", sttStr(**types), sttStr(actualType->type));
+			tAssert(NULL, -1, msg, actualType->type == **types, NULL);
+			(*types)++;
+			actualType = stypeGetIntern(actualType);
+		}
+	}
+	return ASTT_SUCCESS;
+}
+
+void tTypeGenSuccess(const char *code, STypeT *types) {
+	Stream stream;
+	initCerr();
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	ASTFile astFile;
+
+	T_ASSERT("parseASTFile failed", parseASTFile(&astFile, tokListGetm(&tokens, 0)));
+
+	T_ASSERT("typeGen failed", typeGen(&astFile) == 0);
+
+	astNodeTrav((ASTNode *) &astFile, (ASTTravFunc) _tType, NULL, &types);
+
+	freeASTFile(&astFile);
+	freeDList(&tokens, (FreeFunc) freeToken);
+}
+
+static ASTTravRes _debugType(ASTNode *node, ASTTravCtx *ctx) {
+	ASTScope *scope = astNodeScope(node, NULL);
+	if (!scope) {
+		return ASTT_SUCCESS;
+	}
+	for (int i = 0; i < scope->identifiers.size; i++) {
+		char msg[256];
+		STypeT *type = dlistGetm(&scope->identifiers, i);
+		printf(" \"%s\"", sttStr(*type));
+	}
+
+	return ASTT_SUCCESS;
+}
+
+void tTypeGenDebug(const char *code) {
+	Stream stream;
+	initCerr();
+	initStreamStr(&stream, code);
+	DList tokens = tokenize(&stream, "UNKNOWN");
+	ASTFile file;
+
+	T_ASSERT("parseASTFile failed", parseASTFile(&file, tokListGetm(&tokens, 0)));
+
+	if (typeGen(&file)) {
+		printf("errors: [");
+		for (int i = 0; i < cerrCount(); i++) {
+			printf(" \"%s\"", cerrStr(getCerr()[i]));
+		}
+		printf("]\n");
+	} else {
+		printf("types: [");
+		astNodeTrav((ASTNode *) &file, (ASTTravFunc) _debugType, NULL, NULL);
+		printf("]\n");
+	}
+
+
+	freeASTFile(&file);
+	freeDList(&tokens, (FreeFunc) freeToken);
+}

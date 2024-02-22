@@ -223,6 +223,11 @@ SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 }
 
 int astScopeAddIdent(ASTScope *scope, struct SType *type, char *name) {
+	SType *prevType = astScopeGetIdentifier(scope, name);
+	if (prevType) {
+		return stypeCombine(prevType, type);
+	}
+
 	int index;
 	index = scope->identifiers.size;
 
@@ -237,12 +242,19 @@ int astScopeAddAnonIdent(ASTScope *scope, struct SType *type) {
 	return index;
 }
 
-int astScopeGetIdentifier(STypedef *ref, ASTScope *scope, char *name) {
+SType *astScopeGetIdentifier(ASTScope *scope, char *name) {
 	const int *index = wordDictGet(&scope->identifierDict, name);
-	if (!index) return 0;
-	ref->index = *index;
-	ref->parentScope = scope;
-	return 1;
+	if (!index) {
+		return NULL;
+	}
+	return (SType *) dlistGet(&scope->identifiers, *index);
+}
+
+SType *astScopeGetTypedef(ASTScope *scope, char *name) {
+	if (!wordDictPresent(&scope->typedefNames, name)) {
+		return astScopeGetIdentifier(scope, name);
+	}
+	return NULL;
 }
 
 int astScopeHasEnum(ASTScope *scope, const char *name) {

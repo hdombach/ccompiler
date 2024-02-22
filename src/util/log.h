@@ -27,6 +27,7 @@ typedef struct Token Token;
 	X(CERR_EXP_STM, "Execting statement") \
 	X(CERR_WHILE, "Expecting while") \
 	X(CERR_LBL, "Invalid label") \
+	X(CERR_TYPE, "Type error") \
 
 /**
  * @brief The possible errors that can be thrown by the compile stages

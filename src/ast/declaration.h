@@ -23,7 +23,7 @@ typedef struct ASTScope ASTScope;
 /**
  * @brief Bitfield listing qualifiers applied
  */
-typedef enum  {
+typedef enum ASTTypeQualifier {
 	AST_TQ_NONE = 0b0,
 	AST_TQ_CONST = 0b1,
 	AST_TQ_VOLATILE = 0b10,
@@ -52,7 +52,7 @@ int printASTTypeQualifier(ASTTypeQualifier const *qualifiers);
 /**
  * @brief Bitfield listing storage class specifiers applied
  */
-typedef enum {
+typedef enum ASTStorageClassSpec {
 	AST_SC_NONE = 0b0,
 	AST_SC_TYPEDEF = 0b1,
 	AST_SC_AUTO = 0b10,

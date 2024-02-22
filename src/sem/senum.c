@@ -13,6 +13,7 @@ static STypeVTable _enumVTable = {
 		(PrintFunc) printSEnum,
 	},
 	(STypeDerefFunc) NULL,
+	(STypeInternFunc) NULL,
 };
 
 void initSEnum(SEnum *type) {

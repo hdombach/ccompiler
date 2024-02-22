@@ -27,10 +27,7 @@ static ASTTravRes checkLabels(ASTNode *node, ASTTravCtx *ctx) {
 
 static int checkIdentifier(ASTIdentifier *identifier, ASTScope *scope) {
 	STypedef ref;
-	if (!astScopeGetIdentifier(&ref, scope, identifier->name)) {
-		//logCerr(CERR_UNKNOWN, identifier->node.tok, "Identifier %s is not defined.", identifier->name);
-		return 0;
-	}
+	TODO("complete this func");
 	return 1;
 }
 
@@ -62,10 +59,12 @@ static ASTTravRes printScopes(ASTNode *node, ASTTravCtx *ctx) {
 	return ASTT_SUCCESS;
 }
 
-void typeGen(ASTFile *file) {
+int typeGen(ASTFile *file) {
+	int startCerrCount = cerrCount();
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
 
 	//astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
+	return cerrCount() - startCerrCount > 0;
 }
