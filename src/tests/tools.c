@@ -233,8 +233,11 @@ static ASTTravRes _debugType(ASTNode *node, ASTTravCtx *ctx) {
 	}
 	for (int i = 0; i < scope->identifiers.size; i++) {
 		char msg[256];
-		STypeT *type = dlistGetm(&scope->identifiers, i);
-		printf(" \"%s\"", sttStr(*type));
+		SType *type = dlistGetm(&scope->identifiers, i);
+		while (type) {
+			printf(" \"%s\"", sttStr(type->type));
+			type = stypeGetIntern(type);
+		}
 	}
 
 	return ASTT_SUCCESS;
@@ -247,7 +250,10 @@ void tTypeGenDebug(const char *code) {
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile file;
 
-	T_ASSERT("parseASTFile failed", parseASTFile(&file, tokListGetm(&tokens, 0)));
+	if (!parseASTFile(&file, tokListGetm(&tokens, 0))) {
+		T_ASSERT("parseASTFile failed", 0);
+		return;
+	}
 
 	if (typeGen(&file)) {
 		printf("errors: [");

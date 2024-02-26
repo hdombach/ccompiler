@@ -78,6 +78,12 @@ static void typeGenTypes() {
 			"int *test;\n"
 			"int test;",
 			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
+
+	tTypeGenSuccess(
+			"int test;"
+			"extern int test;"
+			"int *testPtr;",
+			(STypeT[]) {STT_PRIM, STT_POINTER, STT_PRIM, STT_UNKNOWN});
 }
 
 static void typeGenTests() {

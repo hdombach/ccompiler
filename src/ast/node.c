@@ -32,6 +32,7 @@ void freeASTNode(ASTNode *node) {
 		node->vtable->table.freeFunc(node);
 	}
 
+	node->vtable = NULL;
 	node->type = AST_UNKNOWN;
 }
 
