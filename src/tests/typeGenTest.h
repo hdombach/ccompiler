@@ -55,8 +55,8 @@ static void typeGenLabels() {
 			(CError[]) {CERR_LBL, CERR_UNKNOWN});
 }
 
-static void typeGenTypes() {
-	tStartSection("Test type gen types");
+static void testSimpleTypes() {
+	tStartSection("Test simple type gen");
 
 	tTypeGenSuccess(
 			"int num;"
@@ -64,15 +64,18 @@ static void typeGenTypes() {
 			"int *ptr2;",
 			(STypeT[]) {STT_PRIM, STT_POINTER, STT_PRIM, STT_POINTER, STT_PRIM, STT_UNKNOWN});
 
-	tTypeGenFailed(
+	/* Fine if duplicate is in file scope
+	 * n1256 6.2.2.5 */
+
+	tTypeGenSuccess(
 			"int test;\n"
 			"int test;",
-			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
+			(STypeT[]) {STT_PRIM, STT_UNKNOWN});
 
-	tTypeGenFailed(
+	tTypeGenSuccess(
 			"int *test;\n"
 			"int *test;",
-			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
+			(STypeT[]) {STT_POINTER, STT_PRIM, STT_UNKNOWN});
 
 	tTypeGenFailed(
 			"int *test;\n"
@@ -84,9 +87,21 @@ static void typeGenTypes() {
 			"extern int test;"
 			"int *testPtr;",
 			(STypeT[]) {STT_PRIM, STT_POINTER, STT_PRIM, STT_UNKNOWN});
+
+	tTypeGenSuccess(
+			"int test[];\n"
+			"int *test2[];\n",
+			(STypeT[]) {STT_ARRAY, STT_PRIM, STT_ARRAY, STT_POINTER, STT_PRIM, STT_UNKNOWN});
+
+	tTypeGenFailed(
+			"int main() {\n"
+			"	int test;\n"
+			"	int test;\n"
+			"}",
+			(CError[]) {CERR_TYPE, CERR_TYPE, CERR_UNKNOWN});
 }
 
 static void typeGenTests() {
 	typeGenLabels();
-	typeGenTypes();
+	testSimpleTypes();
 }

@@ -20,6 +20,7 @@ void initASTScope(ASTScope *scope) {
 	initDList(&scope->tags, sizeof(STypeBuf));
 	initWordDict(&scope->identifierDict);
 	initDList(&scope->identifiers, sizeof(STypeBuf));
+	scope->isFileScope = 0;
 }
 
 void freeASTScope(ASTScope *scope) {

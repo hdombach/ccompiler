@@ -22,9 +22,12 @@
 void initSType(SType *type, STypeVTable *vtable) {
 	type->vtable = vtable;
 	type->type = STT_UNKNOWN;
+	type->isBase = 0;
 	type->isConst = 0;
 	type->isVolatile = 0;
 	type->isTypedef = 0;
+	type->isRegister = 0;
+	type->isStatic = 0;
 	type->isExtern = 0;
 }
 
@@ -120,6 +123,7 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 	if (!ASSERT(declaration->node.type == AST_DECLARATION)) return 0;
 
 	STypeBuf tempInternal, tempType;
+	SType *tempTypeRef = (SType *) &tempType;
 
 	if (!loadTypespec((SType *) &tempInternal, declaration->typeSpec, scope)) {
 		logCerr(CERR_UNKNOWN, declaration->node.tok, "Problem loading typespec");
@@ -132,7 +136,7 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 		 * since typespec types are trivially copiable, tis fine */
 
 		if (!loadDecl(
-				(SType *) &tempType,
+				tempTypeRef,
 				(SType *) &tempInternal,
 				(ASTNode *) declarator,
 				scope))
@@ -145,11 +149,12 @@ int loadSTypes(ASTScope *scope, ASTDeclaration *declaration) {
 			return 0;
 		}
 
-		stypeLoadStorageClass((SType *) &tempType, declaration->typeSpec->storage);
+		stypeLoadStorageClass(tempTypeRef, declaration->typeSpec->storage, scope);
+		tempTypeRef->isBase = 1;
 
 		if (!astScopeAddIdent(
 				scope,
-				(SType *) &tempType,
+				tempTypeRef,
 				strdup(astDeclaratorName((ASTNode *) declarator))))
 		{
 			logCerr(
@@ -302,7 +307,7 @@ int stypeCombine(SType *main, SType *next) {
 		return 0;
 	}
 
-	if (!lhs->isExtern && !rhs->isExtern) {
+	if (lhs->isBase && !lhs->isExtern && !rhs->isExtern) {
 		logCerr(CERR_TYPE, NULL, "Can't both be not extern");
 		return 0;
 	}
@@ -332,7 +337,11 @@ void stypeLoadTypeQualifier(SType *type, ASTTypeQualifier qualifier) {
 	}
 }
 
-void stypeLoadStorageClass(SType *type, ASTStorageClassSpec spec) {
+void stypeLoadStorageClass(
+		SType *type,
+		ASTStorageClassSpec spec,
+		ASTScope *scope)
+{
 	if (spec & AST_SC_TYPEDEF) {
 		type->isTypedef = 1;
 	}
@@ -343,6 +352,9 @@ void stypeLoadStorageClass(SType *type, ASTStorageClassSpec spec) {
 		type->isStatic = 1;
 	}
 	if (spec & AST_SC_EXTERN) {
+		type->isExtern = 1;
+	}
+	if (spec == AST_SC_NONE && scope->isFileScope) {
 		type->isExtern = 1;
 	}
 }

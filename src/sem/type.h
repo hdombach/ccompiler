@@ -67,6 +67,7 @@ typedef struct STypeVTable {
 typedef struct SType {
 	STypeT type;
 	STypeVTable const *vtable;
+	unsigned char isBase: 1;
 	unsigned char isConst: 1;
 	unsigned char isVolatile: 1;
 	unsigned char isTypedef: 1;
@@ -161,6 +162,9 @@ int stypeCombine(SType *main, SType *next);
 
 void stypeLoadTypeQualifier(SType *type, ASTTypeQualifier qualifier);
 
-void stypeLoadStorageClass(SType *type, ASTStorageClassSpec spec);
+void stypeLoadStorageClass(
+		SType *type,
+		ASTStorageClassSpec spec,
+		ASTScope *scope);
 
 SType *stypeGetIntern(SType *type);

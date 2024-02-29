@@ -174,9 +174,11 @@ void tTypeGenFailed(const char *code, CError *errors) {
 	DList tokens = tokenize(&stream, "UNKNOWN");
 	ASTFile astFile;
 
-	T_ASSERT("parseASTFile failed", parseASTFile(&astFile, tokListGetm(&tokens, 0)));
+	T_ASSERT("parseASTFile failed", parseASTFile(&astFile, tokListGetm(&tokens, 0)) > 0);
 
 	typeGen(&astFile);
+
+	T_ASSERT("errors weren't thrown", cerrCount() > 0);
 
 	char msg[256];
 	for (int i = 0; i < cerrCount(); i++) {

@@ -48,6 +48,7 @@ typedef struct ASTScope {
 	 */
 	DList identifiers;
 	struct ASTScope *parent;
+	char isFileScope;
 } ASTScope;
 
 void initASTScope(ASTScope *scope);

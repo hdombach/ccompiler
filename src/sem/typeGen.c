@@ -61,14 +61,10 @@ static ASTTravRes printScopes(ASTNode *node, ASTTravCtx *ctx) {
 
 int typeGen(ASTFile *file) {
 	int startCerrCount = cerrCount();
-	DEBUG_MSG("starting labels");
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) addLabels, NULL);
-	DEBUG_MSG("starting checking labels");
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) checkLabels, NULL);
-	DEBUG_MSG("starting resolve types");
 	astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) resolveTypes, NULL);
 
-	DEBUG_MSG("finished everything");
 	//astNodeTrav((ASTNode *) file, NULL, (ASTTravFunc) printScopes, NULL);
 	return cerrCount() - startCerrCount > 0;
 }

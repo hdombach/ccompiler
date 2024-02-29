@@ -46,6 +46,7 @@ void initASTFile(ASTFile *file, Token const *tok) {
 	initDListEmpty(&file->items, AST_NODE_S);
 	file->scope = malloc(sizeof(ASTScope));
 	initASTScope(file->scope);
+	file->scope->isFileScope = 1;
 }
 
 void freeASTFile(ASTFile *file) {
