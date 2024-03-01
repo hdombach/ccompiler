@@ -179,40 +179,49 @@ int astScopeHasTag(ASTScope *scope, const char *name) {
 	return wordDictPresent(&scope->tagDict, name);
 }
 
-ASTNode *astScopeGetTag(ASTScope *scope, const char *name) {
-	SCompoundRef *result = malloc(STYPE_S);
-	initSCompoundRef(result);
+int astScopeGetTag(SType *tag, ASTScope *scope, const char *name) {
+	int const *index = wordDictGet(&scope->tagDict, name);
+	if (!index) {
+		return 0;
+	}
 
-	result->index = *wordDictGet(&scope->tagDict, name);
-	result->parentScope = scope;
-	TODO("not just struct ref");
-	result->type.type = STT_STRUCT_REF;
-	return (ASTNode *) result;
+	SType const *og = dlistGet(&scope->tags, *index);
+
+	if (og->type == STT_STRUCT) {
+		SCompoundRef *structTag = (SCompoundRef *) tag;
+		structTag->index = *index;
+		structTag->parentScope = scope;
+		structTag->type.type = STT_STRUCT_REF;
+	} else if (og->type == STT_ENUM) {
+		SEnumRef *enumTag = (SEnumRef *) tag;
+		enumTag->index = *index;
+		enumTag->parentScope = scope;
+		enumTag->type.type = STT_ENUM_REF;
+	} else {
+		INT_ERROR("Unknown type stored for tag %s", name);
+		return 0;
+	}
+	return 1;
 }
 
-SCompoundRef *astScopeAddCompound(
+int astScopeAddCompound(
 		ASTScope *scope,
 		struct SCompound *compound,
 		char *name)
 {
-	SCompoundRef *result = malloc(STYPE_S);
-	initSCompoundRef(result);
-	result->index = scope->tags.size;
-	result->parentScope = scope;
-
-	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) goto failure;
+	if (!wordDictInsert(&scope->tagDict, name, scope->tags.size)) {
+		return 0;
+	}
 	dlistApp(&scope->tags, compound);
 
-	result->type.type = STT_STRUCT_REF;
-	return result;
-
-failure:
-	destroySType((SType *) result);
-	return NULL;
+	return 1;
 }
 
-SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
-	SCompoundRef *result = malloc(STYPE_S);
+void astScopeAddAnonCompound(
+		SCompoundRef *result,
+		ASTScope *scope,
+		struct SCompound *new)
+{
 	initSCompoundRef(result);
 	result->index = scope->tags.size;
 
@@ -220,7 +229,6 @@ SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound *new) {
 	dlistApp(&scope->tags, new);
 
 	result->type.type = STT_STRUCT_REF;
-	return result;
 }
 
 int astScopeAddIdent(ASTScope *scope, struct SType *type, char *name) {

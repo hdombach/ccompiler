@@ -89,23 +89,35 @@ int astScopeHasTag(ASTScope *scope, const char *name);
 
 /**
  * @brief Gets enum, union, or struct
+ * @param[out] type
  * @param[in] scope
  * @param[in] name
- * @returns Returns SCompoundRef or SEnumRef
+ * @returns 1: success
  */
-ASTNode *astScopeGetTag(ASTScope *scope, const char *name);
+int astScopeGetTag(SType *tag, ASTScope *scope, const char *name);
 
 /**
  * @brief Adds a compound to the scope
  * @param[in] scope
  * @param[in] compound
  * @param[in] name
- * @returns Where the compound is stored
+ * @returns 1: success, 0: failure
  * @note Takes ownership of name, caller takes ownership of result
  */
-SCompoundRef *astScopeAddCompound(ASTScope *scope, struct SCompound *compound, char *name);
+int astScopeAddCompound(
+		ASTScope *scope,
+		struct SCompound *compound,
+		char *name);
 
-SCompoundRef *astScopeAddAnonCompound(ASTScope *scope, struct SCompound*);
+/**
+ * @param[out] result
+ * @param[in] scope
+ * @param[in] new
+ */
+void astScopeAddAnonCompound(
+		SCompoundRef *result,
+		ASTScope *scope,
+		struct SCompound* new);
 
 /**
  * @brief Adds an identifier

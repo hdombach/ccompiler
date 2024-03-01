@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "scope.h"
 #include "type.h"
 #include "../util/log.h"
 
@@ -22,6 +23,9 @@ void initSCompound(SCompound *type) {
 }
 
 int printSCompound(const SCompound *ref) {
+	if (!ref) {
+		return printf("\"null\"");
+	}
 	if (!ASSERT(ref->type.type == STT_STRUCT || ref->type.type == STT_UNION))
 		return 0;
 	return printASTScope(ref->scope);
@@ -63,6 +67,7 @@ int loadSCompoundRef(
 	if (!ASSERT(structDecl->node.type == AST_STRUCT_DECL)) return 0;
 
 	SCompound tempComp;
+	SCompoundRef *buf;
 
 	initSCompoundRef(type);
 	if (!loadSCompound(&tempComp, structDecl)) return 0;
@@ -70,12 +75,14 @@ int loadSCompoundRef(
 		if (!astScopeHasTag(scope, structDecl->name)) {
 			if (!astScopeAddCompound(scope, &tempComp, strdup(structDecl->name))) return 0;
 		}
-		*type = *(SCompoundRef *) astScopeGetTag(scope, structDecl->name);
+		if (!astScopeGetTag((SType *) type, scope, structDecl->name)) {
+			INT_ERROR("struct %s wasn't sucessfully added", structDecl->name);
+		}
 		ASSERT(type->type.type == STT_STRUCT_REF || type->type.type == STT_UNION_REF);
 		return 1;
 	}
 
-	*type = *(SCompoundRef *) astScopeAddAnonCompound(scope, &tempComp);
+	astScopeAddAnonCompound(type, scope, &tempComp);
 	ASSERT(type->type.type == STT_STRUCT_REF || type->type.type == STT_UNION_REF);
 	return 1;
 }
@@ -96,7 +103,11 @@ int printSCompoundRef(const SCompoundRef *ref) {
 }
 
 SCompound *scompoundDeref(struct SCompoundRef *ref) {
-	return dlistGetm(&ref->parentScope->tags, ref->index);
+	if (ref->index > 0) {
+		return dlistGetm(&ref->parentScope->tags, ref->index);
+	} else {
+		return NULL;
+	}
 }
 
 

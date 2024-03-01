@@ -50,6 +50,7 @@ void initSEnumRef(SEnumRef *type) {
 int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 	STYPE_VALID(SEnumRef);
 	if (!ASSERT(declaration->node.type == AST_ENUM_DECL)) return 0;
+	SEnumRef *buf;
 
 	SEnum tempEnum;
 
@@ -59,7 +60,9 @@ int loadSEnumRef(SEnumRef *type, ASTEnumDecl *declaration, ASTScope *scope) {
 			if (!loadSEnum(&tempEnum, declaration)) return 0;
 			if (!astScopeAddEnum(scope, &tempEnum, strdup(declaration->name))) return 0;
 		}
-		*type = *astScopeGetEnum(scope, declaration->name);
+		buf = astScopeGetEnum(scope, declaration->name);
+		*type = *buf;
+		free(buf);
 		return 1;
 	}
 
